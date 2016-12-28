@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>学习笔记</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="xtf615.com/"/>
+  <updated>2016-12-28T05:37:54.587Z</updated>
+  <id>xtf615.com/</id>
+  
+  <author>
+    <name>xuetf</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Spark搭建教程</title>
+    <link href="xtf615.com/2016/12/28/Spark%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
+    <id>xtf615.com/2016/12/28/Spark搭建教程/</id>
+    <published>2016-12-28T05:37:54.000Z</published>
+    <updated>2016-12-28T05:37:54.587Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
