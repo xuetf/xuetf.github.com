@@ -17,8 +17,8 @@
   
   <entry>
     <title>spark分布式环境搭建教程</title>
-    <link href="xtf615.com/2016/12/29/spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
-    <id>xtf615.com/2016/12/29/spark分布式环境搭建教程/</id>
+    <link href="xtf615.com/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
+    <id>xtf615.com/2016/12/29/Spark分布式环境搭建教程/</id>
     <published>2016-12-29T13:31:00.000Z</published>
     <updated>2016-12-29T14:14:24.793Z</updated>
     
@@ -94,15 +94,15 @@
       <category term="spark" scheme="xtf615.com/categories/spark/"/>
     
     
+      <category term="spark" scheme="xtf615.com/tags/spark/"/>
+    
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
       <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
-      <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
-    
-      <category term="spark" scheme="xtf615.com/tags/spark/"/>
-    
       <category term="内存" scheme="xtf615.com/tags/%E5%86%85%E5%AD%98/"/>
+    
+      <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
     
   </entry>
   
@@ -231,13 +231,13 @@
       <category term="hadoop" scheme="xtf615.com/categories/hadoop/"/>
     
     
-      <category term="hadoop" scheme="xtf615.com/tags/hadoop/"/>
-    
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
       <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
       <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
+    
+      <category term="hadoop" scheme="xtf615.com/tags/hadoop/"/>
     
   </entry>
   
