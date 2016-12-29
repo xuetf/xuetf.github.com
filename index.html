@@ -74,7 +74,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="学习笔记" type="application/atom+xml" />
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
 
 
 
@@ -87,11 +87,11 @@
 
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="学习笔记">
+<meta property="og:title" content="蘑菇先生学习记">
 <meta property="og:url" content="xtf615.com/index.html">
-<meta property="og:site_name" content="学习笔记">
+<meta property="og:site_name" content="蘑菇先生学习记">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="学习笔记">
+<meta name="twitter:title" content="蘑菇先生学习记">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> 学习笔记 </title>
+  <title> 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -158,7 +158,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">学习笔记</span>
+      <span class="site-title">蘑菇先生学习记</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -299,9 +299,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="学习笔记">
+    <meta itemprop="name" content="蘑菇先生学习记">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="学习笔记" src="">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
     </span>
   </span>
 
@@ -391,68 +391,23 @@
 
       
         
-          
-            <h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
-<li><p><strong>装有centOS7的3台服务器</strong></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">master 172.16.21.121</div><div class="line">node1  172.16.21.129</div><div class="line">node2  172.16.21.130</div></pre></td></tr></table></figure>
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
+<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
+<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
 </li>
-<li><p><strong>搭建hadoop集群环境</strong><br><a href="/2016/12/29/hadoop%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">hadoop分布式环境搭建教程</a></p>
+<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
 </li>
-<li><p><strong>scala: scala-2.12.1.tgz</strong></p>
-</li>
-<li><strong>spark: sprak-2.0.2-bin-hadoop2.7.tgz</strong></li>
-<li><strong>上传sacala和spark到3台服务器</strong></li>
-</ul>
-<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1><ul>
-<li><strong>解压到/usr/local/scala</strong></li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export PATH=$PATH:$SCALA_HOME/bin</div></pre></td></tr></table></figure>
-<p>  scala -version查看版本</p>
+<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
 </li>
 </ul>
-<h1 id="安装spark"><a href="#安装spark" class="headerlink" title="安装spark"></a>安装spark</h1><ul>
-<li><strong>解压</strong><br>  tar -zxvf spark-2.0.2-bin-hadoop2.7.tgz到/usr/local/spark</li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=/usr/local/spark/spark-2.0.2-bin-hadoop2.7</div><div class="line">export PATH=$PATH:$SPARK_HOME/bin</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>配置集群</strong></p>
-<ul>
-<li><p>master上：$SPARK_HOME/conf/slaves 添加:</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">node1 </div><div class="line">node2</div></pre></td></tr></table></figure>
-</li>
-<li><p>spark-env.sh： 添加SCALA_HOME和JAVA_HOME</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_73</div></pre></td></tr></table></figure>
-</li>
-<li><p>修改spark web 默认端口为8081</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME/sbin</div><div class="line">vim start-master.sh</div><div class="line">if [ &quot;$SPARK_MASTER_WEBUI_PORT&quot; = &quot;&quot; ]; then</div><div class="line">  SPARK_MASTER_WEBUI_PORT=8081</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>启动</strong></p>
-<ul>
-<li>启动hadoop集群,master上执行<br>  $HADOOP_HOME/sbin/start-all.sh</li>
-<li>启动spark集群，master上执行<br>  $SPARK_HOME/sbin/start-all.sh</li>
-<li><p>jps查看<br>  master:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png" alt="spark-master-jps"></p>
-<p>  node1:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node1-jps.png" alt="spark-node1-jps"></p>
-<p>  node2:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node2-jps.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p><strong>验证</strong></p>
-<ul>
-<li>访问master的8081<br>  <a href="http://172.16.21.121:8081/" target="_blank" rel="external">http://172.16.21.121:8081/</a><br>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-8081.png" alt="spark-node2-jps"></li>
-<li><p>运行SparkPi例子</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME</div><div class="line">bin/spark-submit --class org.apache.spark.examples.SparkPi --master     spark://master:7077 examples/jars/spark-examples_2.11-2.0.2.jar 100 2&gt;&amp;1 | grep &quot;Pi is roughly&quot;</div></pre></td></tr></table></figure>
-<p>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/sparkpi.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.voidcn.com/blog/dream_broken/article/p-6319289.html" target="_blank" rel="external">http://www.voidcn.com/blog/dream_broken/article/p-6319289.html</a>    </p>
-
-          
+<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/12/29/Spark分布式环境搭建教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -498,9 +453,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="学习笔记">
+    <meta itemprop="name" content="蘑菇先生学习记">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="学习笔记" src="">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
     </span>
   </span>
 
@@ -590,114 +545,16 @@
 
       
         
-          
-            <h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ul>
-<li><strong>64位centos7服务器3台</strong><ul>
-<li>master:172.16.21.121</li>
-<li>node1:172.16.21.129</li>
-<li>node2:172.16.21.130</li>
-</ul>
-</li>
-<li><strong>hadoop-2.7.3.tar.gz</strong></li>
-<li><strong>jdk-8u73-linux-x64.tar.gz</strong></li>
-<li><strong>关闭防火墙</strong><br><code>service firewalld stop或systemctl stop firewalld.service</code></li>
-<li><p><strong>关闭selinux</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setenforce 0临时关闭，sestatus查看状态:current mode变成permissive</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>纠正系统时间</strong></p>
-<ul>
-<li><p>设置时区</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">timedatectl查看时区</div><div class="line">timedatactl set-timezone Asia/Shanghai</div></pre></td></tr></table></figure>
-</li>
-<li><p>安装ntp并启动</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">yum -y install ntp</div><div class="line">systemctl enable ntpd</div><div class="line">start ntpd</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>安装jdk</strong>    </p>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">解压tar -zxvf jdk-8u73-linux-x64.tar.gz到/usr/local/java</div><div class="line">vim /etc/profile</div><div class="line">添加：</div><div class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_73</div><div class="line">export JRE_HOME=/$JAVA_HOME/jre</div><div class="line">export CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</div><div class="line">export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin</div><div class="line"></div><div class="line">source /etc/profile配置生效</div><div class="line">java -version查看</div></pre></td></tr></table></figure>
-</code></pre></li>
-<li><p><strong>配置主机域名</strong></p>
-<ul>
-<li><p>配置hostname</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">172.16.21.121(master): </div><div class="line">hostname master</div><div class="line">vim /etc/hostname 输入master</div><div class="line"></div><div class="line">172.16.21.129(node1): </div><div class="line">hostname node1</div><div class="line">vim /etc/hostname 输入node1</div><div class="line"></div><div class="line">172.16.21.130(node2): </div><div class="line">hostname node2</div><div class="line">vim /etc/hostname 输入node2</div></pre></td></tr></table></figure>
-</li>
-<li><p>配置host(3台服务器同时输入)</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">172.16.21.121 master</div><div class="line">172.16.21.129 node1</div><div class="line">172.16.21.130 node2</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>ssh免密码登录</strong></p>
-<ul>
-<li><p>master上操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ssh-keygen -t rsa 一直回车，信息中会看到.ssh/id_rsa.pub的路径</div><div class="line">复制：cat /root/.ssh/id_rsa.pub &gt;&gt; /root/.ssh/authorized_keys</div></pre></td></tr></table></figure>
-</li>
-<li><p>node1和node2上操作:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">创建node1和node2上root/.ssh目录:mkdir /root/.ssh</div></pre></td></tr></table></figure>
-</li>
-<li><p>master上操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">复制authorized_keys到node1和node2节点：</div><div class="line">scp /root/.ssh/authorized_keys root@172.16.21.129:/root/.ssh/</div><div class="line">scp /root/.ssh/authorized_keys root@172.16.21.130:/root/.ssh/</div></pre></td></tr></table></figure>
-</li>
-<li><p>master,node1,node2都操作:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod 700 /root/.ssh</div></pre></td></tr></table></figure>
-</li>
-<li><p>master上验证: </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ssh master</div><div class="line">ssh node1</div><div class="line">ssh node2</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="配置Hadoop集群"><a href="#配置Hadoop集群" class="headerlink" title="配置Hadoop集群"></a>配置Hadoop集群</h1><ul>
-<li>解压 tar -zxvf hadoop-2.7.3.tar.gz, 到/usr/local/hadoop</li>
-<li><p>配置环境变量：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">vim /etc/profile</div><div class="line">添加：</div><div class="line">export HADOOP_HOME=/usr/local/hadoop/hadoop-2.7.3</div><div class="line">export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin</div><div class="line">生效：source /etc/profile</div><div class="line">查看版本: hadoop version</div></pre></td></tr></table></figure>
-<ul>
-<li><p>修改hadoop配置添加JAVA_HOME </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">vim /usr/local/hadoop/hadoop-2.7.3/etc/hadoop hadoop-env.sh</div><div class="line">vim /usr/local/hadoop/hadoop-2.7.3/etc/hadoop yarn-env.sh</div><div class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_73</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>创建目录</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mkdir -p /usr/local/hadoop/hdfs/data</div><div class="line">mkdir -p /usr/local/hadoop/hdfs/name</div><div class="line">mkdir -p /usr/local/tmp</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>配置core-site.xml</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</div><div class="line">            &lt;value&gt;/usr/local/hadoop/tmp&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;fs.defaultFS&lt;/name&gt;</div><div class="line">            &lt;value&gt;hdfs://master:9000&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;io.file.buffer.size&lt;/name&gt;</div><div class="line">            &lt;value&gt;4096&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><strong>配置hdfs-site.xml</strong> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">   &lt;property&gt;</div><div class="line">      &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;</div><div class="line">      &lt;value&gt;file:/hadoop/hdfs/name&lt;/value&gt;</div><div class="line">   &lt;/property&gt;</div><div class="line">   &lt;property&gt;</div><div class="line">      &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;</div><div class="line">      &lt;value&gt;file:/hadoop/hdfs/data&lt;/value&gt;</div><div class="line">   &lt;/property&gt;</div><div class="line">   &lt;property&gt;</div><div class="line">      &lt;name&gt;dfs.replication&lt;/name&gt;</div><div class="line">      &lt;value&gt;2&lt;/value&gt;</div><div class="line">   &lt;/property&gt;</div><div class="line">   &lt;property&gt;</div><div class="line">      &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;</div><div class="line">      &lt;value&gt;master:9001&lt;/value&gt;</div><div class="line">   &lt;/property&gt;</div><div class="line">   &lt;property&gt;</div><div class="line">      &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;</div><div class="line">      &lt;value&gt;true&lt;/value&gt;</div><div class="line">   &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li><p><strong>复制mapred-site.xml.template为mapred-site.xml,并修改</strong></p>
-<pre><code>cp mapred-site.xml.template mapred-site.xml
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">  &lt;configuration&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;mapreduce.framework.name&lt;/name&gt;</div><div class="line">            &lt;value&gt;yarn&lt;/value&gt;</div><div class="line">            &lt;final&gt;true&lt;/final&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;mapreduce.jobtracker.http.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:50030&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line"></div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:10020&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:19888&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line"></div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;mapred.job.tracker&lt;/name&gt;</div><div class="line">            &lt;value&gt;http://master:9001&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>修改yarn-site.xml</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">&lt;configuration&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;</div><div class="line">             &lt;value&gt;master&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;</div><div class="line">            &lt;value&gt;mapreduce_shuffle&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:8032&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">             &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;</div><div class="line">             &lt;value&gt;master:8030&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">             &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:8031&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;yarn.resourcemanager.admin.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:8033&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">    &lt;property&gt;</div><div class="line">            &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;</div><div class="line">            &lt;value&gt;master:8088&lt;/value&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>将以上步骤操作在node1和node2上重复</strong><br>  可将修改的文件拷贝至node1和node2节点</p>
-</li>
-<li><p><strong>修改master上的slaves文件</strong><br>  $HADOOP_HOME/etc/hadoop/slaves<br>  删除localhost<br>  添加:</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">node1</div><div class="line">node2</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>启动</strong></p>
-<ul>
-<li><p><strong>只在master上操作</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">master上格式化：</div><div class="line">cd $HADOOP_HOME/bin/</div><div class="line">./hadoop namenode -format</div><div class="line">master上启动：</div><div class="line">cd $HADOOP_HOME/sbin/</div><div class="line">./start-all.sh</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看jps：</strong><br>  jps<br>  master: ResourceManager SecondaryNameNode NameNode<br>  <img src="https://raw.githubusercontent.com/xuetf/hadoop/master/master-jps.png" alt="master-jps"></p>
-<p>  node1/node2: DataNode NodeManager<br>  <img src="https://raw.githubusercontent.com/xuetf/hadoop/master/node1-jps.png" alt="node1-jps"><br>  <img src="https://raw.githubusercontent.com/xuetf/hadoop/master/node2-jps.png" alt="node2-jps"></p>
-</li>
-<li><p>访问master的50070：<br>  <a href="http://172.16.21.121:50070" target="_blank" rel="external">http://172.16.21.121:50070</a><br>  <img src="https://raw.githubusercontent.com/xuetf/hadoop/master/50070.png" alt="master-50070"></p>
-</li>
-<li>访问master的8088：<br>   <a href="http://172.16.21.121:8088" target="_blank" rel="external">http://172.16.21.121:8088</a><br>  <img src="https://raw.githubusercontent.com/xuetf/hadoop/master/8088.png" alt="master-8088"></li>
-</ul>
-</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.voidcn.com/blog/dream_broken/article/p-6319288.html" target="_blank" rel="external">http://www.voidcn.com/blog/dream_broken/article/p-6319288.html</a></p>
-
-          
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
+<h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
+<p><strong>本文将使用完全分布模式进行集群搭建</strong></p>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/12/29/hadoop分布式环境搭建教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -743,9 +600,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="学习笔记">
+    <meta itemprop="name" content="蘑菇先生学习记">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="学习笔记" src="">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
     </span>
   </span>
 
@@ -835,34 +692,17 @@
 
       
         
-          
-            <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
+          <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
 <li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
 <li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。</li>
-</ul>
-<h1 id="安装具体步骤"><a href="#安装具体步骤" class="headerlink" title="安装具体步骤"></a>安装具体步骤</h1><ul>
-<li>解压</li>
-<li>安装gcc</li>
-<li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
-<li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  **logfile  /usr/local/logs/redis/redis</em>端口.log<strong>   #日志文件
-  </strong>dir  /usr/local/data/redis/端口<strong>          #持久化文件夹，必须是空文件夹
-  </strong>requirepass 密码<strong>    #认证密码
-  </strong>masterauth 密码<strong>    #和认证密码一致
-  </strong>maxmemory 最大内存<strong>  #eg:10g
-  </strong>maxmemory-policy**        allkeys-lru   #lru算法回收<br>  </code></li>
-<li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
-<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
-</ul>
-</li>
-<li><strong>进入redis的src目录启动redis和sentinel</strong><br>  <code><strong>reids-server redis配置文件</strong><br>  #eg:redis-server /usr/local/etc/redis_6379.conf<br>  <strong>redis-sentinel sentinel配置文件</strong> &amp;<br>  #eg:redis-sentinel /usr/local/etc/sentinel_26379.conf &amp;<br>  </code></li>
-<li><strong>依次启动主节点和从节点后，使用redis-cli连接</strong><br>  <code><strong>reids-cli -h ip地址 -p 端口 -a 密码</strong><br> <strong>sentinel reset mymaster</strong> #重置哨兵状态*<br>  使用命令查看部署情况，info replication可查看集群状态<br>  </code></li>
-</ul>
-<h1 id="具体配置参见"><a href="#具体配置参见" class="headerlink" title="具体配置参见"></a>具体配置参见</h1><p><a href="https://github.com/xuetf/redis" target="_blank" rel="external">https://github.com/xuetf/redis</a></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://blog.csdn.net/ownfire/article/details/51546543" target="_blank" rel="external">http://blog.csdn.net/ownfire/article/details/51546543</a><br><a href="http://www.ilanni.com/?p=11838" target="_blank" rel="external">http://www.ilanni.com/?p=11838</a></p>
-
-          
+<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/12/29/redis分布式环境搭建教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>

@@ -74,7 +74,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="学习笔记" type="application/atom+xml" />
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
 
 
 
@@ -86,54 +86,27 @@
 
 
 
-<meta name="description" content="准备
-装有centOS7的3台服务器
- 123master 172.16.21.121node1  172.16.21.129node2  172.16.21.130
-
-搭建hadoop集群环境hadoop分布式环境搭建教程
-
-scala: scala-2.12.1.tgz
-
-spark: sprak-2.0.2-bin-hadoop2.7.tgz
-上传sacala和spark到3台服务器
-
-安装">
+<meta name="description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
+三种集群资源管理概述
+Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="spark分布式环境搭建教程">
 <meta property="og:url" content="xtf615.com/2016/12/29/Spark分布式环境搭建教程/index.html">
-<meta property="og:site_name" content="学习笔记">
-<meta property="og:description" content="准备
-装有centOS7的3台服务器
- 123master 172.16.21.121node1  172.16.21.129node2  172.16.21.130
-
-搭建hadoop集群环境hadoop分布式环境搭建教程
-
-scala: scala-2.12.1.tgz
-
-spark: sprak-2.0.2-bin-hadoop2.7.tgz
-上传sacala和spark到3台服务器
-
-安装">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
+三种集群资源管理概述
+Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
 <meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-node1-jps.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-node2-jps.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-8081.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/sparkpi.png">
-<meta property="og:updated_time" content="2016-12-29T14:14:24.793Z">
+<meta property="og:updated_time" content="2016-12-29T15:34:47.954Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spark分布式环境搭建教程">
-<meta name="twitter:description" content="准备
-装有centOS7的3台服务器
- 123master 172.16.21.121node1  172.16.21.129node2  172.16.21.130
-
-搭建hadoop集群环境hadoop分布式环境搭建教程
-
-scala: scala-2.12.1.tgz
-
-spark: sprak-2.0.2-bin-hadoop2.7.tgz
-上传sacala和spark到3台服务器
-
-安装">
+<meta name="twitter:description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
+三种集群资源管理概述
+Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png">
 
 
@@ -168,7 +141,7 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
 
 
 
-  <title> spark分布式环境搭建教程 | 学习笔记 </title>
+  <title> spark分布式环境搭建教程 | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -199,7 +172,7 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">学习笔记</span>
+      <span class="site-title">蘑菇先生学习记</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -340,9 +313,9 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="学习笔记">
+    <meta itemprop="name" content="蘑菇先生学习记">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="学习笔记" src="">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
     </span>
   </span>
 
@@ -428,7 +401,17 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
       
 
       
-        <h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
+<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
+<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
+</li>
+<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
+</li>
+<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
+</li>
+</ul>
+<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br><a id="more"></a></p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
 <li><p><strong>装有centOS7的3台服务器</strong></p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">master 172.16.21.121</div><div class="line">node1  172.16.21.129</div><div class="line">node2  172.16.21.130</div></pre></td></tr></table></figure>
 </li>
@@ -437,9 +420,8 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
 <li><p><strong>scala: scala-2.12.1.tgz</strong></p>
 </li>
 <li><strong>spark: sprak-2.0.2-bin-hadoop2.7.tgz</strong></li>
-<li><strong>上传sacala和spark到3台服务器</strong></li>
-</ul>
-<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1><ul>
+<li><strong>上传sacala和spark到3台服务器</strong><!--more-->
+<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1></li>
 <li><strong>解压到/usr/local/scala</strong></li>
 <li><p><strong>配置环境变量</strong></p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export PATH=$PATH:$SCALA_HOME/bin</div></pre></td></tr></table></figure>
@@ -684,7 +666,7 @@ spark: sprak-2.0.2-bin-hadoop2.7.tgz
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Scala"><span class="nav-number">2.</span> <span class="nav-text">安装Scala</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装spark"><span class="nav-number">3.</span> <span class="nav-text">安装spark</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三种集群资源管理概述"><span class="nav-number">2.</span> <span class="nav-text">三种集群资源管理概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Scala"><span class="nav-number">4.</span> <span class="nav-text">安装Scala</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装spark"><span class="nav-number">5.</span> <span class="nav-text">安装spark</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>

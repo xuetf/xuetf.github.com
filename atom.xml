@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>学习笔记</title>
+  <title>蘑菇先生学习记</title>
   
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2016-12-29T14:14:24.793Z</updated>
+  <updated>2016-12-29T15:34:47.954Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -20,9 +20,19 @@
     <link href="xtf615.com/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
     <id>xtf615.com/2016/12/29/Spark分布式环境搭建教程/</id>
     <published>2016-12-29T13:31:00.000Z</published>
-    <updated>2016-12-29T14:14:24.793Z</updated>
+    <updated>2016-12-29T15:34:47.954Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
+<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
+<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
+</li>
+<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
+</li>
+<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
+</li>
+</ul>
+<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br><a id="more"></a></p>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
 <li><p><strong>装有centOS7的3台服务器</strong></p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">master 172.16.21.121</div><div class="line">node1  172.16.21.129</div><div class="line">node2  172.16.21.130</div></pre></td></tr></table></figure>
 </li>
@@ -31,9 +41,8 @@
 <li><p><strong>scala: scala-2.12.1.tgz</strong></p>
 </li>
 <li><strong>spark: sprak-2.0.2-bin-hadoop2.7.tgz</strong></li>
-<li><strong>上传sacala和spark到3台服务器</strong></li>
-</ul>
-<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1><ul>
+<li><strong>上传sacala和spark到3台服务器</strong><!--more-->
+<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1></li>
 <li><strong>解压到/usr/local/scala</strong></li>
 <li><p><strong>配置环境变量</strong></p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export PATH=$PATH:$SCALA_HOME/bin</div></pre></td></tr></table></figure>
@@ -85,9 +94,16 @@
     
     <summary type="html">
     
-      &lt;h1 id=&quot;准备&quot;&gt;&lt;a href=&quot;#准备&quot; class=&quot;headerlink&quot; title=&quot;准备&quot;&gt;&lt;/a&gt;准备&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;装有centOS7的3台服务器&lt;/strong&gt;&lt;/p&gt;
- &lt;figure class=&quot;highligh
+      &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。&lt;/p&gt;
+&lt;h1 id=&quot;三种集群资源管理概述&quot;&gt;&lt;a href=&quot;#三种集群资源管理概述&quot; class=&quot;headerlink&quot; title=&quot;三种集群资源管理概述&quot;&gt;&lt;/a&gt;三种集群资源管理概述&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Spark Standalone&lt;br&gt;作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Apache Mesos&lt;br&gt;Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Hadoop YARN&lt;br&gt;Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;本文将使用Hadoop YARN方式进行集群搭建。&lt;/strong&gt;&lt;br&gt;
     
     </summary>
     
@@ -111,9 +127,13 @@
     <link href="xtf615.com/2016/12/29/hadoop%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
     <id>xtf615.com/2016/12/29/hadoop分布式环境搭建教程/</id>
     <published>2016-12-29T10:53:29.000Z</published>
-    <updated>2016-12-29T12:44:30.483Z</updated>
+    <updated>2016-12-29T15:44:31.304Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ul>
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
+<h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
+<p><strong>本文将使用完全分布模式进行集群搭建</strong></p>
+<a id="more"></a>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ul>
 <li><strong>64位centos7服务器3台</strong><ul>
 <li>master:172.16.21.121</li>
 <li>node1:172.16.21.129</li>
@@ -222,9 +242,9 @@
     
     <summary type="html">
     
-      &lt;h1 id=&quot;准备工作&quot;&gt;&lt;a href=&quot;#准备工作&quot; class=&quot;headerlink&quot; title=&quot;准备工作&quot;&gt;&lt;/a&gt;准备工作&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;64位centos7服务器3台&lt;/strong&gt;&lt;ul&gt;
-&lt;li&gt;master:172.16.2
+      &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop&lt;/p&gt;
+&lt;h1 id=&quot;部署方案&quot;&gt;&lt;a href=&quot;#部署方案&quot; class=&quot;headerlink&quot; title=&quot;部署方案&quot;&gt;&lt;/a&gt;部署方案&lt;/h1&gt;&lt;p&gt;hadoop部署方案包括：单机模式、伪分布模式、完全分布模式&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本文将使用完全分布模式进行集群搭建&lt;/strong&gt;&lt;/p&gt;
     
     </summary>
     
@@ -246,24 +266,20 @@
     <link href="xtf615.com/2016/12/29/redis%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
     <id>xtf615.com/2016/12/29/redis分布式环境搭建教程/</id>
     <published>2016-12-29T07:56:43.000Z</published>
-    <updated>2016-12-29T10:54:47.516Z</updated>
+    <updated>2016-12-29T15:42:48.219Z</updated>
     
     <content type="html"><![CDATA[<h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
 <li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
 <li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。</li>
+<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。<a id="more"></a>
+</li>
 </ul>
 <h1 id="安装具体步骤"><a href="#安装具体步骤" class="headerlink" title="安装具体步骤"></a>安装具体步骤</h1><ul>
 <li>解压</li>
 <li>安装gcc</li>
 <li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
 <li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  **logfile  /usr/local/logs/redis/redis</em>端口.log<strong>   #日志文件
-  </strong>dir  /usr/local/data/redis/端口<strong>          #持久化文件夹，必须是空文件夹
-  </strong>requirepass 密码<strong>    #认证密码
-  </strong>masterauth 密码<strong>    #和认证密码一致
-  </strong>maxmemory 最大内存<strong>  #eg:10g
-  </strong>maxmemory-policy**        allkeys-lru   #lru算法回收<br>  </code></li>
+<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  logfile /usr/local/logs/redis/redis</em>端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
 <li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
 <li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
 </ul>
@@ -278,7 +294,9 @@
     <summary type="html">
     
       &lt;h1 id=&quot;redis部署说明&quot;&gt;&lt;a href=&quot;#redis部署说明&quot; class=&quot;headerlink&quot; title=&quot;redis部署说明&quot;&gt;&lt;/a&gt;redis部署说明&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;版本&lt;/strong&gt;&lt;br&gt;使用redis最新版3.2
+&lt;li&gt;&lt;strong&gt;版本&lt;/strong&gt;&lt;br&gt;使用redis最新版3.2.3进行安装&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;主从关系&lt;/strong&gt;&lt;br&gt;使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;哨兵机制&lt;/strong&gt;&lt;br&gt;配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
     
     </summary>
     

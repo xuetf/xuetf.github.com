@@ -74,7 +74,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="学习笔记" type="application/atom+xml" />
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
 
 
 
@@ -89,31 +89,22 @@
 <meta name="description" content="redis部署说明
 版本使用redis最新版3.2.3进行安装
 主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
-哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-
-安装具体步骤
-解压">
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis分布式环境搭建教程">
 <meta property="og:url" content="xtf615.com/2016/12/29/redis分布式环境搭建教程/index.html">
-<meta property="og:site_name" content="学习笔记">
+<meta property="og:site_name" content="蘑菇先生学习记">
 <meta property="og:description" content="redis部署说明
 版本使用redis最新版3.2.3进行安装
 主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
-哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-
-安装具体步骤
-解压">
-<meta property="og:updated_time" content="2016-12-29T10:54:47.516Z">
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。">
+<meta property="og:updated_time" content="2016-12-29T15:42:48.219Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis分布式环境搭建教程">
 <meta name="twitter:description" content="redis部署说明
 版本使用redis最新版3.2.3进行安装
 主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
-哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-
-安装具体步骤
-解压">
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。">
 
 
 
@@ -147,7 +138,7 @@
 
 
 
-  <title> redis分布式环境搭建教程 | 学习笔记 </title>
+  <title> redis分布式环境搭建教程 | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -178,7 +169,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">学习笔记</span>
+      <span class="site-title">蘑菇先生学习记</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -319,9 +310,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="学习笔记">
+    <meta itemprop="name" content="蘑菇先生学习记">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="学习笔记" src="">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
     </span>
   </span>
 
@@ -410,19 +401,15 @@
         <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
 <li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
 <li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。</li>
+<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。<a id="more"></a>
+</li>
 </ul>
 <h1 id="安装具体步骤"><a href="#安装具体步骤" class="headerlink" title="安装具体步骤"></a>安装具体步骤</h1><ul>
 <li>解压</li>
 <li>安装gcc</li>
 <li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
 <li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  **logfile  /usr/local/logs/redis/redis</em>端口.log<strong>   #日志文件
-  </strong>dir  /usr/local/data/redis/端口<strong>          #持久化文件夹，必须是空文件夹
-  </strong>requirepass 密码<strong>    #认证密码
-  </strong>masterauth 密码<strong>    #和认证密码一致
-  </strong>maxmemory 最大内存<strong>  #eg:10g
-  </strong>maxmemory-policy**        allkeys-lru   #lru算法回收<br>  </code></li>
+<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  logfile /usr/local/logs/redis/redis</em>端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
 <li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
 <li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
 </ul>
