@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next pisces use-motion" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="redis,缓存," />
+  <meta name="keywords" content="redis,缓存,分布式,HA方案," />
 
 
 
@@ -86,13 +86,34 @@
 
 
 
+<meta name="description" content="redis部署说明
+版本使用redis最新版3.2.3进行安装
+主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
+
+安装具体步骤
+解压">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis分布式环境搭建教程">
 <meta property="og:url" content="xtf615.com/2016/12/29/redis分布式环境搭建教程/index.html">
 <meta property="og:site_name" content="学习笔记">
-<meta property="og:updated_time" content="2016-12-29T08:45:26.919Z">
+<meta property="og:description" content="redis部署说明
+版本使用redis最新版3.2.3进行安装
+主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
+
+安装具体步骤
+解压">
+<meta property="og:updated_time" content="2016-12-29T09:00:26.405Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis分布式环境搭建教程">
+<meta name="twitter:description" content="redis部署说明
+版本使用redis最新版3.2.3进行安装
+主从关系使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。
+哨兵机制配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
+
+安装具体步骤
+解压">
 
 
 
@@ -100,7 +121,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Pisces',
+    scheme: 'Muse',
     sidebar: {"position":"left","display":"post"},
     fancybox: true,
     motion: true,
@@ -386,7 +407,31 @@
       
 
       
-        
+        <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
+<li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
+<li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
+<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。</li>
+</ul>
+<h1 id="安装具体步骤"><a href="#安装具体步骤" class="headerlink" title="安装具体步骤"></a>安装具体步骤</h1><ul>
+<li>解压</li>
+<li>安装gcc</li>
+<li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
+<li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
+<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  **logfile  /usr/local/logs/redis/redis</em>端口.log<strong>   #日志文件
+  </strong>dir  /usr/local/data/redis/端口<strong>          #持久化文件夹，必须是空文件夹
+  </strong>requirepass 密码<strong>    #认证密码
+  </strong>masterauth 密码<strong>    #和认证密码一致
+  </strong>maxmemory 最大内存<strong>  #eg:10g
+  </strong>maxmemory-policy**        allkeys-lru   #lru算法回收<br>  </code></li>
+<li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
+<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
+</ul>
+</li>
+<li><strong>进入redis的src目录启动redis和sentinel</strong><br>  <code><strong>reids-server redis配置文件</strong><br>  #eg:redis-server /usr/local/etc/redis_6379.conf<br>  <strong>redis-sentinel sentinel配置文件</strong> &amp;<br>  #eg:redis-sentinel /usr/local/etc/sentinel_26379.conf &amp;<br>  </code></li>
+<li><strong>依次启动主节点和从节点后，使用redis-cli连接</strong><br>  <code><strong>reids-cli -h ip地址 -p 端口 -a 密码</strong><br> <strong>sentinel reset mymaster</strong> #重置哨兵状态*<br>  使用命令查看部署情况，info replication可查看集群状态<br>  </code></li>
+</ul>
+<h1 id="具体配置参见"><a href="#具体配置参见" class="headerlink" title="具体配置参见"></a>具体配置参见</h1><p><a href="https://github.com/xuetf/redis" target="_blank" rel="external">https://github.com/xuetf/redis</a></p>
+
       
     </div>
 
@@ -413,6 +458,10 @@
           
             <a href="/tags/缓存/" rel="tag"># 缓存</a>
           
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+            <a href="/tags/HA方案/" rel="tag"># HA方案</a>
+          
         </div>
       
 
@@ -429,10 +478,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/12/29/redis分布式环境搭建教程/" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -479,8 +524,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
@@ -493,7 +547,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -511,7 +565,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -562,6 +616,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis部署说明"><span class="nav-number">1.</span> <span class="nav-text">redis部署说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装具体步骤"><span class="nav-number">2.</span> <span class="nav-text">安装具体步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#具体配置参见"><span class="nav-number">3.</span> <span class="nav-text">具体配置参见</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
     </div>
   </aside>
@@ -591,7 +661,7 @@
 <div class="theme-info">
   博客 -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Pisces
+    NexT.Muse
   </a>
 </div>
 
@@ -657,13 +727,6 @@
 
   
   
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
-
-
 
   
   <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
