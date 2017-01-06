@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2016-12-29T15:34:47.954Z</updated>
+  <updated>2017-01-06T01:26:30.181Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -14,6 +14,105 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>windows下idea编程实现远程发布任务到Spark集群</title>
+    <link href="xtf615.com/2016/12/30/windows%E4%B8%8Bidea%E7%BC%96%E7%A8%8B%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E5%8F%91%E5%B8%83%E4%BB%BB%E5%8A%A1%E5%88%B0Spark%E9%9B%86%E7%BE%A4/"/>
+    <id>xtf615.com/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/</id>
+    <published>2016-12-30T11:47:13.000Z</published>
+    <updated>2017-01-06T01:26:30.181Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。</p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ul>
+<li>软件<ul>
+<li>win10</li>
+<li>jdk1.7(windows版本:1.7.0_79)</li>
+<li>scala2.11.8(windows版本：scala-2.11.8.zip)</li>
+<li>idea 2016.3.2(windows版本：ideaIU-2016.3.2.exe)</li>
+<li>hadoop2.7.3(linux版本：hadoop-2.7.3.tar.gz)</li>
+<li>spark2.0.2(linux版本：spark-2.0.2-bin-hadoop2.7.tgz)</li>
+<li>idea scala插件（scala-intellij-bin-2016.3.4.zip，<a href="https://plugins.jetbrains.com/idea/plugin/1347-scala）" target="_blank" rel="external">https://plugins.jetbrains.com/idea/plugin/1347-scala）</a></li>
+<li>winutil.exe等（<a href="https://github.com/xuetf/spark/blob/master/idea/hadoop-common-2.2.0-bin.rar?raw=true" target="_blank" rel="external">winutil下载地址</a>）</li>
+<li>maven3.3.9(windows版本：apache-maven-3.3.9-bin.zip)<a id="more"></a></li>
+</ul>
+</li>
+<li>搭建Spark集群<br><a href="/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">分布式Spark集群搭建</a></li>
+<li>配置windows环境变量<ul>
+<li>jdk(windows版本) JAVA_HOME</li>
+<li>scala(windows版本) SCALA_HOME</li>
+<li>hadoop(linux版本) HADOOP_HOME</li>
+<li>maven(windows版本) MAVEN_HOME<br><strong>注意：以上环境变量均在windows下配置，括号中强调了软件包的平台版本。</strong></li>
+</ul>
+</li>
+<li><p>配置idea</p>
+<ul>
+<li><p>maven配置：</p>
+<ul>
+<li><p><strong>修改setting.xml</strong><br>修改%MAVEN_HOME%下的conf/setting.xml为阿里云镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">在mirrors节点添加：</div><div class="line">&lt;mirror&gt; </div><div class="line">    &lt;id&gt;nexus-aliyun&lt;/id&gt;</div><div class="line">    &lt;name&gt;Nexus aliyun&lt;/name&gt;</div><div class="line">    &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public&lt;/url&gt; </div><div class="line">    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; </div><div class="line">&lt;/mirror&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>修改idea的maven配置</strong><br>主要是为了加快建立maven项目时的速度<br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting1.png" alt="maven-idea-setting1"><br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting2.png" alt="maven-idea-setting2"> </p>
+</li>
+</ul>
+</li>
+<li><p>scala pluin配置<br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin1.png" alt="scala-idea-setting1"><br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin2.png" alt="scala-idea-setting1">     </p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="开发流程"><a href="#开发流程" class="headerlink" title="开发流程"></a>开发流程</h1><ul>
+<li><strong>新建MAVEN+SCALA项目</strong><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala.png" alt="maven-scala1"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala2.png" alt="maven-scala2"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala3.png" alt="maven-scala3"> </li>
+<li><p><strong>配置JDK、SCALA</strong><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala4.png" alt="maven-scala4"> </p>
+</li>
+<li><p><strong>添加POM依赖</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;properties&gt;</div><div class="line">  &lt;spark.version&gt;2.0.2&lt;/spark.version&gt;</div><div class="line">  &lt;scala.version&gt;2.11&lt;/scala.version&gt;</div><div class="line">&lt;/properties&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;spark-core_$&#123;scala.version&#125;&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;hadoop-client&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;2.6.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>编写代码</strong></p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">import org.apache.spark.&#123;SparkConf, SparkContext&#125;</div><div class="line">import scala.math.random</div><div class="line">object SparkPi &#123;</div><div class="line">  def main(args:Array[String]):Unit = &#123;</div><div class="line">    val conf = new SparkConf().setAppName(&quot;Spark Pi&quot;).setMaster(&quot;spark://172.16.21.121:7077&quot;)</div><div class="line">      .setJars(List(&quot;E:\\idea-workspace\\spark-practice\\out\\artifacts\\spark_practice_jar\\spark-practice.jar&quot;));</div><div class="line"></div><div class="line">    val spark = new SparkContext(conf)</div><div class="line">    val slices = if (args.length &gt; 0) args(0).toInt else 2</div><div class="line">    val n = 100000 * slices</div><div class="line">    val count = spark.parallelize(1 to n, slices).map &#123; i =&gt;</div><div class="line">      val x = random * 2 - 1</div><div class="line">      val y = random * 2 - 1</div><div class="line">      if (x * x + y * y &lt; 1) 1 else 0</div><div class="line">    &#125;.reduce(_ + _)</div><div class="line">    println(&quot;Pi is roughly &quot; + 4.0 * count / n)</div><div class="line">    spark.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  其中setMaster为：spark主节点的地址。setjars为下面步骤生成的jar包在window路径下的目录</p>
+</li>
+<li><p>添加输出sparkdemo.jar<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts1.png" alt="artifacts1"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts2.png" alt="artifacts2"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts3.png" alt="artifacts3"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts4.png" alt="artifacts4"> </p>
+</li>
+<li><p>编译代码<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/build.png" alt="build"> </p>
+</li>
+<li><p><strong>删除输出的sparkdemo.jar中META-INF中多余文件</strong><br>只保留MANIFEST.MF和MAVEN文件夹<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/sparkdemo_mete_inf_delete.png" alt="delete"> </p>
+</li>
+<li><p><strong>include in build勾掉</strong><br>防止右键运行的时候，重新输出，导致mete-inf又恢复了<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/build2.png" alt="去掉include in build"> </p>
+</li>
+<li><p>设置VM参数<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/vm.png" alt="VM参数"> </p>
+</li>
+<li>右键运行<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/run-result.png" alt="run1"> </li>
+<li>运行时可查看web控制台<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-running.png" alt="run2"><br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-finished.png" alt="run3"> </li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;说明&quot;&gt;&lt;a href=&quot;#说明&quot; class=&quot;headerlink&quot; title=&quot;说明&quot;&gt;&lt;/a&gt;说明&lt;/h1&gt;&lt;p&gt;本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。&lt;/p&gt;
+&lt;h1 id=&quot;准备工作&quot;&gt;&lt;a href=&quot;#准备工作&quot; class=&quot;headerlink&quot; title=&quot;准备工作&quot;&gt;&lt;/a&gt;准备工作&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;软件&lt;ul&gt;
+&lt;li&gt;win10&lt;/li&gt;
+&lt;li&gt;jdk1.7(windows版本:1.7.0_79)&lt;/li&gt;
+&lt;li&gt;scala2.11.8(windows版本：scala-2.11.8.zip)&lt;/li&gt;
+&lt;li&gt;idea 2016.3.2(windows版本：ideaIU-2016.3.2.exe)&lt;/li&gt;
+&lt;li&gt;hadoop2.7.3(linux版本：hadoop-2.7.3.tar.gz)&lt;/li&gt;
+&lt;li&gt;spark2.0.2(linux版本：spark-2.0.2-bin-hadoop2.7.tgz)&lt;/li&gt;
+&lt;li&gt;idea scala插件（scala-intellij-bin-2016.3.4.zip，&lt;a href=&quot;https://plugins.jetbrains.com/idea/plugin/1347-scala）&quot;&gt;https://plugins.jetbrains.com/idea/plugin/1347-scala）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;winutil.exe等（&lt;a href=&quot;https://github.com/xuetf/spark/blob/master/idea/hadoop-common-2.2.0-bin.rar?raw=true&quot;&gt;winutil下载地址&lt;/a&gt;）&lt;/li&gt;
+&lt;li&gt;maven3.3.9(windows版本：apache-maven-3.3.9-bin.zip)
+    
+    </summary>
+    
+      <category term="spark" scheme="xtf615.com/categories/spark/"/>
+    
+    
+      <category term="spark" scheme="xtf615.com/tags/spark/"/>
+    
+      <category term="idea" scheme="xtf615.com/tags/idea/"/>
+    
+      <category term="scala" scheme="xtf615.com/tags/scala/"/>
+    
+  </entry>
   
   <entry>
     <title>spark分布式环境搭建教程</title>

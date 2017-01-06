@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="spark,idea,scala," />
 
 
 
@@ -86,12 +86,54 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="蘑菇先生学习记">
-<meta property="og:url" content="xtf615.com/index.html">
+<meta name="description" content="说明本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。
+准备工作
+软件
+win10
+jdk1.7(windows版本:1.7.0_79)
+scala2.11.8(windows版本：scala-2.11.8.zip)
+idea 2016.3.2(windows版本：i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="windows下idea编程实现远程发布任务到Spark集群">
+<meta property="og:url" content="xtf615.com/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="说明本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。
+准备工作
+软件
+win10
+jdk1.7(windows版本:1.7.0_79)
+scala2.11.8(windows版本：scala-2.11.8.zip)
+idea 2016.3.2(windows版本：i">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/build.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/sparkdemo_mete_inf_delete.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/build2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/vm.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/run-result.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-running.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-finished.png">
+<meta property="og:updated_time" content="2017-01-06T01:26:30.181Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="蘑菇先生学习记">
+<meta name="twitter:title" content="windows下idea编程实现远程发布任务到Spark集群">
+<meta name="twitter:description" content="说明本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。
+准备工作
+软件
+win10
+jdk1.7(windows版本:1.7.0_79)
+scala2.11.8(windows版本：scala-2.11.8.zip)
+idea 2016.3.2(windows版本：i">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting1.png">
 
 
 
@@ -119,13 +161,13 @@
 
 
 
-  <link rel="canonical" href="xtf615.com/"/>
+  <link rel="canonical" href="xtf615.com/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/"/>
 
 
 
 
 
-  <title> 蘑菇先生学习记 </title>
+  <title> windows下idea编程实现远程发布任务到Spark集群 | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -146,9 +188,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -279,9 +319,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -314,10 +354,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/" itemprop="url">
-                  windows下idea编程实现远程发布任务到Spark集群
-                </a>
+                windows下idea编程实现远程发布任务到Spark集群
               
             
           </h1>
@@ -390,8 +427,7 @@
       
 
       
-        
-          <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。</p>
+        <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。</p>
 <h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ul>
 <li>软件<ul>
 <li>win10</li>
@@ -400,495 +436,120 @@
 <li>idea 2016.3.2(windows版本：ideaIU-2016.3.2.exe)</li>
 <li>hadoop2.7.3(linux版本：hadoop-2.7.3.tar.gz)</li>
 <li>spark2.0.2(linux版本：spark-2.0.2-bin-hadoop2.7.tgz)</li>
-<li>idea scala插件（scala-intellij-bin-2016.3.4.zip，<a href="https://plugins.jetbrains.com/idea/plugin/1347-scala）">https://plugins.jetbrains.com/idea/plugin/1347-scala）</a></li>
-<li>winutil.exe等（<a href="https://github.com/xuetf/spark/blob/master/idea/hadoop-common-2.2.0-bin.rar?raw=true">winutil下载地址</a>）</li>
-<li>maven3.3.9(windows版本：apache-maven-3.3.9-bin.zip)
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/Spark分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/Spark分布式环境搭建教程/" itemprop="url">
-                  spark分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T21:31:00+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spark/" itemprop="url" rel="index">
-                    <span itemprop="name">spark</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
-<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
-<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
+<li>idea scala插件（scala-intellij-bin-2016.3.4.zip，<a href="https://plugins.jetbrains.com/idea/plugin/1347-scala）" target="_blank" rel="external">https://plugins.jetbrains.com/idea/plugin/1347-scala）</a></li>
+<li>winutil.exe等（<a href="https://github.com/xuetf/spark/blob/master/idea/hadoop-common-2.2.0-bin.rar?raw=true" target="_blank" rel="external">winutil下载地址</a>）</li>
+<li>maven3.3.9(windows版本：apache-maven-3.3.9-bin.zip)<a id="more"></a></li>
+</ul>
 </li>
-<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
+<li>搭建Spark集群<br><a href="/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">分布式Spark集群搭建</a></li>
+<li>配置windows环境变量<ul>
+<li>jdk(windows版本) JAVA_HOME</li>
+<li>scala(windows版本) SCALA_HOME</li>
+<li>hadoop(linux版本) HADOOP_HOME</li>
+<li>maven(windows版本) MAVEN_HOME<br><strong>注意：以上环境变量均在windows下配置，括号中强调了软件包的平台版本。</strong></li>
+</ul>
 </li>
-<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
+<li><p>配置idea</p>
+<ul>
+<li><p>maven配置：</p>
+<ul>
+<li><p><strong>修改setting.xml</strong><br>修改%MAVEN_HOME%下的conf/setting.xml为阿里云镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">在mirrors节点添加：</div><div class="line">&lt;mirror&gt; </div><div class="line">    &lt;id&gt;nexus-aliyun&lt;/id&gt;</div><div class="line">    &lt;name&gt;Nexus aliyun&lt;/name&gt;</div><div class="line">    &lt;url&gt;http://maven.aliyun.com/nexus/content/groups/public&lt;/url&gt; </div><div class="line">    &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; </div><div class="line">&lt;/mirror&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>修改idea的maven配置</strong><br>主要是为了加快建立maven项目时的速度<br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting1.png" alt="maven-idea-setting1"><br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_setting2.png" alt="maven-idea-setting2"> </p>
 </li>
 </ul>
-<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/Spark分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+</li>
+<li><p>scala pluin配置<br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin1.png" alt="scala-idea-setting1"><br> <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/idea_scala_plugin2.png" alt="scala-idea-setting1">     </p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="开发流程"><a href="#开发流程" class="headerlink" title="开发流程"></a>开发流程</h1><ul>
+<li><strong>新建MAVEN+SCALA项目</strong><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala.png" alt="maven-scala1"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala2.png" alt="maven-scala2"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala3.png" alt="maven-scala3"> </li>
+<li><p><strong>配置JDK、SCALA</strong><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/maven_scala4.png" alt="maven-scala4"> </p>
+</li>
+<li><p><strong>添加POM依赖</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;properties&gt;</div><div class="line">  &lt;spark.version&gt;2.0.2&lt;/spark.version&gt;</div><div class="line">  &lt;scala.version&gt;2.11&lt;/scala.version&gt;</div><div class="line">&lt;/properties&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;org.apache.spark&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;spark-core_$&#123;scala.version&#125;&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;$&#123;spark.version&#125;&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;hadoop-client&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;2.6.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>编写代码</strong></p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">import org.apache.spark.&#123;SparkConf, SparkContext&#125;</div><div class="line">import scala.math.random</div><div class="line">object SparkPi &#123;</div><div class="line">  def main(args:Array[String]):Unit = &#123;</div><div class="line">    val conf = new SparkConf().setAppName(&quot;Spark Pi&quot;).setMaster(&quot;spark://172.16.21.121:7077&quot;)</div><div class="line">      .setJars(List(&quot;E:\\idea-workspace\\spark-practice\\out\\artifacts\\spark_practice_jar\\spark-practice.jar&quot;));</div><div class="line"></div><div class="line">    val spark = new SparkContext(conf)</div><div class="line">    val slices = if (args.length &gt; 0) args(0).toInt else 2</div><div class="line">    val n = 100000 * slices</div><div class="line">    val count = spark.parallelize(1 to n, slices).map &#123; i =&gt;</div><div class="line">      val x = random * 2 - 1</div><div class="line">      val y = random * 2 - 1</div><div class="line">      if (x * x + y * y &lt; 1) 1 else 0</div><div class="line">    &#125;.reduce(_ + _)</div><div class="line">    println(&quot;Pi is roughly &quot; + 4.0 * count / n)</div><div class="line">    spark.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  其中setMaster为：spark主节点的地址。setjars为下面步骤生成的jar包在window路径下的目录</p>
+</li>
+<li><p>添加输出sparkdemo.jar<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts1.png" alt="artifacts1"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts2.png" alt="artifacts2"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts3.png" alt="artifacts3"><br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/artifacts4.png" alt="artifacts4"> </p>
+</li>
+<li><p>编译代码<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/build.png" alt="build"> </p>
+</li>
+<li><p><strong>删除输出的sparkdemo.jar中META-INF中多余文件</strong><br>只保留MANIFEST.MF和MAVEN文件夹<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/sparkdemo_mete_inf_delete.png" alt="delete"> </p>
+</li>
+<li><p><strong>include in build勾掉</strong><br>防止右键运行的时候，重新输出，导致mete-inf又恢复了<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/build2.png" alt="去掉include in build"> </p>
+</li>
+<li><p>设置VM参数<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/vm.png" alt="VM参数"> </p>
+</li>
+<li>右键运行<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/run-result.png" alt="run1"> </li>
+<li>运行时可查看web控制台<br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-running.png" alt="run2"><br><img src="https://raw.githubusercontent.com/xuetf/spark/master/idea/spark-finished.png" alt="run3"> </li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
 
     <footer class="post-footer">
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/hadoop分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/hadoop分布式环境搭建教程/" itemprop="url">
-                  hadoop分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T18:53:29+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/spark/" rel="tag"># spark</a>
           
-
+            <a href="/tags/idea/" rel="tag"># idea</a>
           
-            
+            <a href="/tags/scala/" rel="tag"># scala</a>
           
-
-          
-
-          
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
-<h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
-<p><strong>本文将使用完全分布模式进行集群搭建</strong></p>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/hadoop分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/29/Spark分布式环境搭建教程/" rel="next" title="spark分布式环境搭建教程">
+                <i class="fa fa-chevron-left"></i> spark分布式环境搭建教程
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
 
-    <div>
-      
-    </div>
+          <span class="post-nav-divider"></span>
 
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/redis分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+          <div class="post-nav-prev post-nav-item">
             
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/redis分布式环境搭建教程/" itemprop="url">
-                  redis分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T15:56:43+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
-<li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
-<li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/redis分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -896,6 +557,12 @@
 
 
           
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
         </div>
         
           
@@ -914,8 +581,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
@@ -996,6 +672,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#说明"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备工作"><span class="nav-number">2.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开发流程"><span class="nav-number">3.</span> <span class="nav-text">开发流程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
@@ -1094,6 +786,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
@@ -1114,6 +810,10 @@
     
   
  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
 
 
 
