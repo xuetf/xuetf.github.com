@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-01-18T03:56:17.623Z</updated>
+  <updated>2017-02-09T15:53:18.556Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -14,6 +14,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>线性回归</title>
+    <link href="xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
+    <id>xtf615.com/2017/02/09/线性回归/</id>
+    <published>2017-02-09T14:27:47.000Z</published>
+    <updated>2017-02-09T15:53:18.556Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="模型表示"><a href="#模型表示" class="headerlink" title="模型表示"></a>模型表示</h1><h2 id="房价预测例子"><a href="#房价预测例子" class="headerlink" title="房价预测例子"></a>房价预测例子</h2><p>  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元)左右的价格卖掉这个房子。这就是监督学习算法的一个例子<br><img src="/picture/machine-learning/house_price.jpg" alt="house_price"><br>   它被称作监督学习是因为对于每个数据来说，我们给出了“正确的答案”，即告诉我们：根据我们的数据来说，房子实际的价格是多少，而且，更具体来说，这是一个回归问题。回归一词指的是，我们根据之前的数据预测出一个准确的输出值，对于这个例子就是价格，同时，还有另一种最常见的监督学习方式，叫做分类问题，当我们想要预测离散的输出值，例如，我们正在寻找癌症肿瘤，并想要确定肿瘤是良性的还是恶性的，这就是 0/1离散输出的问题。更进一步来说，在监督学习中我们有一个数据集，这个数据集被称训练集。<br>  <img src="/picture/machine-learning/train_set_representation.jpg" alt="train_set_representation"> </p>
+<h2 id="标记"><a href="#标记" class="headerlink" title="标记"></a>标记</h2><p>我们将要用来描述这个回归问题的标记如下:<br>    m代表训练集中实例的数量<br>    x代表特征/输入变量<br>    y代表目标变量/输出变量<br>    (x,y)代表训练集中的实例<br>    \((x^{(i)},y^{(i)})\) 代表第i个观察实例<br>    h代表学习算法的解决方案或函数也称为假设(hypothesis)<br><img src="/picture/machine-learning/supervised_learning.jpg" alt="supervised_learning"><br>  这就是一个监督学习算法的工作方式，我们可以看到这里有我们的训练集里房屋价格我们把它喂给我们的学习算法，学习算法的工作了，然后输出一个函数，通常表示为小写h表示。h代表   hypothesis(假设)，h表示一个函数，输入是房屋尺寸大小，就像你朋友想出售的房屋，因此h根据输入的x值来得出y值，y值对应房子的价格因此，h是一个从x到y的函数映射。<br>   我将选择最初的使用规则h代表hypothesis，因而，要解决房价预测问题，我们实际上是要将训练集“喂”给我们的学习算法，进而学习得到一个假设 h，然后将我们要预测的房屋的尺寸作为输入变量输入给h，预测出该房屋的交易价格作为输出变量输出为结果。那么，对于我们的房价预测问题，我们该如何表达h？<br>   一种可能的表达方式为：\(h_θ(x)=θ_1+θ_2x\)，因为只含有一个特征/输入变量，因此这样的问题叫作单变量线性回归问题。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>我们将定义代价函数的概念，这有助于我们弄清楚如何把最有可能的直线与我们的数据相拟合。如图：<br><img src="/picture/machine-learning/cost_function.jpg" alt="cost_function"><br>在线性回归中我们有一个像这样的训练集，m代表了训练样本的数量，比如m=47.而我们的假设函数，也就是用来进行预测的函数，是这样的线性函数形式：\(h_θ(x)=θ_1+θ_2x\)。接下来我们会引入一些术语我们现在要做的便是为我们的模型选择合适的参数（parameters）θ0和θ1，在房价问题这个例子中便是直线的斜率和在  y轴上的截距。我们选择的参数决定了我们得到的直线相对于我们的训练集的准确程度，模型所预测的值与训练集中实际值之间的差距（下图中蓝线所指）就是建模误差（modeling error）。<br><img src="/picture/machine-learning/modeling_error.jpg" alt="modeling_error"><br>我们的目标便是选择出可以使得建模误差的平方和能够最小的模型参数。即使得代价函数：<br>$$J(\theta_0,\theta_1)=\frac{1}{2m}\sum_i=1^m\left(h_θ(x^{(i)})-y^{(i)}\right)^2$$</p>
+<p>$$J(\theta_0,\theta_1)=\frac{1}{2m}\sum_{i=1}^m$$</p>
+<p>$$J(\theta_0,\theta_1)=\frac{1}{2m}$$</p>
+<p>$$\sum_{i=1}^m$$</p>
+<p>$$\left(h_\theta(x^{(i)})-y^{(i)}\right)^2$$</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;模型表示&quot;&gt;&lt;a href=&quot;#模型表示&quot; class=&quot;headerlink&quot; title=&quot;模型表示&quot;&gt;&lt;/a&gt;模型表示&lt;/h1&gt;&lt;h2 id=&quot;房价预测例子&quot;&gt;&lt;a href=&quot;#房价预测例子&quot; class=&quot;headerlink&quot; title=&quot;房价预测例
+    
+    </summary>
+    
+      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
+    
+      <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+  </entry>
   
   <entry>
     <title>机器学习概念</title>
@@ -290,15 +323,15 @@
       <category term="spark" scheme="xtf615.com/categories/spark/"/>
     
     
-      <category term="spark" scheme="xtf615.com/tags/spark/"/>
-    
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
       <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
-      <category term="内存" scheme="xtf615.com/tags/%E5%86%85%E5%AD%98/"/>
-    
       <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
+    
+      <category term="spark" scheme="xtf615.com/tags/spark/"/>
+    
+      <category term="内存" scheme="xtf615.com/tags/%E5%86%85%E5%AD%98/"/>
     
   </entry>
   
@@ -431,13 +464,13 @@
       <category term="hadoop" scheme="xtf615.com/categories/hadoop/"/>
     
     
+      <category term="hadoop" scheme="xtf615.com/tags/hadoop/"/>
+    
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
       <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
       <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
-    
-      <category term="hadoop" scheme="xtf615.com/tags/hadoop/"/>
     
   </entry>
   
@@ -459,9 +492,9 @@
 <li>安装gcc</li>
 <li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
 <li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  logfile /usr/local/logs/redis/redis</em>端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
+<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis_端口号.pid<br>  logfile /usr/local/logs/redis/redis_端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
 <li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
-<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
+<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel_端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel_端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
 </ul>
 </li>
 <li><strong>进入redis的src目录启动redis和sentinel</strong><br>  <code><strong>reids-server redis配置文件</strong><br>  #eg:redis-server /usr/local/etc/redis_6379.conf<br>  <strong>redis-sentinel sentinel配置文件</strong> &amp;<br>  #eg:redis-sentinel /usr/local/etc/sentinel_26379.conf &amp;<br>  </code></li>

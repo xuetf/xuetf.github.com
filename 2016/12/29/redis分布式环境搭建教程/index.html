@@ -409,9 +409,9 @@
 <li>安装gcc</li>
 <li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
 <li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis<em>端口号.pid<br>  logfile /usr/local/logs/redis/redis</em>端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
+<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis_端口号.pid<br>  logfile /usr/local/logs/redis/redis_端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
 <li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
-<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel<em>端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel</em>端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
+<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel_端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel_端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
 </ul>
 </li>
 <li><strong>进入redis的src目录启动redis和sentinel</strong><br>  <code><strong>reids-server redis配置文件</strong><br>  #eg:redis-server /usr/local/etc/redis_6379.conf<br>  <strong>redis-sentinel sentinel配置文件</strong> &amp;<br>  #eg:redis-sentinel /usr/local/etc/sentinel_26379.conf &amp;<br>  </code></li>
@@ -538,7 +538,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -556,7 +556,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -657,6 +657,30 @@
 </div>
 
 
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
 
         

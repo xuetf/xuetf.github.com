@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="机器学习,线性回归,广义线性模型," />
 
 
 
@@ -86,12 +86,22 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="蘑菇先生学习记">
-<meta property="og:url" content="xtf615.com/tags/机器学习/index.html">
+<meta name="description" content="模型表示房价预测例子  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性回归">
+<meta property="og:url" content="xtf615.com/2017/02/09/线性回归/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="模型表示房价预测例子  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/house_price.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/train_set_representation.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/supervised_learning.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/cost_function.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/modeling_error.jpg">
+<meta property="og:updated_time" content="2017-02-09T15:53:18.556Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="蘑菇先生学习记">
+<meta name="twitter:title" content="线性回归">
+<meta name="twitter:description" content="模型表示房价预测例子  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/house_price.jpg">
 
 
 
@@ -119,13 +129,13 @@
 
 
 
-  <link rel="canonical" href="xtf615.com/tags/机器学习/"/>
+  <link rel="canonical" href="xtf615.com/2017/02/09/线性回归/"/>
 
 
 
 
 
-  <title> 标签: 机器学习 | 蘑菇先生学习记 </title>
+  <title> 线性回归 | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -146,7 +156,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -278,74 +288,181 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        机器学习
-        <small>标签</small>
-      </h2>
-    </div>
-
+  <div id="posts" class="posts-expand">
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/02/09/线性回归/" itemprop="url">
-              
-                <span itemprop="name">线性回归</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-02-09T22:27:47+08:00"
-              content="2017-02-09" >
-          02-09
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/01/18/机器学习概念/" itemprop="url">
-              
-                <span itemprop="name">机器学习概念</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-01-18T09:25:34+08:00"
-              content="2017-01-18" >
-          01-18
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-  </div>
 
   
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/09/线性回归/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                线性回归
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-09T22:27:47+08:00">
+                2017-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="模型表示"><a href="#模型表示" class="headerlink" title="模型表示"></a>模型表示</h1><h2 id="房价预测例子"><a href="#房价预测例子" class="headerlink" title="房价预测例子"></a>房价预测例子</h2><p>  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元)左右的价格卖掉这个房子。这就是监督学习算法的一个例子<br><img src="/picture/machine-learning/house_price.jpg" alt="house_price"><br>   它被称作监督学习是因为对于每个数据来说，我们给出了“正确的答案”，即告诉我们：根据我们的数据来说，房子实际的价格是多少，而且，更具体来说，这是一个回归问题。回归一词指的是，我们根据之前的数据预测出一个准确的输出值，对于这个例子就是价格，同时，还有另一种最常见的监督学习方式，叫做分类问题，当我们想要预测离散的输出值，例如，我们正在寻找癌症肿瘤，并想要确定肿瘤是良性的还是恶性的，这就是 0/1离散输出的问题。更进一步来说，在监督学习中我们有一个数据集，这个数据集被称训练集。<br>  <img src="/picture/machine-learning/train_set_representation.jpg" alt="train_set_representation"> </p>
+<h2 id="标记"><a href="#标记" class="headerlink" title="标记"></a>标记</h2><p>我们将要用来描述这个回归问题的标记如下:<br>    m代表训练集中实例的数量<br>    x代表特征/输入变量<br>    y代表目标变量/输出变量<br>    (x,y)代表训练集中的实例<br>    \((x^{(i)},y^{(i)})\) 代表第i个观察实例<br>    h代表学习算法的解决方案或函数也称为假设(hypothesis)<br><img src="/picture/machine-learning/supervised_learning.jpg" alt="supervised_learning"><br>  这就是一个监督学习算法的工作方式，我们可以看到这里有我们的训练集里房屋价格我们把它喂给我们的学习算法，学习算法的工作了，然后输出一个函数，通常表示为小写h表示。h代表   hypothesis(假设)，h表示一个函数，输入是房屋尺寸大小，就像你朋友想出售的房屋，因此h根据输入的x值来得出y值，y值对应房子的价格因此，h是一个从x到y的函数映射。<br>   我将选择最初的使用规则h代表hypothesis，因而，要解决房价预测问题，我们实际上是要将训练集“喂”给我们的学习算法，进而学习得到一个假设 h，然后将我们要预测的房屋的尺寸作为输入变量输入给h，预测出该房屋的交易价格作为输出变量输出为结果。那么，对于我们的房价预测问题，我们该如何表达h？<br>   一种可能的表达方式为：\(h_θ(x)=θ_1+θ_2x\)，因为只含有一个特征/输入变量，因此这样的问题叫作单变量线性回归问题。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>我们将定义代价函数的概念，这有助于我们弄清楚如何把最有可能的直线与我们的数据相拟合。如图：<br><img src="/picture/machine-learning/cost_function.jpg" alt="cost_function"><br>在线性回归中我们有一个像这样的训练集，m代表了训练样本的数量，比如m=47.而我们的假设函数，也就是用来进行预测的函数，是这样的线性函数形式：\(h_θ(x)=θ_1+θ_2x\)。接下来我们会引入一些术语我们现在要做的便是为我们的模型选择合适的参数（parameters）θ0和θ1，在房价问题这个例子中便是直线的斜率和在  y轴上的截距。我们选择的参数决定了我们得到的直线相对于我们的训练集的准确程度，模型所预测的值与训练集中实际值之间的差距（下图中蓝线所指）就是建模误差（modeling error）。<br><img src="/picture/machine-learning/modeling_error.jpg" alt="modeling_error"><br>我们的目标便是选择出可以使得建模误差的平方和能够最小的模型参数。即使得代价函数：<br>$$J(\theta_0,\theta_1)=\frac{1}{2m}\sum_i=1^m\left(h_θ(x^{(i)})-y^{(i)}\right)^2$$</p>
+<p>$$J(\theta_0,\theta_1)=\frac{1}{2m}\sum_{i=1}^m$$</p>
+<p>$$J(\theta_0,\theta_1)=\frac{1}{2m}$$</p>
+<p>$$\sum_{i=1}^m$$</p>
+<p>$$\left(h_\theta(x^{(i)})-y^{(i)}\right)^2$$</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/线性回归/" rel="tag"># 线性回归</a>
+          
+            <a href="/tags/广义线性模型/" rel="tag"># 广义线性模型</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/18/机器学习概念/" rel="next" title="机器学习概念">
+                <i class="fa fa-chevron-left"></i> 机器学习概念
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -353,6 +470,12 @@
 
 
           
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
         </div>
         
           
@@ -371,8 +494,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
@@ -453,6 +585,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#模型表示"><span class="nav-number">1.</span> <span class="nav-text">模型表示</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#房价预测例子"><span class="nav-number">1.1.</span> <span class="nav-text">房价预测例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记"><span class="nav-number">1.2.</span> <span class="nav-text">标记</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代价函数"><span class="nav-number">2.</span> <span class="nav-text">代价函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
@@ -575,6 +723,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
@@ -595,6 +747,10 @@
     
   
  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
 
 
 

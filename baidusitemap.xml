@@ -4,6 +4,30 @@
 
     
   <url>
+    <loc>xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</loc>
+    <lastmod>2017-02-09T15:53:18.556Z</lastmod>
+    <data>
+        <display>
+        <title>线性回归</title>
+        <pubTime>2017-02-09T14:27:47.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>线性回归</tag>
+         
+        <tag>广义线性模型</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/01/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5/</loc>
     <lastmod>2017-01-18T03:56:17.623Z</lastmod>
     <data>
@@ -59,13 +83,13 @@
         <title>hadoop分布式环境搭建教程</title>
         <pubTime>2016-12-29T10:53:29.000Z</pubTime>
         
+        <tag>hadoop</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
         <tag>环境</tag>
-         
-        <tag>hadoop</tag>
          
          
            
@@ -113,15 +137,15 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
-        <tag>spark</tag>
-         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
-        <tag>内存</tag>
-         
         <tag>环境</tag>
+         
+        <tag>spark</tag>
+         
+        <tag>内存</tag>
          
          
            
