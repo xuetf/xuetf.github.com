@@ -4,6 +4,29 @@
 
     
   <url>
+    <loc>xtf615.com/2017/02/10/%E5%9F%BA%E4%BA%8Ejieba%E5%88%86%E8%AF%8D%E5%92%8Cnltk%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2017-02-10T10:46:47.490Z</lastmod>
+    <data>
+        <display>
+        <title>基于jieba分词和nltk的情感分析</title>
+        <pubTime>2017-02-10T10:45:56.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>自然语言处理</tag>
+         
+        <tag>分词</tag>
+         
+        <tag>情感分析</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</loc>
     <lastmod>2017-02-10T10:10:00.070Z</lastmod>
     <data>
@@ -85,13 +108,13 @@
         <title>hadoop分布式环境搭建教程</title>
         <pubTime>2016-12-29T10:53:29.000Z</pubTime>
         
-        <tag>hadoop</tag>
-         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
         <tag>环境</tag>
+         
+        <tag>hadoop</tag>
          
          
            
@@ -139,15 +162,15 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
+        <tag>spark</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
-        <tag>环境</tag>
-         
-        <tag>spark</tag>
-         
         <tag>内存</tag>
+         
+        <tag>环境</tag>
          
          
            
