@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-02-10T10:02:08.335Z</updated>
+  <updated>2017-02-10T10:10:00.070Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
     <id>xtf615.com/2017/02/09/线性回归/</id>
     <published>2017-02-09T14:27:47.000Z</published>
-    <updated>2017-02-10T10:02:08.335Z</updated>
+    <updated>2017-02-10T10:10:00.070Z</updated>
     
     <content type="html"><![CDATA[<h1 id="模型表示"><a href="#模型表示" class="headerlink" title="模型表示"></a>模型表示</h1><h2 id="房价预测例子"><a href="#房价预测例子" class="headerlink" title="房价预测例子"></a>房价预测例子</h2><p>  让我们通过一个例子来开始：这个例子是预测住房价格的，我们要使用一个数据集，数据集包含俄勒冈州波特兰市的住房价格。在这里，我要根据不同房屋尺寸所售出的价格，画出我的数据集。比方说，如果你朋友的房子是1250平方尺大小，你要告诉他们这房子能卖多少钱。那么，你可以做的一件事就是构建一个模型，也许是条直线，从这个数据模型上来看，也许你可以告诉你的朋友，他能以大约 220000(美元)左右的价格卖掉这个房子。这就是监督学习算法的一个例子<br><img src="/picture/machine-learning/house_price.jpg" alt="house_price"><br>   它被称作监督学习是因为对于每个数据来说，我们给出了“正确的答案”，即告诉我们：根据我们的数据来说，房子实际的价格是多少，而且，更具体来说，这是一个回归问题。回归一词指的是，我们根据之前的数据预测出一个准确的输出值，对于这个例子就是价格，同时，还有另一种最常见的监督学习方式，叫做分类问题，当我们想要预测离散的输出值，例如，我们正在寻找癌症肿瘤，并想要确定肿瘤是良性的还是恶性的，这就是 0/1离散输出的问题。更进一步来说，在监督学习中我们有一个数据集，这个数据集被称训练集。下图是房价预测数据格式：<br>  <img src="/picture/machine-learning/train_set_representation.jpg" alt="train_set_representation"><br><a id="more"></a>  </p>
 <h2 id="标记"><a href="#标记" class="headerlink" title="标记"></a>标记</h2><p>我们将要用来描述这个回归问题的标记如下:<br>    m代表训练集中实例的数量<br>    x代表特征/输入变量<br>    y代表目标变量/输出变量<br>    (x,y)代表训练集中的实例<br>    \((x^{(i)},y^{(i)})\) 代表第i个观察实例<br>    h代表学习算法的解决方案或函数也称为假设(hypothesis)<br><img src="/picture/machine-learning/supervised_learning.jpg" alt="supervised_learning"><br>  这就是一个监督学习算法的工作方式，我们可以看到这里有我们的训练集里房屋价格我们把它喂给我们的学习算法，学习算法的工作了，然后输出一个函数，通常表示为小写h表示。h代表   hypothesis(假设)，h表示一个函数，输入是房屋尺寸大小，就像你朋友想出售的房屋，因此h根据输入的x值来得出y值，y值对应房子的价格因此，h是一个从x到y的函数映射。<br>   我将选择最初的使用规则h代表hypothesis，因而，要解决房价预测问题，我们实际上是要将训练集“喂”给我们的学习算法，进而学习得到一个假设 h，然后将我们要预测的房屋的尺寸作为输入变量输入给h，预测出该房屋的交易价格作为输出变量输出为结果。那么，对于我们的房价预测问题，我们该如何表达h？<br>   一种可能的表达方式为：\(h_θ(x)=θ_0+θ_1x\)，因为只含有一个特征/输入变量，因此这样的问题叫作单变量线性回归问题。</p>
@@ -90,6 +90,8 @@
       <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
     
       <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+      <category term="梯度下降" scheme="xtf615.com/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/"/>
     
   </entry>
   
