@@ -290,6 +290,174 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/11/逻辑回归/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/11/逻辑回归/" itemprop="url">
+                  逻辑回归
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-11T15:30:53+08:00">
+                2017-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="分类问题"><a href="#分类问题" class="headerlink" title="分类问题"></a>分类问题</h1><p>在分类问题中，你要预测的变量  y是离散的值，我们将学习一种叫做逻辑回归(Logistic Regression)的算法，这是目前最流行使用最广泛的一种学习算法。</p>
+<p>在分类问题中，我们尝试预测的是结果是否属于某一个类（例如正确或错误）。分类问题的例子有：判断一封电子邮件是否是垃圾邮件；判断一次金融交易是否是欺诈；之前我们也谈到了肿瘤分类问题的例子，区别一个肿瘤是恶性的还是良性的。</p>
+<p>我们从二元的分类问题开始讨论。我们将因变量(dependant variable)可能属于的两个类分别称为负向类（negative class）和正向类（positive class），则因变量 \(y\in{0,1}\) 其中0表示负向类，1表示正向类。<br><img src="/picture/machine-learning/logistic_regression1.jpg" alt="logistic_regression"><br><img src="/picture/machine-learning/logistic_regression2.jpg" alt="logistic_regression2"><br>如果我们要用线性回归算法来解决一个分类问题，对于分类，y取值为     0或者1，但如果你使用的是线性回归，那么假设函数的输出值可能远大于  1，或者远小于0，即使所有训练样本的标签y都等于0或1。尽管我们知道标签应该取值0或者1，但是如果算法得到的值远大于1或者远小于0的话，就会感觉很奇怪。所以我们在接下来的要研究的算法就叫做逻辑回归算法，这个算法的性质是：它的输出值永远在0到1之间。</p>
+<p>顺便说一下，逻辑回归算法是分类算法，我们将它作为分类算法使用。有时候可能因为这个算法的名字中出现了“回归”使你感到困惑，但逻辑回归算法实际上是一种分类算法.</p>
+<h1 id="假设表示"><a href="#假设表示" class="headerlink" title="假设表示"></a>假设表示</h1><p>在分类问题中，要用什么样的函数来表示我们的假设。此前我们说过，希望我们的分类器的输出值在0和1之间，因此，我们希望想出一个满足某个性质的假设函数，这个性质是它的预测值要在0和1之间。<br>回顾在一开始提到的乳腺癌分类问题，我们可以用线性回归的方法求出适合数据的一条直线：<br><img src="/picture/machine-learning/logistic_regression3.jpg" alt="logistic_regression3"><br>根据线性回归模型我们只能预测连续的值，然而对于分类问题，我们需要输出0或1，我们可以预测：<br>当\(h_θ&gt;=0.5\)时，预测y=1。<br>当\(h_θ&lt;0.5\)时，预测y=0。<br>对于上图所示的数据，这样的一个线性模型似乎能很好地完成分类任务。假使我们又观测到一个非常大尺寸的恶性肿瘤，将其作为实例加入到我们的训练集中来，这将使得我们获得一条新的直线。<br><img src="/picture/machine-learning/logistic_regression4.jpg" alt="logistic_regression4"><br>这时，再使用 0.5作为阀值来预测肿瘤是良性还是恶性便不合适了。可以看出，线性回归模型，因为其预测的值可以超越[0,1]的范围，并不适合解决这样的问题。<br>我们引入一个新的模型，逻辑回归，该模型的输出变量范围始终在0和 1之间。逻辑回归模型的假设是：<br>$$h_\theta(x)=g(\theta^TX) \\\\<br>其中，X代表特征向量 \\\\<br>g代表逻辑函数(logistic function), 也叫S形函数（Sigmoid \ function), \\\\<br>公式为：g(z)=\frac{1}{1+e^{-z}}<br>$$<br>该函数的图像：<br><img src="/picture/machine-learning/logistic_regression5.jpg" alt="logistic_regression5"><br>合起来，我们得到逻辑回归模型的假设：<br>$$h_\theta(x)=\frac{1}{1+e^{-\theta^TX}}$$<br>\(h_\theta(x)\)的作用是，对于给定的输入变量，根据选择的参数计算输出变量=1的可能性(estimated probablity)，即:<br>$$h_\theta(x)=P(y=1|x;\theta)$$<br>例如，如果对于给定的 x，通过已经确定的参数计算得出\(h_θ(x)=0.7\)，则表示有70%的几率y为正向类，相应地y为负向类的几率为1-0.7=0.3。</p>
+<h1 id="判定边界"><a href="#判定边界" class="headerlink" title="判定边界"></a>判定边界</h1><p>现在讲下决策边界(decision  boundary)的概念。这个概念能更好地帮助我们理解逻辑回归的假设函数在计算什么。<br><img src="/picture/machine-learning/logistic_regression6.jpg" alt="logistic_regression6"><br>在逻辑回归中，我们预测：</p>
+<ul>
+<li>当\(h_θ\)大于等于0.5时，预测y=1;</li>
+<li>当\(h_θ\)小于0.5时，预测y=0;<br>根据上面绘制出的S形函数图像，我们知道:</li>
+<li>当z=0时, g(z)=0.5;</li>
+<li>当z&gt;0时, g(z)&gt;0.5;</li>
+<li>当z&lt;0时, g(z)&lt;0.5.</li>
+</ul>
+<p>又\(z=\theta^TX\),即：<br>\(\theta^TX \ge 0\),预测y=1;<br>\(\theta^TX &lt; 0\),预测y=0;<br>现在假设我们有一个模型：<br><img src="/picture/machine-learning/logistic_regression7.jpg" alt="logistic_regression7"><br>并且参数θ是向量[-3 1 1]。则当\( (-3+x_1+x_2)\ge 0\)，即 \(x_1+x_2 \ge 3\)时,模型将预测y=1。<br>我们可以绘制直线\(x_1+x_2=3\)，这条线便是我们模型的分界线，将预测为1的区域和预测为0的区域分隔开。<br><img src="/picture/machine-learning/logistic_regression8.jpg" alt="logistic_regression8"><br>假使我们的数据呈现这样的分布情况，怎样的模型才能适合呢？<br><img src="/picture/machine-learning/logistic_regression9.jpg" alt="logistic_regression9"><br>因为需要用曲线才能分隔y=0的区域和y=1的区域，我们需要二次方特征：假设参数：\(h_θ(x)=g(θ_0+θ_1x_1+θ_2x_2+θ_3x_1^2+θ_4x_2^2)\)是[-1 0 0 1 1],则我们得到的判定边界恰好是圆点在原点且半径为1的圆形。<br>我们可以用非常复杂的模型来适应非常复杂形状的判定边界。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>接下来我们要介绍如何拟合逻辑回归模型的参数\(θ\)。具体来说，我要定义用来拟合参数的优化目标或者叫代价函数，这便是监督学习问题中的逻辑回归模型的拟合问题。<br><img src="/picture/machine-learning/logistic_regression10.jpg" alt="logistic_regression10"><br>对于线性回归模型，我们定义的代价函数是所有模型误差的平方和。理论上来说，我们也可以对逻辑回归模型沿用这个定义，但是问题在于:当我们将\(h_θ(x)=\frac{1}{1+e^{-θ^TX}}\)代入到这样定义了的代价函数中时，我们得到的代价函数将是一个非凸函数（no-convex function).<br><img src="/picture/machine-learning/logistic_regression11.jpg" alt="logistic_regression11"><br>这意味着我们的代价函数有许多局部最小值，<strong>这将影响梯度下降算法寻找全局最小值。</strong><br>线性回归的代价函数为：<br>$$J(\theta)=\frac{1}{2m}\sum_{i=1}^m\left(h_{\theta}(x^{(i)})-y^{(i)}\right)^2$$<br>我们重新定义逻辑回归的代价函数为:<br>$$J(\theta)=\frac{1}{m}\sum_{i=1}^mCost\left(h_{\theta}(x^{(i)}),y^{(i)}\right)$$<br>其中：<br>$$<br>\begin{eqnarray}<br>Cost(h_\theta(x),y)=<br>\begin{cases}<br>-log(h_\theta(x)), y=1 \cr -log(1-h_\theta(x)), y=0<br>\end{cases}<br>\end{eqnarray}<br>$$<br>\(h_θ(x)\)与\(Cost(h_θ(x),y)\)之间的关系如下图所示：<br><img src="/picture/machine-learning/logistic_regression12.jpg" alt="logistic_regression12"><br>这样构建的\(Cost(h_θ(x),y)\)函数的特点是：当实际的y=1且\(h_θ\)也为1时误差为 0，当y=1但\(h_θ\)不为1时误差随着\(h_θ\)的变小而变大；当实际的y=0且\(h_θ\)也为0时,代价为0，当y=0但\(h_θ\)不为0时误差随着\(h_θ\)的变大而变大。<br>将构建的Cost(hθ(x),y)简化如下:<br>$$Cost(h_θ(x),y)=-y*log(h_θ(x))-(1-y)*log(1-h_θ(x))$$</p>
+<p>代入代价函数得到：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)$$<br>在得到这样一个代价函数以后，我们便可以用梯度下降算法来求得能使代价函数最小的参数了。算法为：<br><strong>repeat until convergence</strong>{<br>   $$\theta_j:=\theta_j-\alpha\frac{\partial}{\partial\theta_j}J(\theta) $$<br>}<br>求导后得到：<br><strong>repeat until convergence</strong>{<br>   $$\theta_j:=\theta_j-\alpha\sum_{i=1}^m\left((h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}\right) $$<br>}</p>
+<h2 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h2><p>所给的代价函数：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)$$<br>其中：<br>\(h_θ(x^{(i)})=\frac{1}{1+e^{-θ^TX}}\)<br>令\(z=θ^Tx=θ_0+θ_1x_1+θ_2x_2+…+θ_nx_n\)<br>则\(\frac{\partial z}{\partial(θ_j)}=x_j^{(i)}\)<br>\(h_θ(x^{(i)})=\frac{1}{1+e^{-z}}=\frac{e^z}{1+e^z}\) </p>
+<p>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)\\\\<br>=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))-y^{(i)}log(1-h_θ(x^{(i)}))+log(1-h_θ(x^{(i)}))\right) \\\\<br>= -\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log\left(\frac{h_θ(x^{(i)})}{1-h_θ(x^{(i)})}\right)+log(1-h_θ(x^{(i)}))\right) \\\\<br>= -\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log\left(\frac{\frac{e^{z^{(i)}}}{1+e^{z^{(i)}}}}{1-\frac{e^{z^{(i)}}}{1+e^{z^{(i)}}}}\right)+log(1-\frac{e^{z^{(i)}}}{1+e^{z^{(i)}}})\right) \\\\<br>= -\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}z^{(i)}-log(1+e^{z^{(i)}})\right)<br>$$<br>$$<br>J’(θ)= -\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}\frac{\partial z^{(i)}}{\partialθ_j}-\frac{e^{z^{(i)}}}{1+e^{z^{(i)}}}\frac{\partial z^{(i)}}{\partialθ_j}\right) \\\\<br>= -\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}-h_θ(x^{(i)})\right)\frac{\partial z^{(i)}}{\partialθ_j} \\\\<br>= \frac{1}{m}\sum_{i=1}^m\left((h_θ(x^{(i)})-y^{(i)})x_j^{(i)}\right)<br>$$</p>
+<p>注：虽然得到的梯度下降算法表面上看上去与线性回归的梯度下降算法一样，但是这里的\(h_θ(x)=g(θ^TX)\)与线性回归中不同，所以实际上是不一样的。另外，在运行梯度下降算法之T前，进行特征缩放依旧是非常必要的。<br>一些梯度下降算法之外的选择：除了梯度下降算法以外，还有一些常被用来令代价函数最小的算法，这些算法更加复杂和优越，而且通常不需要人工选择学习率，通常比梯度下降算法要更加快速。这些算法有：共轭梯度（Conjugate Gradient），局部优化法(Broyden fletcher goldfarb shann,BFGS)和有限内存局部优化法(LBFGS)。</p>
+<h1 id="多类别分类-1对多"><a href="#多类别分类-1对多" class="headerlink" title="多类别分类 1对多"></a>多类别分类 1对多</h1><p>我们将谈到如何使用逻辑回归(logistic  regression)来解决多类别分类问题，具体来说，我想通过一个叫做”一对多” (one-vs-all)的分类算法。<br>先看这样一些例子。</p>
+<ul>
+<li>第一个例子：假如说你现在需要一个学习算法能自动地将邮件归类到不同的文件夹里，或者说可以自动地加上标签，那么，你也许需要一些不同的文件夹，或者不同的标签来完成<br>这件事，来区分开来自工作的邮件、来自朋友的邮件、来自家人的邮件或者是有关兴趣爱好的邮件，那么，我们就有了这样一个分类问题：其类别有四个，分别用y=1、y=2、y=3、y=4来代表。</li>
+<li>第二个例子是有关药物诊断的，如果一个病人因为鼻塞来到你的诊所，他可能并没有生病，用y=1这个类别来代表；或者患了感冒，用y=2来代表；或者得了流感用y=3来代表。</li>
+<li>第三个例子：如果你正在做有关天气的机器学习分类问题，那么你可能想要区分哪些天是晴天、多云、雨天、或者下雪天，对上述所有的例子，y可以取一个很小的数值，一个相对”谨慎”的数值，比如1到3、1到4或者其它数值。<br>以上说的都是多类分类问题。<br>然而对于之前的一个二元分类问题，我们的数据看起来可能是像这样：<br><img src="/picture/machine-learning/logistic_regression13.jpg" alt="logistic"><br>对于一个多类分类问题，我们的数据集或许看起来像这样：<br><img src="/picture/machine-learning/logistic_regression14.jpg" alt="logistic"><br>我用三种不同的符号来代表三个类别，问题就是给出三个类型的数据集，我们如何得到一个学习算法来进行分类呢？<br>我们现在已经知道如何进行二元分类，可以使用逻辑回归，对于直线或许你也知道，可以将数据集一分为二为正类和负类。用一对多的分类思想，我们可以将其用在多类分类问题上。<br>下面将介绍如何进行一对多的分类工作，有时这个方法也被称为”一对余”方法。<br>现在我们有一个训练集，好比上图表示的有三个类别，我们用三角形表示y=1，方框表示  y=2，叉叉表示y=3。我们下面要做的就是使用一个训练集，将其分成三个二元分类问题。我们先从用三角形代表的类别1开始，实际上我们可以创建一个，新的”伪”训练集，类型2和类型3定为负类，类型1设定为正类，我们创建一个新的训练集，如下图所示的那样，我们要拟合出一个合适的分类器。<br><img src="/picture/machine-learning/logistic_regression15.jpg" alt="logistic_regression15"></li>
+</ul>
+<p>这里的三角形是正样本，而圆形代表负样本。可以这样想，设置三角形的值为1，圆形的值为0，下面我们来训练一个标准的逻辑回归分类器，这样我们就得到一个正边界。<br>为了能实现这样的转变，我们将多个类中的一个类标记为正向类（y=1），然后将其他所有类都标记为负向类，这个模型记作\(h_\theta^{(1)}(x)\)。<br>接着，类似地第我们选择另一个类标记为正向类（y=2），再将其它类都标记为负向类，将这个模型记作\(h_\theta^{(2)}(x)\),依此类推。<br>最后我们得到一系列的模型简记为：\(h_\theta^{(i)}(x)=p(y=i|x;\theta)\)<br><img src="/picture/machine-learning/logistic_regression16.jpg" alt="logistic_regression16"><br>最后，在我们需要做预测时，我们将所有的分类机都运行一遍，然后对每一个输入变量，都选择最高可能性的输出变量。<br>总之，我们已经把要做的做完了，现在要做的就是训练这个逻辑回归分类器：\(h_\theta^{(i)}(x)\)其中i对应每一个可能的y=i，最后,为了做出预测，我们给出输入一个新的x值，用这个做预测。我们要做的就是在我们三个分类器里面输入x，然后我们选择一个让\(h_\theta^{(i)}(x)\)最大的i,即\(\max_{i}h_\theta^{(i)}(x)\)<br>现在知道了基本的挑选分类器的方法，选择出哪一个分类器是可信度最高效果最好的,那么就可认为得到一个正确的分类，无论i值是多少，我们都有最高的概率值，我们预测y就是那个值。这就是多类别分类问题，以及一对多的方法，通过这个小方法，现在也可以将逻辑回归分类器用在多类分类的问题上。</p>
+<h1 id="正则化的逻辑回归"><a href="#正则化的逻辑回归" class="headerlink" title="正则化的逻辑回归"></a>正则化的逻辑回归</h1><p>待续…</p>
+<h1 id="广义线性模型推导逻辑回归"><a href="#广义线性模型推导逻辑回归" class="headerlink" title="广义线性模型推导逻辑回归"></a>广义线性模型推导逻辑回归</h1><p>待续…</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/10/基于jieba分词和nltk的情感分析/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1380,7 +1548,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1398,7 +1566,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
