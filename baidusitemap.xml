@@ -5,7 +5,7 @@
     
   <url>
     <loc>xtf615.com/2017/02/11/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
-    <lastmod>2017-02-11T13:16:01.583Z</lastmod>
+    <lastmod>2017-02-11T13:37:42.416Z</lastmod>
     <data>
         <display>
         <title>逻辑回归</title>
@@ -137,13 +137,13 @@
         <title>hadoop分布式环境搭建教程</title>
         <pubTime>2016-12-29T10:53:29.000Z</pubTime>
         
+        <tag>hadoop</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
         <tag>环境</tag>
-         
-        <tag>hadoop</tag>
          
          
            
@@ -191,15 +191,15 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
-        <tag>spark</tag>
-         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
-        <tag>内存</tag>
-         
         <tag>环境</tag>
+         
+        <tag>spark</tag>
+         
+        <tag>内存</tag>
          
          
            
