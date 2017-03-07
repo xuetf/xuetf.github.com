@@ -96,7 +96,7 @@
 <meta property="og:description" content="基本概念时间序列是什么？定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。
 所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$
 进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\),">
-<meta property="og:updated_time" content="2017-03-07T05:46:25.287Z">
+<meta property="og:updated_time" content="2017-03-07T05:52:14.034Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ARIMA时间序列模型(一)">
 <meta name="twitter:description" content="基本概念时间序列是什么？定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。
@@ -464,7 +464,7 @@
 </ul>
 <p>$$\mu_t=E(Z_t)=E\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^tE(a_j)=0$$</p>
 <ul>
-<li>\({Z_t}\)f方差函数为:</li>
+<li>\({Z_t}\)方差函数为:</li>
 </ul>
 <p>$$\gamma(t,t)=var(Z_t)=var\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^t var(a_j)=t \cdot \sigma_a^2$$</p>
 <p>注意到，这一过程，方差会随着时间线性增长。</p>
@@ -475,7 +475,7 @@
 <li><p>ACF自相关函数，根据定义有：</p>
 <p>$$\rho(t,s)=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}} \\\ = \frac{\sigma_at}{\sqrt{\sigma_a^2t \cdot \sigma_a^2s}} \\\ = \sqrt{t/s}, \ 1 \leq t \leq s$$</p>
 <p>当s=t+1时，</p>
-<p>$$\rho(t,t+1)=corr(Z_t,Z_{t+1})=\sqrt{t/(t+1)} \approx 1, \\当t无穷大$$</p>
+<p>$$\rho(t,t+1)=corr(Z_t,Z_{t+1})=\sqrt{t/(t+1)} \approx 1, \ 当t无穷大$$</p>
 <p>​</p>
 <p><strong>理解：随机游走可以看作，在时间轴上任意行走一步（大步或小步），是若干时刻的和。</strong></p>
 </li>
@@ -573,6 +573,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/03/07/ARIMA时间序列模型-二/" rel="prev" title="ARIMA时间序列模型(二)">
+                ARIMA时间序列模型(二) <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -642,7 +646,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

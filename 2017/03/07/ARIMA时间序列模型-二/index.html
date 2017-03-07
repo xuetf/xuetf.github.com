@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="机器学习,时间序列,人工智能,ARIMA," />
 
 
 
@@ -86,12 +86,27 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="蘑菇先生学习记">
-<meta property="og:url" content="xtf615.com/page/2/index.html">
+<meta name="description" content="前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。
+一般线性过程定义：
+时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARIMA时间序列模型(二)">
+<meta property="og:url" content="xtf615.com/2017/03/07/ARIMA时间序列模型-二/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。
+一般线性过程定义：
+时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/arima1.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/arima2.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/arima4.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/arima3.jpg">
+<meta property="og:updated_time" content="2017-03-07T13:28:41.650Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="蘑菇先生学习记">
+<meta name="twitter:title" content="ARIMA时间序列模型(二)">
+<meta name="twitter:description" content="前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。
+一般线性过程定义：
+时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/arima1.jpg">
 
 
 
@@ -119,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="xtf615.com/page/2/"/>
+  <link rel="canonical" href="xtf615.com/2017/03/07/ARIMA时间序列模型-二/"/>
 
 
 
 
 
-  <title> 蘑菇先生学习记 </title>
+  <title> ARIMA时间序列模型(二) | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -146,9 +161,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -279,9 +292,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -290,7 +303,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/Spark分布式环境搭建教程/">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/03/07/ARIMA时间序列模型-二/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="xuetf">
@@ -314,10 +327,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/12/29/Spark分布式环境搭建教程/" itemprop="url">
-                  spark分布式环境搭建教程
-                </a>
+                ARIMA时间序列模型(二)
               
             
           </h1>
@@ -332,8 +342,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T21:31:00+08:00">
-                2016-12-29
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-07T13:49:28+08:00">
+                2017-03-07
               </time>
             
 
@@ -355,8 +365,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spark/" itemprop="url" rel="index">
-                    <span itemprop="name">spark</span>
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
                   </a>
                 </span>
 
@@ -375,7 +385,7 @@
           
           
           &nbsp; | &nbsp;
-          <span id="/2016/12/29/Spark分布式环境搭建教程/"class="leancloud_visitors" data-flag-title="spark分布式环境搭建教程">
+          <span id="/2017/03/07/ARIMA时间序列模型-二/"class="leancloud_visitors" data-flag-title="ARIMA时间序列模型(二)">
                    &nbsp;阅读次数
                   </span>
           
@@ -395,363 +405,138 @@
       
 
       
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
-<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
-<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
-</li>
-<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
-</li>
-<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
+        <p>　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。</p>
+<h1 id="一般线性过程"><a href="#一般线性过程" class="headerlink" title="一般线性过程"></a>一般线性过程</h1><h2 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h2><ul>
+<li>时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值是白噪声系列的线性函数。</li>
+<li>时间序列\({Z_t}\)是有因果的(causal),当且仅当\(Z_t\)的值只受到目前为止的信息影响，换句话说\(Z_t\)是独立于未来信息\(a_s\)的，s&gt;t</li>
+<li>时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).</li>
+</ul>
+<p>因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。</p>
+<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)</p>
+<h2 id="均值，自协方差，自相关系数"><a href="#均值，自协方差，自相关系数" class="headerlink" title="均值，自协方差，自相关系数"></a>均值，自协方差，自相关系数</h2><p>一般线性过程：<br>$$E(Z_t)=\mu$$<br>$$\gamma_0=var(Z_t)=\sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>$$\gamma_k=cov(Z_t,Z_{t-k})=\sigma_a^2\sum_{j=0}^{\infty}\psi_j\psi_{j+k},k \geq 0$$<br>$$\rho_k=\frac{cov(Z_t,Z_{t-k})}{var(Z_t)}=\frac{\sum_{j=0}^{\infty}\psi_j\psi_{j+k}}{\sum_{j=0}^{\infty}\psi_j^2},k &gt; 0$$</p>
+<h1 id="移动平均MA过程"><a href="#移动平均MA过程" class="headerlink" title="移动平均MA过程"></a>移动平均MA过程</h1><p>定义：q阶移动平均过程，简记为：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q} \\\\<br>其中，q \in \mathbb{N}, 并且 {a_t} \sim WN(0,\sigma_a^2)$$</p>
+<ul>
+<li>如果\(\theta_0=0\)，则0阶移动平均过程实际上就是白噪声序列，此时\(Z_t=a_t\)</li>
+<li>移动平均过程是一种特殊的一般线性过程。因为它是线性，因果和平稳的</li>
+</ul>
+<h2 id="一阶移动平均过程MA（1）"><a href="#一阶移动平均过程MA（1）" class="headerlink" title="一阶移动平均过程MA（1）"></a>一阶移动平均过程MA（1）</h2><p>$$Z_t=\theta_0+a_t-\theta a_{t-1}$$</p>
+<ul>
+<li>显然，\(E(Z_t)=\theta_0\)</li>
+<li>\(\gamma_0=var(Z_t)=\sigma_a^2(1+\theta^2)\)</li>
+<li>\(\gamma_1=cov(Z_t,Z_{t-1})=cov(a_t-\theta a_{t-1},a_{t-1}-\theta a_{t-2}) = cov(-\theta a_{t-1},-\theta a_{t-2})=-\theta \sigma_a^2\)</li>
+<li>\(\rho_1 = \frac{-\theta}{1+\theta^2}\)</li>
+<li>\(\rho_2=cov(Z_t,Z_{t-2})=cov(a_t-\theta a_{t-1},a_{t-2}-\theta a_{t-3})=0\)</li>
+<li>同理，因为\(Z_t和Z_{t-2}\)之间不存在共同的下标,故\(\rho_2=0\)</li>
+<li>故当\(k \geq 2\)时，\(\gamma_k=cov(Z_t,Z_{t-k})=0, 并且 \rho_k=0\)，即这一过程在超过滞后1,就不存在相关性。这一事实在我们后续为实际数据选择合适的模型时会起到很重要作用。</li>
+</ul>
+<h2 id="二阶移动平均过程MA（2）"><a href="#二阶移动平均过程MA（2）" class="headerlink" title="二阶移动平均过程MA（2）"></a>二阶移动平均过程MA（2）</h2><p>$$Z_t=\theta_0+a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2}$$</p>
+<ul>
+<li>显然，\(E(Z_t)=\theta_0\)</li>
+<li>方差\(\gamma_0=var(Z_t)=(1+\theta_1^2+\theta_2^2)\sigma_a^2\)</li>
+<li>滞后k=1的自协方差:<br>$$\gamma_1=cov(Z_t,Z_{t-1})=cov(a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2},a_{t-1}-\theta_1 a_{t-2}-\theta_2 a_{t-3})=cov(-\theta_1 a_{t-1},a_{t-1}) + cov(-\theta_2 a_{t-2},-\theta_1 a_{t-2})=[-\theta_1+(-\theta_1)(-\theta_2)]\sigma_a^2=(-\theta_1+\theta_1 \theta_2)\sigma_a^2$$</li>
+<li>滞后k=2的自协方差为：<br>$$\gamma_2=cov(Z_t,Z_{t-2})=cov(a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2},a_{t-2}-\theta_1 a_{t-3}-\theta_2 a_{t-4})=cov(-\theta_2 a_{t-2}, a_{t-2})=-\theta_2 \sigma_a^2$$</li>
+<li>同理相关系数，\(\rho_k=0, \forall k \geq 3\)</li>
+</ul>
+<p>$$ \begin{eqnarray} \rho=\begin{cases} \rho_1=\frac{-\theta_1+\theta_1 \theta_2}{1+\theta_1^2+\theta_2^2} \cr \rho_2=\frac{-\theta_2}{1+\theta_1^2+\theta_2^2} \cr \rho_k=0, \forall k \geq 3 \end{cases} \end{eqnarray}$$</p>
+<h2 id="q阶移动平均过程MA（q）"><a href="#q阶移动平均过程MA（q）" class="headerlink" title="q阶移动平均过程MA（q）"></a>q阶移动平均过程MA（q）</h2><p>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$</p>
+<ul>
+<li>均值\(\mu=\theta_0\)</li>
+<li>方差\(\gamma_0=(1+\theta_1^2+\theta_2^2+…+\theta_q^2)\sigma_a^2\)</li>
+<li>自协方差：<br>$$ \begin{eqnarray} \rho_k=\begin{cases} \frac{-\theta_k+\theta_1 \theta_{k+1}+\theta_2 \theta_{k+2}+…+\theta_{q-k} \theta_{q}}{1+\theta_1^2+\theta_2^2+…+\theta_q^2},k=1,2,…,q \cr 0, \forall k \geq q+1 \end{cases} \end{eqnarray}$$</li>
+<li>自相关：<br>当k=q时,\(\rho_k \neq 0\); 当k&gt;q时，\(\rho_k=0\)<br><strong>我们通常说，q阶移动平均过程的自相关函数在q滞后截尾，即ACF会在lag=q时截尾(cuts off).</strong></li>
+</ul>
+<h2 id="后向移位算子"><a href="#后向移位算子" class="headerlink" title="后向移位算子"></a>后向移位算子</h2><p>任意时间序列上的后向移位算子B定义为：<br>\(BZ_t=Z_{t-1}\), \(B^kZ_t=B^{k-1}(BZ_t)=…=Z_{t-k}, \forall k \in \mathbb{Z}\)<br>因此，B(Z)是原始序列Z的滞后为1的序列。\(B^k(Z)是原始序列滞后为k的序列\)<br>特别的，\(B^0是单位算子，B^0Z=Z\)<br>因此：<br>移动平均过程：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$<br>可以被重写为：<br>$$Z_t=(1-\theta_1B-\theta_2B^2-…-\theta_qB^q)a_t=\theta(B)a_t$$<br>其中，\(\theta(x)=1-\theta_1x-…-\theta_qx^q\)是MA移动平均的特征多项式</p>
+<h1 id="自回归过程AR"><a href="#自回归过程AR" class="headerlink" title="自回归过程AR"></a>自回归过程AR</h1><p>p阶自回归模型AR(p)定义为：<br>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t \\\\<br>其中，p \geq 0,且p为整数。 \phi是参数。{a_t} \sim WN(0,\sigma_a^2)<br>$$<br>模型可以被重写为：<br>$$\phi(B)Z_t=\theta_0+a_t \\\\<br>其中，\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p是AR的特征多项式$$</p>
+<h2 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h2><p>AR(p)模型有一个唯一的平稳性解，只有当下面AR特征方程的所有根都在单位圆外时。<br>$$\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p=0$$</p>
+<ul>
+<li>求解唯一平稳性解叫做AR(p)自回归过程</li>
+<li>上述条件称作平稳性条件</li>
+<li>对于一个复杂的z值，如果\(\vert z \vert &gt; 1\),我们称它是在单位圆外。 </li>
+<li>例子：找出AR(1)模型的平稳性条件：<br>  \(Z_t=\phi Z_{t-1}+a_t\)<br>  由上可得，\(1-\phi x=0\),则\(x=1/\phi\),因为需要满足|x|&gt;1，则我们有\(|\phi| &lt; 1\)</li>
+<li>例子，找出AR(1),\(Z_t=0.5Z_{t-1}+a_t\)的一般线性过程形式：<br>由前面AR的特征多项式可得，<br>$$(1-0.5B)Z_t=a_t$$<br>因此可以根据等比数列求和性质得到如下式子<br>$$Z_t=\frac{1}{1-0.5B}a_t=(1+0.5B+0.5^2B^2+…)a_t$$<br>进一步得到，即一般线性过程形式：<br>$$Z_t=a_t+0.5a_{t-1}+0.5^2a_{t-2}+…$$<h2 id="一般平稳性条件"><a href="#一般平稳性条件" class="headerlink" title="一般平稳性条件"></a>一般平稳性条件</h2>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t \ (1)$$<br>必须满足如下条件：<br>$$ \begin{eqnarray} \begin{cases} \mu=\frac{1}{1-\phi_1-…-\phi_p} \cr \psi_1=\phi_1, \cr \psi_2=\phi_1\psi_1+\phi_2, \cr … \cr \psi_k=\phi_1\psi_{k-1}+\phi_2\psi_{k-2}+…+\phi_p\psi_{k-p} \end{cases} \end{eqnarray}$$<br>其中，\(\psi是一般线性过程的参数\)<br>一般线性过程是：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2}  \ (2)$$<br>要想满足平稳性，要求AR模型能够转换成一般线性过程的形式，因此通过比较(1),(2)式子，展开运算，可以得到上述一般平稳性条件</li>
+</ul>
+<h2 id="均值，自协方差，方差，自相关"><a href="#均值，自协方差，方差，自相关" class="headerlink" title="均值，自协方差，方差，自相关"></a>均值，自协方差，方差，自相关</h2><p>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t $$</p>
+<ul>
+<li>均值<br>我们对等式两边同时求均值：<br>$$\mu=\theta_0+\phi_1 \mu+\phi_2 \mu + …+ \phi_p \mu + 0$$<br>得到：<br>$$\mu = \frac{\theta_0}{1-\phi_1-\phi_2-…-\phi_p}$$<br>可以证明分母不为0.</li>
+<li>自相关<br><img src="/picture/machine-learning/arima1.jpg" alt="arima"><br>将两个式子等式两边对应相乘，然后再等式两边同时求自相关，根据定义，可以得到上述3.3的式子。<br><img src="/picture/machine-learning/arima2.jpg" alt="arima"></li>
+<li>方差<br><img src="/picture/machine-learning/arima4.jpg" alt="arima"><br><img src="/picture/machine-learning/arima3.jpg" alt="arima"><br>上述3.2式子和\(Z_t\)相乘后，再等式两边同时取方差，根据定义以及\(E(a_tZ_t)\)的推导，可以得到上述式子。</li>
+</ul>
+<h1 id="ARMA模型"><a href="#ARMA模型" class="headerlink" title="ARMA模型"></a>ARMA模型</h1><p>英文全称为，the mixed autoregressive-moving average model<br>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} \\\\<br>+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$<br>我们称\({Z_t}\)是(p,q)阶混合自回归移动平均模型，简记为ARMA(p,q)<br>如果q=0，则模型退化为AR模型；如果p=0,则模型退化为MA模型。二者都是ARMA模型的特例。<br>为了方便，我们重写以上等式为：<br>$$\phi(B)Z_t=\theta_0+\theta(B)a_t \\\\<br>其中，\phi(x)和\theta(x)分别是AR模型和MA模型的的特征多项式$$<br>$$\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p$$<br>$$\theta(x)=1-\theta_1x-\theta_2x^2-…-\theta_px^q$$</p>
+<p>定理：如果AR多项式等式\(\phi(x)=0\)所有根都在单位圆之外，那么ARMA(p,q)模型存在唯一的平稳性解。<br>当存在平稳性解时，ARMA模型具备如下形式:<br>$$Z_t=\mu+\sum_{j=0}^\infty \psi_j a_{t-j}$$</p>
+<h2 id="如何求解ARMA模型平稳性条件？"><a href="#如何求解ARMA模型平稳性条件？" class="headerlink" title="如何求解ARMA模型平稳性条件？"></a>如何求解ARMA模型平稳性条件？</h2><p>考虑ARMA(1,1)，则：<br>$$Z_t=\phi Z_{t-1}+a_t-\theta a_{t-1}$$<br>比较上述式子的系数可以得到：<br>$$\psi_0 a_t+\psi_1 a_{t-1}+ \psi_2 a_{t-2}+ … \\\\<br>  = \phi \psi_0 a_{t-1} + \phi \psi_1 a_{t-2} + \phi \psi_2 a_{t-3} +…+a_t-\theta a_{t-1}$$<br>可以得出：<br>$$\psi_0=1$$<br>$$\psi_1=\phi \psi_0 - \theta = \phi - \theta$$<br>$$\psi_0=\phi \psi_1 = \phi^2-\phi \theta$$<br>$$…$$<br>$$\psi_k=\phi \psi_k = \phi^k - \phi^{k-1} \theta$$<br>一般的，对于ARMA(p,q),我们可以得到:<br>$$ \begin{eqnarray} \begin{cases} \psi_0=1 \cr \psi_1=-\theta_1+\phi_1, \cr \psi_2=-\theta_2+\phi_2+\phi_1 \psi_1, \cr … \cr \psi_j=\theta_j+ \phi_p \psi_{j-p}+ … + \phi_1 \psi_{j-1} \end{cases} \end{eqnarray}$$<br>而，<br>$$\mu=\frac{\theta_0}{1-\phi_1-\phi_2-…-\phi_p}$$<br>所以有：<br>$$Z_t=\mu+\sum_{j=0}^\infty \psi_j a_{t-j}$$</p>
+<h2 id="可逆性"><a href="#可逆性" class="headerlink" title="可逆性"></a>可逆性</h2><ul>
+<li><p>为什么需要可逆性？<br>  假设我们获取了100个观察值：<br>  $$z_1,z_2,…,z_{100}$$<br>  经过复杂的过程，我们得到了一个AR(1)模型:<br>  $$Z_t=0.6Z_{t-1}+a_t$$<br>  那么该如何解释结果呢？<br>  如果模型变成：<br>  $$Z_t=a_t-0.5a_{t-1}或者Z_t=0.3Z_{t-1}+a_t+0.2a_{t-1}$$<br>  又该如何解释呢？</p>
+<ul>
+<li>定义：如果时间序列\({Z_t}\)是可逆的，则：<br>$$a_t=\pi_0 Z_t+\pi_1 Z_{t-1}+\pi_2 Z_{t-2}+…$$<br>这个性质使得我们能够基于过去观察序列获取信息序列<br>不失一般性，我们令\(\pi_0=1\)<br>AR过程总是可逆的。</li>
+<li>定理：ARMA或MA模型是可逆的，当且仅当MA特征方程的根都在单位圆外。<br>$$\theta(x)=1-\theta_1x-\theta_2x^2-…-\theta_qx^q=0$$</li>
+<li>定义：如果时间序列\({Z_t}\)是可逆的，则定义：<br>$$Z_t=a_t-\pi_1Z_{t-1}-\pi_2Z_{t-2}-…$$<br>为该时间序列的AR表示（autoregressive representation）。</li>
+</ul>
 </li>
 </ul>
-<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/Spark分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<p>注意：可以发现求解AR表示和求解AR或ARMA模型的唯一平稳性解方法是一样的，同样是需要比较方程两边的系数。<br>相反，求解AR或ARMA模型的唯一平稳性解也叫做AR或ARMA模型的MA表示。</p>
+
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
 
     <footer class="post-footer">
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/hadoop分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/hadoop分布式环境搭建教程/" itemprop="url">
-                  hadoop分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T18:53:29+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
           
-
+            <a href="/tags/时间序列/" rel="tag"># 时间序列</a>
           
-            
+            <a href="/tags/人工智能/" rel="tag"># 人工智能</a>
           
-
+            <a href="/tags/ARIMA/" rel="tag"># ARIMA</a>
           
-
-          
-          
-          &nbsp; | &nbsp;
-          <span id="/2016/12/29/hadoop分布式环境搭建教程/"class="leancloud_visitors" data-flag-title="hadoop分布式环境搭建教程">
-                   &nbsp;阅读次数
-                  </span>
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
-<h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
-<p><strong>本文将使用完全分布模式进行集群搭建</strong></p>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/hadoop分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/07/ARIMA时间序列模型/" rel="next" title="ARIMA时间序列模型(一)">
+                <i class="fa fa-chevron-left"></i> ARIMA时间序列模型(一)
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
 
-    <div>
-      
-    </div>
+          <span class="post-nav-divider"></span>
 
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/redis分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+          <div class="post-nav-prev post-nav-item">
             
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/redis分布式环境搭建教程/" itemprop="url">
-                  redis分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T15:56:43+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-          &nbsp; | &nbsp;
-          <span id="/2016/12/29/redis分布式环境搭建教程/"class="leancloud_visitors" data-flag-title="redis分布式环境搭建教程">
-                   &nbsp;阅读次数
-                  </span>
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
-<li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
-<li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/redis分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
-  </nav>
-
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -759,6 +544,12 @@
 
 
           
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
         </div>
         
           
@@ -777,8 +568,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
@@ -859,6 +659,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一般线性过程"><span class="nav-number">1.</span> <span class="nav-text">一般线性过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义："><span class="nav-number">1.1.</span> <span class="nav-text">定义：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#均值，自协方差，自相关系数"><span class="nav-number">1.2.</span> <span class="nav-text">均值，自协方差，自相关系数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#移动平均MA过程"><span class="nav-number">2.</span> <span class="nav-text">移动平均MA过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一阶移动平均过程MA（1）"><span class="nav-number">2.1.</span> <span class="nav-text">一阶移动平均过程MA（1）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二阶移动平均过程MA（2）"><span class="nav-number">2.2.</span> <span class="nav-text">二阶移动平均过程MA（2）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#q阶移动平均过程MA（q）"><span class="nav-number">2.3.</span> <span class="nav-text">q阶移动平均过程MA（q）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后向移位算子"><span class="nav-number">2.4.</span> <span class="nav-text">后向移位算子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自回归过程AR"><span class="nav-number">3.</span> <span class="nav-text">自回归过程AR</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#理论"><span class="nav-number">3.1.</span> <span class="nav-text">理论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一般平稳性条件"><span class="nav-number">3.2.</span> <span class="nav-text">一般平稳性条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#均值，自协方差，方差，自相关"><span class="nav-number">3.3.</span> <span class="nav-text">均值，自协方差，方差，自相关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ARMA模型"><span class="nav-number">4.</span> <span class="nav-text">ARMA模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何求解ARMA模型平稳性条件？"><span class="nav-number">4.1.</span> <span class="nav-text">如何求解ARMA模型平稳性条件？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可逆性"><span class="nav-number">4.2.</span> <span class="nav-text">可逆性</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
@@ -986,6 +802,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
@@ -1006,6 +826,10 @@
     
   
  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
 
 
 
