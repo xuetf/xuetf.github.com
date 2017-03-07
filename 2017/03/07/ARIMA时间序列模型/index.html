@@ -1,0 +1,1115 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,时间序列,人工智能,ARIMA," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="基本概念时间序列是什么？定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。
+所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$
+进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\),">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARIMA时间序列模型(一)">
+<meta property="og:url" content="xtf615.com/2017/03/07/ARIMA时间序列模型/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="基本概念时间序列是什么？定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。
+所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$
+进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\),">
+<meta property="og:updated_time" content="2017-03-07T05:46:25.287Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARIMA时间序列模型(一)">
+<meta name="twitter:description" content="基本概念时间序列是什么？定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。
+所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$
+进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\),">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/03/07/ARIMA时间序列模型/"/>
+
+
+
+
+
+  <title> ARIMA时间序列模型(一) | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/03/07/ARIMA时间序列模型/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ARIMA时间序列模型(一)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-07T09:33:02+08:00">
+                2017-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+          &nbsp; | &nbsp;
+          <span id="/2017/03/07/ARIMA时间序列模型/"class="leancloud_visitors" data-flag-title="ARIMA时间序列模型(一)">
+                   &nbsp;阅读次数
+                  </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="时间序列是什么？"><a href="#时间序列是什么？" class="headerlink" title="时间序列是什么？"></a>时间序列是什么？</h2><p>定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。</p>
+<p>所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$</p>
+<p>进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。</p>
+<p>回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$</p>
+<p>因变量X的信息是已知的，我们希望对响应变量Y做出推断。</p>
+<p>在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$</p>
+<p>在时间序列中，已知的信息包括：</p>
+<ul>
+<li>时间下标t</li>
+<li>过去的信息</li>
+</ul>
+<p>两个典型的时间序列模型如下：</p>
+<p>$$Z_t=a+bt+\varepsilon_t$$</p>
+<p>and</p>
+<p>$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$</p>
+<p>它们分别对应于确定性模型和随机模型，本文将讨论后者。<br><a id="more"></a>  </p>
+<h1 id="时间序列的均值，方差，协方差"><a href="#时间序列的均值，方差，协方差" class="headerlink" title="时间序列的均值，方差，协方差"></a>时间序列的均值，方差，协方差</h1><ul>
+<li><p><strong>均值函数（The mean function）</strong>：对于一个时间序列\({Z_t,t \in Z}\), 均值函数或平均序列被定义为：</p>
+<p>$$\mu_t = E(Z_t), \ t \in \mathbb{Z} $$</p>
+<p>\(\mu_t\)是在t时刻的期望值，\(\mu_t\) 在不同时刻可以是不同的值。</p>
+</li>
+<li><p><strong>自协方差函数（The auto-covariance function）</strong>：简记为ACVF，定义为：</p>
+<p>$$\gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z}$$</p>
+<p>其中，</p>
+<p>$$cov(Z_t,Z_s)=E[(Z_t-\mu_t)(Z_s-\mu_s)]=E(Z_tZ_s)-\mu_t\mu_s$$</p>
+</li>
+<li><p><strong>方差函数（The variance function）</strong>：特别是在s=t时，我们有：</p>
+<p>$$\gamma(t,t)=cov(Z_t,Z_t)=var(Z_t)$$</p>
+<p>这就是\({Z_t}\)的方差函数</p>
+</li>
+<li><p><strong>自相关函数（The auto-correlation function）</strong>：简记为ACF，定义为：</p>
+<p>$$\rho(t,s)=corr(Z_t,Z_s),  \ t,s \in \gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z} $$</p>
+<p>其中，</p>
+<p>$$corr(Z_t,Z_s)=\frac{cov(Z_t,Z_s)}{\sqrt{var(Z_t)var(Z_s)}}=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}}$$</p>
+<p><strong>ACVF和ACF有如下性质：</strong></p>
+<p> ACVF:</p>
+</li>
+<li><p>\(\gamma(t,t)=var(Z_t)\)</p>
+</li>
+<li>\(\gamma(t,s)=\gamma(s,t)\)</li>
+<li><p>\(\vert{\gamma(t,s)} \vert \leq \sqrt{\gamma(t,t)\gamma(s,s)} \)</p>
+<p> ACF:</p>
+</li>
+<li><p>\(\rho(t,t)=1\)</p>
+</li>
+<li>\(\rho(t,s)=\rho(s,t)\)</li>
+<li><p>\(\vert{\rho(t,s)}\vert \leq 1\)</p>
+<p><strong>一些重要的性质：</strong></p>
+</li>
+</ul>
+<p>$$cov(aX,Y)=acov(X,Y)$$</p>
+<p>$$cov(X,aY+bZ)=acov(X,Y)+bcov(X,Z)$$</p>
+<p>$$cov(c_1Y_1+c_2Y_2, d_1Z_1+d_2Z_2)=c_1d_1cov(Y_1,Z_1)+c_2d_1cov(Y_2,Z_1)+c_1d_2cov(Y_1,Z_2)+c_2d_2cov(Y_2,Z_2)$$</p>
+<p>$$cov\left[\sum_{i=1}^m c_iY_i, \sum_{j=1}^n d_jZ_j\right]=\sum_{i=1}^m\sum_{j=1}^n c_id_jcov(Y_i,Z_j)$$</p>
+<p>最后一条性质经常用到。</p>
+<h2 id="随机游走"><a href="#随机游走" class="headerlink" title="随机游走"></a>随机游走</h2><p><strong>随机游走（The random walk）</strong>：令序列\({a_t, t \in \mathbb{N}}\) 是服从 \(i.i.d\)独立同分布的随机变量。每个变量都是零均值，方差为\(\sigma_a^2\), 随机游走过程\({Z_t, t \in \mathbb{N}}\)定义为：</p>
+<p>$$Z_t = \sum_{j=1}^t a_j, \ t \in \mathbb{N}$$</p>
+<p>另外，我们可以写作：</p>
+<p>$$Z_t=Z_{t-1}+a_t, \ t \in \mathbb{N}, Z_0=0$$</p>
+<ul>
+<li>\({Z_t}\)均值函数为:</li>
+</ul>
+<p>$$\mu_t=E(Z_t)=E\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^tE(a_j)=0$$</p>
+<ul>
+<li>\({Z_t}\)f方差函数为:</li>
+</ul>
+<p>$$\gamma(t,t)=var(Z_t)=var\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^t var(a_j)=t \cdot \sigma_a^2$$</p>
+<p>注意到，这一过程，方差会随着时间线性增长。</p>
+<ul>
+<li><p>ACVF自协方差函数：对于一切\(t \leq s\),</p>
+<p>$$\gamma(t,s)=cov(Z_t,Z_s) \\\\=cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j + \sum_{j=t+1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j\right) \\\\=var\left(\sum_{j=1}^t a_j\right) = t \cdot \sigma_a^2$$</p>
+</li>
+<li><p>ACF自相关函数，根据定义有：</p>
+<p>$$\rho(t,s)=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}} \\\ = \frac{\sigma_at}{\sqrt{\sigma_a^2t \cdot \sigma_a^2s}} \\\ = \sqrt{t/s}, \ 1 \leq t \leq s$$</p>
+<p>当s=t+1时，</p>
+<p>$$\rho(t,t+1)=corr(Z_t,Z_{t+1})=\sqrt{t/(t+1)} \approx 1, \\当t无穷大$$</p>
+<p>​</p>
+<p><strong>理解：随机游走可以看作，在时间轴上任意行走一步（大步或小步），是若干时刻的和。</strong></p>
+</li>
+</ul>
+<h2 id="移动平均"><a href="#移动平均" class="headerlink" title="移动平均"></a>移动平均</h2><p><strong>移动平均（a moving average）</strong>：假设\({Z_t, t \in \mathbb{Z}}\) 定义为：</p>
+<p>$$Z_t=a_t-0.5a_{t-1}, \ t \in \mathbb{Z}$$</p>
+<p>同样，a满足独立同分布，零均值，方差为\(\sigma_a^2\)</p>
+<ul>
+<li><p>\({Z_t}\)均值函数为:</p>
+<p>$$\mu_t=E(Z_t)=E(a_t)-0.5E(a_{t-1})=0, \ t \in \mathbb{Z}$$</p>
+</li>
+<li><p>\({Z_t}\)f方差函数为:</p>
+<p>$$var(Z_t)=var(a_t-0.5a_{t-1})=\sigma_a^2+0.5^2\sigma_a^2=1.25\sigma_a^2$$</p>
+</li>
+<li><p>ACVF自协方差函数：</p>
+<p>$$cov(Z_t,Z_{t-1})=cov(a_t-0.5a_{t-1},a_{t-1}-0.5a_{t-2})=cov(a_t,a_{t-1})-0.5cov(a_t,a_{t-2})-0.5cov(a_{t-1},a_{t-1})-0.5cov(a_{t-1},a_{t-1})+0.5^2cov(a_{t-1},a_{t-2})=-0.5cov(a_{t-1},a_{t-1})$$</p>
+<p>或者表示为：</p>
+<p>$$\gamma(t,t-1)=-0.5\sigma_a^2,   \forall t \in \mathbb{Z}$$</p>
+<p>对任意\(k \geq 2\),</p>
+<p>$$cov(Z_t, Z_{t-k})=0$$</p>
+<p>或者表示为，$$\gamma(t,t-k)=0, \ \forall  k \geq 2,t \in \mathbb{Z}$$</p>
+</li>
+<li><p>ACF自相关函数：</p>
+<p>$$\rho(t,s)=-0.4,   if  \ \vert{t-s}\vert = 1 \\\ \rho(t,s)=0, if \ \vert{t-s}\vert \geq 2$$</p>
+<p><strong>理解：移动平均可以看作，若干时刻的线性组合。</strong></p>
+</li>
+</ul>
+<h1 id="平稳性"><a href="#平稳性" class="headerlink" title="平稳性"></a>平稳性</h1><p><strong>强平稳性（strict stationarity）要求：</strong>时间序列\({Z_t}\)为强平稳，只有当对任意的自然数n, 任意的时间点\(t_1\),\(t_2\),..,\(t_n\)以及任意的滞后k, 都满足\(Z_{t_1}\),\(Z_{t_2}\),…,\(Z_{t_n}\)的联合分布 和\(Z_{t_1-k}\),\(Z_{t_2-k}\),…,\(Z_{t_n-k}\)相同。</p>
+<p><strong>弱平稳性(weak stationarity)要求</strong>：时间序列为弱平稳性，只有当均值函数\(\mu_t\)不随时间变化，并且对于任意的时间t和任意的滞后k，都有\(\gamma(t,t-k)=\gamma(0,k)\)</p>
+<p>对于弱平稳性，有如下标志：</p>
+<p>$$\mu = E(Z_t)$$</p>
+<p>$$\gamma_k=cov(Z_t, Z_{t-k}), \ (\gamma_{-k}=\gamma_k)$$</p>
+<p>$$\rho_k=Corr(Z_t,Z_{t-k}); \ (\rho_{-k}=\rho_k)$$</p>
+<p>强平稳性和弱平稳性关系如下：</p>
+<ol>
+<li>强平稳性+有限的秒时刻 =&gt; 弱平稳性</li>
+<li>时间序列的联合分布为多元正太分布，那么这两种定义是一致的</li>
+</ol>
+<h2 id="白噪声"><a href="#白噪声" class="headerlink" title="白噪声"></a>白噪声</h2><p><strong>白噪声（White noise）</strong>：一个很重要的关于平稳性处理的例子就是所谓的白噪声处理。它被定义为满足独立同分布的随机变量\({a_t}\), 零均值并且方差为\(\sigma_a^2&gt;0\), 简记为：\(WN(0,\sigma_a^2)\)</p>
+<p>显然，\({a_t}\)满足强平稳性要求。</p>
+<p>对于弱平稳性，注意到\(\mu_t=E(a_t)=0\)是一个常数，并且，</p>
+<p>$$ \begin{eqnarray} \gamma(t;t-k)=\begin{cases} \sigma_a^2, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} :=\gamma_k$$,</p>
+<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} $$</p>
+<p>有些书中定义白噪声为一系列不相关的随机变量。</p>
+<p>前面我们提高的随机游走，由于\({Z_t}\)的方差受时间影响线性变化\(var(Z_t)=t\sigma_a^2\)，并且协方差\(\gamma(t,s)=t\sigma_a^2\), 因此不仅仅受滞后k的影响，故不是平稳的时间序列。</p>
+<p>令，$$X_t=\nabla Z_t=Z_t-Z_{t-1}$$</p>
+<p>则\(X_t=a_t\), \({\nabla Z_t}\)是平稳的。</p>
+<p>前面我们还提到移动平均。是由白噪声构成的一个非平凡平稳时间序列。在前面那个例子里，我们有：</p>
+<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr -0.4, k \pm 1 \cr 0, \vert k \vert \geq 2  \end{cases} \end{eqnarray}$$</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/时间序列/" rel="tag"># 时间序列</a>
+          
+            <a href="/tags/人工智能/" rel="tag"># 人工智能</a>
+          
+            <a href="/tags/ARIMA/" rel="tag"># ARIMA</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/22/SVM支持向量机/" rel="next" title="SVM支持向量机">
+                <i class="fa fa-chevron-left"></i> SVM支持向量机
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时间序列是什么？"><span class="nav-number">1.1.</span> <span class="nav-text">时间序列是什么？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#时间序列的均值，方差，协方差"><span class="nav-number">2.</span> <span class="nav-text">时间序列的均值，方差，协方差</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#随机游走"><span class="nav-number">2.1.</span> <span class="nav-text">随机游走</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#移动平均"><span class="nav-number">2.2.</span> <span class="nav-text">移动平均</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平稳性"><span class="nav-number">3.</span> <span class="nav-text">平稳性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#白噪声"><span class="nav-number">3.1.</span> <span class="nav-text">白噪声</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+<div class="powered-by">
+   <a class="theme-link" href="https://hexo.io">Hexo</a> 个人专属
+</div>
+
+<div class="theme-info">
+  博客 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+<span id="busuanzi_container_site_pv">
+&nbsp;&nbsp;|&nbsp;&nbsp; Total visitors:<span id="busuanzi_value_site_pv"></span>&nbsp;times
+</span>
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+
+  
+
+
+</body>
+</html>

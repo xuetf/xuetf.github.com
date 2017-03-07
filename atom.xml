@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-02-18T07:50:10.027Z</updated>
+  <updated>2017-03-07T05:46:25.287Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -14,6 +14,204 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ARIMA时间序列模型(一)</title>
+    <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B/"/>
+    <id>xtf615.com/2017/03/07/ARIMA时间序列模型/</id>
+    <published>2017-03-07T01:33:02.000Z</published>
+    <updated>2017-03-07T05:46:25.287Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="时间序列是什么？"><a href="#时间序列是什么？" class="headerlink" title="时间序列是什么？"></a>时间序列是什么？</h2><p>定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。</p>
+<p>所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$</p>
+<p>进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。</p>
+<p>回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$</p>
+<p>因变量X的信息是已知的，我们希望对响应变量Y做出推断。</p>
+<p>在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$</p>
+<p>在时间序列中，已知的信息包括：</p>
+<ul>
+<li>时间下标t</li>
+<li>过去的信息</li>
+</ul>
+<p>两个典型的时间序列模型如下：</p>
+<p>$$Z_t=a+bt+\varepsilon_t$$</p>
+<p>and</p>
+<p>$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$</p>
+<p>它们分别对应于确定性模型和随机模型，本文将讨论后者。<br><a id="more"></a>  </p>
+<h1 id="时间序列的均值，方差，协方差"><a href="#时间序列的均值，方差，协方差" class="headerlink" title="时间序列的均值，方差，协方差"></a>时间序列的均值，方差，协方差</h1><ul>
+<li><p><strong>均值函数（The mean function）</strong>：对于一个时间序列\({Z_t,t \in Z}\), 均值函数或平均序列被定义为：</p>
+<p>$$\mu_t = E(Z_t), \ t \in \mathbb{Z} $$</p>
+<p>\(\mu_t\)是在t时刻的期望值，\(\mu_t\) 在不同时刻可以是不同的值。</p>
+</li>
+<li><p><strong>自协方差函数（The auto-covariance function）</strong>：简记为ACVF，定义为：</p>
+<p>$$\gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z}$$</p>
+<p>其中，</p>
+<p>$$cov(Z_t,Z_s)=E[(Z_t-\mu_t)(Z_s-\mu_s)]=E(Z_tZ_s)-\mu_t\mu_s$$</p>
+</li>
+<li><p><strong>方差函数（The variance function）</strong>：特别是在s=t时，我们有：</p>
+<p>$$\gamma(t,t)=cov(Z_t,Z_t)=var(Z_t)$$</p>
+<p>这就是\({Z_t}\)的方差函数</p>
+</li>
+<li><p><strong>自相关函数（The auto-correlation function）</strong>：简记为ACF，定义为：</p>
+<p>$$\rho(t,s)=corr(Z_t,Z_s),  \ t,s \in \gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z} $$</p>
+<p>其中，</p>
+<p>$$corr(Z_t,Z_s)=\frac{cov(Z_t,Z_s)}{\sqrt{var(Z_t)var(Z_s)}}=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}}$$</p>
+<p><strong>ACVF和ACF有如下性质：</strong></p>
+<p> ACVF:</p>
+</li>
+<li><p>\(\gamma(t,t)=var(Z_t)\)</p>
+</li>
+<li>\(\gamma(t,s)=\gamma(s,t)\)</li>
+<li><p>\(\vert{\gamma(t,s)} \vert \leq \sqrt{\gamma(t,t)\gamma(s,s)} \)</p>
+<p> ACF:</p>
+</li>
+<li><p>\(\rho(t,t)=1\)</p>
+</li>
+<li>\(\rho(t,s)=\rho(s,t)\)</li>
+<li><p>\(\vert{\rho(t,s)}\vert \leq 1\)</p>
+<p><strong>一些重要的性质：</strong></p>
+</li>
+</ul>
+<p>$$cov(aX,Y)=acov(X,Y)$$</p>
+<p>$$cov(X,aY+bZ)=acov(X,Y)+bcov(X,Z)$$</p>
+<p>$$cov(c_1Y_1+c_2Y_2, d_1Z_1+d_2Z_2)=c_1d_1cov(Y_1,Z_1)+c_2d_1cov(Y_2,Z_1)+c_1d_2cov(Y_1,Z_2)+c_2d_2cov(Y_2,Z_2)$$</p>
+<p>$$cov\left[\sum_{i=1}^m c_iY_i, \sum_{j=1}^n d_jZ_j\right]=\sum_{i=1}^m\sum_{j=1}^n c_id_jcov(Y_i,Z_j)$$</p>
+<p>最后一条性质经常用到。</p>
+<h2 id="随机游走"><a href="#随机游走" class="headerlink" title="随机游走"></a>随机游走</h2><p><strong>随机游走（The random walk）</strong>：令序列\({a_t, t \in \mathbb{N}}\) 是服从 \(i.i.d\)独立同分布的随机变量。每个变量都是零均值，方差为\(\sigma_a^2\), 随机游走过程\({Z_t, t \in \mathbb{N}}\)定义为：</p>
+<p>$$Z_t = \sum_{j=1}^t a_j, \ t \in \mathbb{N}$$</p>
+<p>另外，我们可以写作：</p>
+<p>$$Z_t=Z_{t-1}+a_t, \ t \in \mathbb{N}, Z_0=0$$</p>
+<ul>
+<li>\({Z_t}\)均值函数为:</li>
+</ul>
+<p>$$\mu_t=E(Z_t)=E\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^tE(a_j)=0$$</p>
+<ul>
+<li>\({Z_t}\)f方差函数为:</li>
+</ul>
+<p>$$\gamma(t,t)=var(Z_t)=var\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^t var(a_j)=t \cdot \sigma_a^2$$</p>
+<p>注意到，这一过程，方差会随着时间线性增长。</p>
+<ul>
+<li><p>ACVF自协方差函数：对于一切\(t \leq s\),</p>
+<p>$$\gamma(t,s)=cov(Z_t,Z_s) \\\\=cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j + \sum_{j=t+1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j\right) \\\\=var\left(\sum_{j=1}^t a_j\right) = t \cdot \sigma_a^2$$</p>
+</li>
+<li><p>ACF自相关函数，根据定义有：</p>
+<p>$$\rho(t,s)=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}} \\\ = \frac{\sigma_at}{\sqrt{\sigma_a^2t \cdot \sigma_a^2s}} \\\ = \sqrt{t/s}, \ 1 \leq t \leq s$$</p>
+<p>当s=t+1时，</p>
+<p>$$\rho(t,t+1)=corr(Z_t,Z_{t+1})=\sqrt{t/(t+1)} \approx 1, \\当t无穷大$$</p>
+<p>​</p>
+<p><strong>理解：随机游走可以看作，在时间轴上任意行走一步（大步或小步），是若干时刻的和。</strong></p>
+</li>
+</ul>
+<h2 id="移动平均"><a href="#移动平均" class="headerlink" title="移动平均"></a>移动平均</h2><p><strong>移动平均（a moving average）</strong>：假设\({Z_t, t \in \mathbb{Z}}\) 定义为：</p>
+<p>$$Z_t=a_t-0.5a_{t-1}, \ t \in \mathbb{Z}$$</p>
+<p>同样，a满足独立同分布，零均值，方差为\(\sigma_a^2\)</p>
+<ul>
+<li><p>\({Z_t}\)均值函数为:</p>
+<p>$$\mu_t=E(Z_t)=E(a_t)-0.5E(a_{t-1})=0, \ t \in \mathbb{Z}$$</p>
+</li>
+<li><p>\({Z_t}\)f方差函数为:</p>
+<p>$$var(Z_t)=var(a_t-0.5a_{t-1})=\sigma_a^2+0.5^2\sigma_a^2=1.25\sigma_a^2$$</p>
+</li>
+<li><p>ACVF自协方差函数：</p>
+<p>$$cov(Z_t,Z_{t-1})=cov(a_t-0.5a_{t-1},a_{t-1}-0.5a_{t-2})=cov(a_t,a_{t-1})-0.5cov(a_t,a_{t-2})-0.5cov(a_{t-1},a_{t-1})-0.5cov(a_{t-1},a_{t-1})+0.5^2cov(a_{t-1},a_{t-2})=-0.5cov(a_{t-1},a_{t-1})$$</p>
+<p>或者表示为：</p>
+<p>$$\gamma(t,t-1)=-0.5\sigma_a^2,   \forall t \in \mathbb{Z}$$</p>
+<p>对任意\(k \geq 2\),</p>
+<p>$$cov(Z_t, Z_{t-k})=0$$</p>
+<p>或者表示为，$$\gamma(t,t-k)=0, \ \forall  k \geq 2,t \in \mathbb{Z}$$</p>
+</li>
+<li><p>ACF自相关函数：</p>
+<p>$$\rho(t,s)=-0.4,   if  \ \vert{t-s}\vert = 1 \\\ \rho(t,s)=0, if \ \vert{t-s}\vert \geq 2$$</p>
+<p><strong>理解：移动平均可以看作，若干时刻的线性组合。</strong></p>
+</li>
+</ul>
+<h1 id="平稳性"><a href="#平稳性" class="headerlink" title="平稳性"></a>平稳性</h1><p><strong>强平稳性（strict stationarity）要求：</strong>时间序列\({Z_t}\)为强平稳，只有当对任意的自然数n, 任意的时间点\(t_1\),\(t_2\),..,\(t_n\)以及任意的滞后k, 都满足\(Z_{t_1}\),\(Z_{t_2}\),…,\(Z_{t_n}\)的联合分布 和\(Z_{t_1-k}\),\(Z_{t_2-k}\),…,\(Z_{t_n-k}\)相同。</p>
+<p><strong>弱平稳性(weak stationarity)要求</strong>：时间序列为弱平稳性，只有当均值函数\(\mu_t\)不随时间变化，并且对于任意的时间t和任意的滞后k，都有\(\gamma(t,t-k)=\gamma(0,k)\)</p>
+<p>对于弱平稳性，有如下标志：</p>
+<p>$$\mu = E(Z_t)$$</p>
+<p>$$\gamma_k=cov(Z_t, Z_{t-k}), \ (\gamma_{-k}=\gamma_k)$$</p>
+<p>$$\rho_k=Corr(Z_t,Z_{t-k}); \ (\rho_{-k}=\rho_k)$$</p>
+<p>强平稳性和弱平稳性关系如下：</p>
+<ol>
+<li>强平稳性+有限的秒时刻 =&gt; 弱平稳性</li>
+<li>时间序列的联合分布为多元正太分布，那么这两种定义是一致的</li>
+</ol>
+<h2 id="白噪声"><a href="#白噪声" class="headerlink" title="白噪声"></a>白噪声</h2><p><strong>白噪声（White noise）</strong>：一个很重要的关于平稳性处理的例子就是所谓的白噪声处理。它被定义为满足独立同分布的随机变量\({a_t}\), 零均值并且方差为\(\sigma_a^2&gt;0\), 简记为：\(WN(0,\sigma_a^2)\)</p>
+<p>显然，\({a_t}\)满足强平稳性要求。</p>
+<p>对于弱平稳性，注意到\(\mu_t=E(a_t)=0\)是一个常数，并且，</p>
+<p>$$ \begin{eqnarray} \gamma(t;t-k)=\begin{cases} \sigma_a^2, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} :=\gamma_k$$,</p>
+<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} $$</p>
+<p>有些书中定义白噪声为一系列不相关的随机变量。</p>
+<p>前面我们提高的随机游走，由于\({Z_t}\)的方差受时间影响线性变化\(var(Z_t)=t\sigma_a^2\)，并且协方差\(\gamma(t,s)=t\sigma_a^2\), 因此不仅仅受滞后k的影响，故不是平稳的时间序列。</p>
+<p>令，$$X_t=\nabla Z_t=Z_t-Z_{t-1}$$</p>
+<p>则\(X_t=a_t\), \({\nabla Z_t}\)是平稳的。</p>
+<p>前面我们还提到移动平均。是由白噪声构成的一个非平凡平稳时间序列。在前面那个例子里，我们有：</p>
+<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr -0.4, k \pm 1 \cr 0, \vert k \vert \geq 2  \end{cases} \end{eqnarray}$$</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;基本概念&quot;&gt;&lt;a href=&quot;#基本概念&quot; class=&quot;headerlink&quot; title=&quot;基本概念&quot;&gt;&lt;/a&gt;基本概念&lt;/h1&gt;&lt;h2 id=&quot;时间序列是什么？&quot;&gt;&lt;a href=&quot;#时间序列是什么？&quot; class=&quot;headerlink&quot; title=&quot;时间序列是什么？&quot;&gt;&lt;/a&gt;时间序列是什么？&lt;/h2&gt;&lt;p&gt;定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。&lt;/p&gt;
+&lt;p&gt;所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$&lt;/p&gt;
+&lt;p&gt;进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。&lt;/p&gt;
+&lt;p&gt;回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$&lt;/p&gt;
+&lt;p&gt;因变量X的信息是已知的，我们希望对响应变量Y做出推断。&lt;/p&gt;
+&lt;p&gt;在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$&lt;/p&gt;
+&lt;p&gt;在时间序列中，已知的信息包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;时间下标t&lt;/li&gt;
+&lt;li&gt;过去的信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;两个典型的时间序列模型如下：&lt;/p&gt;
+&lt;p&gt;$$Z_t=a+bt+\varepsilon_t$$&lt;/p&gt;
+&lt;p&gt;and&lt;/p&gt;
+&lt;p&gt;$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$&lt;/p&gt;
+&lt;p&gt;它们分别对应于确定性模型和随机模型，本文将讨论后者。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SVM支持向量机</title>
+    <link href="xtf615.com/2017/02/22/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
+    <id>xtf615.com/2017/02/22/SVM支持向量机/</id>
+    <published>2017-02-22T00:26:31.000Z</published>
+    <updated>2017-03-07T05:47:07.501Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="优化目标"><a href="#优化目标" class="headerlink" title="优化目标"></a>优化目标</h1><p>　　到目前为止,你已经见过一系列不同的学习算法。在监督学习中，许多学习算法的性能都非常类似，因此，重要的不是你该选择使用学习算法 A还是学习算法B，而更重要的是，应用这些算法时，所创建的大量数据在应用这些算法时，表现情况通常依赖于你的水平。比如：你为学习算法所设计的特征量的选择，以及如何选择正则化参数，诸如此类的事。还有一个更加强大的算法广泛的应用于工业界和学术界，它被称为支持向量机(Support Vector<br>Machine)。与逻辑回归和神经网络相比，支持向量机，或者简称SVM，在学习复杂的非线性方程时提供了一种更为清晰，更加强大的方式。<br>　　为了描述支持向量机，我将会从逻辑回归开始展示我们如何一点一点修改来得到本质上的支持向量机。<br><img src="/picture/machine-learning/svm1.jpg" alt="svm"><br>　　在逻辑回归中我们已经熟悉了这里的假设函数形式和右边的S型激励函数。然为了解释一些数学知识.我将用z表示\(\theta^Tx\)。<br>　　现在考虑下我们想要逻辑回归做什么：如果有一个y=1的样本，不管是在训练集中或是在测试集中，又或者在交叉验证集中，总之是y=1，我们希望\(h(x)\)趋近1。因为我们想要正确地将此样本分类，这就意味着当h(x)趋近于1时，\(\theta^Tx\)应当远大于0。这是因为z表示\(\theta^Tx\)，当z远大于0时，即到了该图的右边，不难发现此时逻辑回归的输出将趋近于1。相反地，如果我们有另一个样本，即y=0。我们希望假设函数的输出值将趋近于0，这对应于z远小于0，此时对应的假设函数的输出值趋近 0。<br><a id="more"></a><br><img src="/picture/machine-learning/svm2.jpg" alt="svm"><br>　　如果进一步观察逻辑回归的代价函数，你会发现每个样本(x, y)都会为总代价函数增加这里的一项，因此，对于总代价函数通常会有对所有的训练样本求和，并且这里还有一个1/m项.<br>　　现在，先忽略 1/m这一项。考虑两种情况：一种是y等于1的情况；另一种是y等于0的情况。在第一种情况中，假设y等于1，此时在目标函数中只需有第一项起作用，因为y等于1时，(1-y)项将等于0。因此，当在y等于1的样本中时，我们得到\(-log\frac{1}{1+e^{-z}}\)<br>　　我们用z表示\(\theta^Tx\)。如果画出关于z的函数，你会看到左下角的这条曲线，我们同样可以看到，当z增大时，也就是相当于\(\theta^Tx\)增大时，z对应的值会变的非常小。对整个代价函数而言，影响也非常小。这也就解释了，为什么逻辑回归在观察到正样本y=1时，试图将\(\theta^Tx\)设置得非常大。因为，在代价函数中的这一项会变的非常小。<br>　　现在开始建立SVM。<br>　　我们会从这个代价函数说起，\(-log\frac{1}{1+e^{-z}}\)，取z=1的点，先画出代价函数。<br><img src="/picture/machine-learning/svm3.jpg" alt="svm"></p>
+<p>　　目前，我们只是讨论了  y=1的情况，另外一种情况是当y=0时，此时如果你仔细观察代价函数只留下了第二项，因为第一项被消除了。并且，如果你将这一项作为z的函数，那么，这里就会得到横轴z。<br>　　新的代价函数将会水平的从这里到右边，然后我再画一条同逻辑回归非常相似的直线，但是，在这里是一条直线，也就是我用紫红色画的曲线，就是这条紫红色的曲线。那么，到了这里已经非常接近逻辑回归中使用的代价函数了。只是这里是由<strong>两条线段</strong>组成，即位于右边的水平部分和位于左边的直线部分，先别过多的考虑左边直线部分的斜率，这并不是很重要。但是，这里我们将使用的新的代价函数，是在y=1的前提下的。你也许能想到，这应该能做同逻辑回归中类似的事情，但事实上，在之后的的优化问题中，这会为支持向量机带来计算上的优势。例如，更容易计算股票交易的问题等等。<br>　　目前，我们只是讨论了y=1的情况，另外一种情况是当y=0时，此时如果你仔细观察代价函数只留下了第二项，因为第一项被消除了。并且，如果你将这一项作为z的函数，那么，这里就会得到横轴z。同样地，我们要替代这一条蓝色的线，用相似的方法。<br><img src="/picture/machine-learning/svm4.jpg" alt="svm"><br>　　如果我们用一个新的代价函数来代替，即这条从0点开始的水平直线，然后是一条斜线，像上图。那么，现在让我给这两个方程命名，左边的函数，我称之为\(cost_1(z)\)，同时，右边函数我称它为\(cost_<br>0(z)\)。这里的下标是指在代价函数中，对应的y=1和y=0的情况，拥有了这些定义后，现在，我们就开始构建支持向量机。<br><img src="/picture/machine-learning/svm5.jpg" alt="svm"><br>　　这是我们在逻辑回归中使用代价函数J(θ)。也许这个方程看起来不是非常熟悉。这是因为之前有个负号在方程外面，但是，这里我所做的是，将负号移到了表达式的里面，这样做使得方程看起来有些不同。对于支持向量机而言，实质上我们要将这替换为\(cost_1(z)\)，也就是\(cost_1(\theta^Tx)\)，同样地，我也将这一项替换为\(cost_0(z)\)，也就是代价\(cost_0(\theta^Tx)\)。这里的代价函数\(cost_1\)，就是之前所提到的那条线。此外，代价函数\(cost_0\)，也是上面所介绍过的那条线.因此，对于支持向量机，我们得到了这里的最小化问题，即：<br><img src="/picture/machine-learning/svm6.jpg" alt="svm"><br>　　然后，再加上正则化参数。现在，按照支持向量机的惯例，事实上，我们的书写会稍微有些不同，代价函数的参数表示也会稍微有些不同。<br>首先，我们要除去1/m这一项，当然，这仅仅是由于人们使用支持向量机时，对比于逻辑回归而言，不同的习惯所致，但这里我所说的意思是：你知道，我将要做的是仅仅除去1/m这一项，但是，这也会得出同样的 θ最优值，因为1/m仅是个常量，因此，你知道在这个最小化问题中，无论前面是否有 1/m这一项，最终我所得到的最优值θ都是一样的。这里我的意思是，先给你举一个实例，假定有一最小化问题：即要求当  (u-5)^2+1取得最小值时的 u值，这时最小值为：当u=5时取得最小值。<br>　　现在，如果我们想要将这个目标函数乘上常数10，这里我的最小化问题就变成了：求使得 10×(u-5)^2+10最小的值  u，然而，使得这里最小的u值仍为5。因此将一些常数乘以你的最小化项，这并不会改变最小化该方程时得到  u值。因此，这里我所做的是删去常量m。也相同的，我将目标函数乘上一个常量m，并不会改变取得最小值时的θ值。<br>　　第二点概念上的变化，我们只是指在使用支持向量机时，一些如下的标准惯例，而不是逻辑回归。因此，对于逻辑回归，在目标函数中，我们有两项：第一个是训练样本的代价，第二个是我们的正则化项，我们不得不去用这一项来平衡。这就相当于我们想要最小化A加上正则化参数λ，然后乘以其他项B。这里的A表示这里的第一项，同时我用B表示第二项，但不包括λ，我们不是优化这里的 A+λ×B。我们所做的是通过设置不同正则参数λ达到优化目的。这样，我们就能够权衡对应的项，是使得训练样本拟合的更好，即最小化A。还是保证正则参数足够小，也即是对于B项而言。<br>　　但对于支持向量机，按照惯例，我们将使用一个不同的参数替换这里使用的λ来权衡这两项。你知道，就是第一项和第二项我们依照惯例使用一个不同的参数称为C，同时改为优化目标，C×A+B因此，在逻辑回归中，如果给定λ，一个非常大的值，意味着给予B更大的权重。而这里，就对应于将C设定为非常小的值，那么，相应的将会给B比给A更大的权重。因此，这只是一种不同的方式来控制这种权衡或者一种不同的方法，即用参数来决定是更关心第一项的优化，还是更关心第二项的优化。当然你也可以把这里的参数  C考虑成1/λ，同1/ λ所扮演的角色相同，并且这两个方程或这两个表达式并不相同，因为C等于1/λ，但是也并不全是这样，如果C等于1/λ，这两个优化目标应当得到相同的值，相同的最优值θ。那么就用它们来代替。现在删掉这里的λ，并且用常数C来代替。因此，这就得到了在支持向量机中我们的整个优化目标函数。通过最小化这个目标函数，得到SVM学习到的参数C。<br><img src="/picture/machine-learning/svm7.jpg" alt="svm"><br>　　最后有别于逻辑回归输出的概率。在这里，当最小化代价函数，获得参数θ时，支持向量机所做的是它来直接预测y的值等于1，还是等于 0。因此，当\(\theta^Tx\)大于或者等于0时，这个假设函数会预测1。这就是支持向量机数学上的定义。</p>
+<h1 id="大边界直观理解"><a href="#大边界直观理解" class="headerlink" title="大边界直观理解"></a>大边界直观理解</h1><p>　　人们有时将支持向量机看作是大间距分类器。在这一部分，我将介绍其中的含义，这有助于我们直观理解SVM模型的假设是什么样的。<br><img src="/picture/machine-learning/svm8.jpg" alt="svm"></p>
+<p>未完待续．．．</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;优化目标&quot;&gt;&lt;a href=&quot;#优化目标&quot; class=&quot;headerlink&quot; title=&quot;优化目标&quot;&gt;&lt;/a&gt;优化目标&lt;/h1&gt;&lt;p&gt;　　到目前为止,你已经见过一系列不同的学习算法。在监督学习中，许多学习算法的性能都非常类似，因此，重要的不是你该选择使用学习算法 A还是学习算法B，而更重要的是，应用这些算法时，所创建的大量数据在应用这些算法时，表现情况通常依赖于你的水平。比如：你为学习算法所设计的特征量的选择，以及如何选择正则化参数，诸如此类的事。还有一个更加强大的算法广泛的应用于工业界和学术界，它被称为支持向量机(Support Vector&lt;br&gt;Machine)。与逻辑回归和神经网络相比，支持向量机，或者简称SVM，在学习复杂的非线性方程时提供了一种更为清晰，更加强大的方式。&lt;br&gt;　　为了描述支持向量机，我将会从逻辑回归开始展示我们如何一点一点修改来得到本质上的支持向量机。&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/svm1.jpg&quot; alt=&quot;svm&quot;&gt;&lt;br&gt;　　在逻辑回归中我们已经熟悉了这里的假设函数形式和右边的S型激励函数。然为了解释一些数学知识.我将用z表示\(\theta^Tx\)。&lt;br&gt;　　现在考虑下我们想要逻辑回归做什么：如果有一个y=1的样本，不管是在训练集中或是在测试集中，又或者在交叉验证集中，总之是y=1，我们希望\(h(x)\)趋近1。因为我们想要正确地将此样本分类，这就意味着当h(x)趋近于1时，\(\theta^Tx\)应当远大于0。这是因为z表示\(\theta^Tx\)，当z远大于0时，即到了该图的右边，不难发现此时逻辑回归的输出将趋近于1。相反地，如果我们有另一个样本，即y=0。我们希望假设函数的输出值将趋近于0，这对应于z远小于0，此时对应的假设函数的输出值趋近 0。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="支持向量机" scheme="xtf615.com/tags/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
+    
+  </entry>
   
   <entry>
     <title>神经网络(系列2)</title>
@@ -184,9 +382,9 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
-    
       <category term="逻辑回归" scheme="xtf615.com/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/"/>
+    
+      <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
     
   </entry>
   
@@ -359,9 +557,9 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
-    
       <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+      <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
     
       <category term="梯度下降" scheme="xtf615.com/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/"/>
     
@@ -442,9 +640,9 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="概念" scheme="xtf615.com/tags/%E6%A6%82%E5%BF%B5/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="概念" scheme="xtf615.com/tags/%E6%A6%82%E5%BF%B5/"/>
     
   </entry>
   
