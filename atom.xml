@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-03-07T13:28:41.650Z</updated>
+  <updated>2017-03-10T12:27:19.624Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -16,11 +16,172 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Python实现时间序列分析</title>
+    <link href="xtf615.com/2017/03/08/Python%E5%AE%9E%E7%8E%B0%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/"/>
+    <id>xtf615.com/2017/03/08/Python实现时间序列分析/</id>
+    <published>2017-03-08T01:54:58.000Z</published>
+    <updated>2017-03-10T12:27:19.624Z</updated>
+    
+    <content type="html"><![CDATA[<p>前面花了两章篇幅介绍了时间序列模型的数学基础。 <a href="/2017/03/07/ARIMA时间序列模型/">ARIMA时间序列模型(一)</a>和<a href="/2017/03/07/ARIMA时间序列模型-二/">ARIMA时间序列模型(二)</a> 。本文重点介绍使用python开源库进行时间序列模型实践。</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>回顾一下自回归移动平均模型ARMA，它主要由两部分组成：AR代表p阶自回归过程，MA代表q阶移动平均过程，形式如下：<br>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} \\\\<br>+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$<br>为了方便，我们重写以上等式为：<br>$$\phi(B)Z_t=\theta_0+\theta(B)a_t \\\\<br>其中，\phi(x)和\theta(x)分别是AR模型和MA模型的的特征多项式$$<br>$$\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p$$<br>$$\theta(x)=1-\theta_1x-\theta_2x^2-…-\theta_px^q$$<br>根据前两篇的分析，我们总结ARMA模型的性质如下：<br><img src="/picture/machine-learning/arima5.jpg" alt="arima"></p>
+<h1 id="p值检验"><a href="#p值检验" class="headerlink" title="p值检验"></a>p值检验</h1><p>　　在开始之前，我们首先回顾一下p值检验。<br>　　一般地，用X表示检验的统计量，当H0为真时，可由样本数据计算出该统计量的值C，根据检验统计量X的具体分布，可求出P值。具体地说：</p>
+<ul>
+<li>左侧检验的P值为检验统计量X小于样本统计值C的概率，即：P = P{ X &lt; C}</li>
+<li>右侧检验的P值为检验统计量X大于样本统计值C的概率：P = P{ X &gt; C}</li>
+<li>双侧检验的P值为检验统计量X落在样本统计值C为端点的尾部区域内的概率的2倍：P = 2P{ X &gt; C} (当C位于分布曲线的右端时) 或P = 2P{ X&lt; C}(当C位于分布曲线的左端时) 。若X服从正态分布和t分布，其分布曲线是关于纵轴对称的，故其P值可表示为P=P{|X|&gt;C}。<br>计算出P值后，将给定的显著性水平α与P值比较，就可作出检验的结论：<br>如果\(p &lt; α\)值，则在显著性水平α下拒绝原假设。<br>如果\(P \geq α\)值，则在显著性水平α下接受原假设。</li>
+</ul>
+<h1 id="pandas数据操作"><a href="#pandas数据操作" class="headerlink" title="pandas数据操作"></a>pandas数据操作</h1><p>使用pandas来加载数据，并对数据索引进行转换，使用日期作为索引。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">dateparse = <span class="keyword">lambda</span> dates:pd.datetime.strptime(dates,<span class="string">'%Y-%m'</span>)</div><div class="line">data=pd.read_csv(<span class="string">'AirPassengers.csv'</span>,parse_dates=<span class="string">'Month'</span>,index_col=<span class="string">'Month'</span>,date_parser=dateparse);</div><div class="line"><span class="keyword">print</span> data.head()</div><div class="line"><span class="comment"># 数据如下所示：</span></div><div class="line">Month                  </div><div class="line"></div><div class="line"><span class="number">1949</span><span class="number">-01</span><span class="number">-01</span>          <span class="number">112</span></div><div class="line"></div><div class="line"><span class="number">1949</span><span class="number">-02</span><span class="number">-01</span>          <span class="number">118</span></div><div class="line"></div><div class="line"><span class="number">1949</span><span class="number">-03</span><span class="number">-01</span>          <span class="number">132</span></div><div class="line"></div><div class="line"><span class="number">1949</span><span class="number">-04</span><span class="number">-01</span>          <span class="number">129</span></div><div class="line"></div><div class="line"><span class="number">1949</span><span class="number">-05</span><span class="number">-01</span>          <span class="number">121</span></div></pre></td></tr></table></figure>
+<p>接着绘制数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ts = data[<span class="string">'#Passengers'</span>]</div><div class="line">plt.plot(ts)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima6.jpg" alt="arma"></p>
+<p>非常清晰的看到，随着季节性的变动，飞机乘客的数量总体上是在不断增长的。但是，不是经常都可以获得这样清晰的视觉体验。我们可以通过下面的方法测试稳定性。</p>
+<h1 id="稳定性检测"><a href="#稳定性检测" class="headerlink" title="稳定性检测"></a>稳定性检测</h1><ul>
+<li><strong>绘制滚动统计</strong>：我们可以绘制移动平均数和移动方差，观察它是否随着时间变化。</li>
+<li><strong>ADF检验：</strong>这是一种检查数据稳定性的统计测试。无效假设：时间序列是不稳定的。测试结果由测试统计量和一些置信区间的临界值组成。如果“测试统计量”少于“临界值”，我们可以拒绝无效假设，并认为序列是稳定的。或者根据前面提高的p值检验，如果p值小于显著性水平，我们可以拒绝无效假设，认为序列稳定。</li>
+</ul>
+<h2 id="滚动统计"><a href="#滚动统计" class="headerlink" title="滚动统计"></a>滚动统计</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">rolling_statistics</span><span class="params">(timeseries)</span>:</span></div><div class="line">    <span class="comment">#Determing rolling statistics</span></div><div class="line">    rolmean = pd.rolling_mean(timeseries, window=<span class="number">12</span>)</div><div class="line">    rolstd = pd.rolling_std(timeseries, window=<span class="number">12</span>)</div><div class="line"></div><div class="line">    <span class="comment">#Plot rolling statistics:</span></div><div class="line">    orig = plt.plot(timeseries, color=<span class="string">'blue'</span>,label=<span class="string">'Original'</span>)</div><div class="line">    mean = plt.plot(rolmean, color=<span class="string">'red'</span>, label=<span class="string">'Rolling Mean'</span>)</div><div class="line">    std = plt.plot(rolstd, color=<span class="string">'black'</span>, label = <span class="string">'Rolling Std'</span>)</div><div class="line">    plt.legend(loc=<span class="string">'best'</span>)</div><div class="line">    plt.title(<span class="string">'Rolling Mean &amp; Standard Deviation'</span>)</div><div class="line">    plt.show(block=<span class="keyword">False</span>)</div></pre></td></tr></table></figure>
+<p>pd.rolling_mean有两个参数，第一个是输入数据，第二个是窗口大小。假设有个序列是，1  2  3  3  5  8  6  9，如果窗口大小为3，那么移动平均数计算过程如下： 第一步: (1+2+3)/3 =2;    第二步:往右移动一个数据，(2+3+3)/3=2.667;  第三步, (3+3+5)/3=3.667;  第四步：(3+5+8)/3=5.333; 第四步: (5+8+6)/3=6.333; 第五步;(8+6+9)/3=7.667;  因此移动平均数序列为： NA NA 2  2.667  3.667  5.3333   6.333  7.667.  共用n-windows+1个数。</p>
+<p><img src="/picture/machine-learning/arima7.jpg" alt="arma"></p>
+<p>移动标准差类似，只不过把求平均变成了求标准差。</p>
+<p>绘图如下：可以看出移动平均数仍然是上升趋势，而移动标准差相对比较平稳。</p>
+<p><img src="/picture/machine-learning/arima8.jpg" alt="arma"></p>
+<h2 id="ADF检验"><a href="#ADF检验" class="headerlink" title="ADF检验"></a>ADF检验</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> statsmodels.tsa.stattools <span class="keyword">import</span> adfuller</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">adf_test</span><span class="params">(timeseries)</span>:</span></div><div class="line">    rolling_statistics(timeseries)<span class="comment">#绘图</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'Results of Augment Dickey-Fuller Test:'</span></div><div class="line">    dftest = adfuller(timeseries, autolag=<span class="string">'AIC'</span>)</div><div class="line">    dfoutput = pd.Series(dftest[<span class="number">0</span>:<span class="number">4</span>], index=[<span class="string">'Test Statistic'</span>,<span class="string">'p-value'</span>,<span class="string">'#Lags Used'</span>,<span class="string">'Number of Observations Used'</span>])</div><div class="line">    <span class="keyword">for</span> key,value <span class="keyword">in</span> dftest[<span class="number">4</span>].items():</div><div class="line">        dfoutput[<span class="string">'Critical Value (%s)'</span>%key] = value</div><div class="line">    <span class="keyword">print</span> dfoutput</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima9.jpg" alt="arma"></p>
+<p>上述输出如何解读?</p>
+<ul>
+<li>Test statistic：代表检验统计量</li>
+<li>p-value：代表p值检验的概率</li>
+<li>Lags used：使用的滞后k，autolag=AIC时会自动选择滞后</li>
+<li>Number of Observations Used：样本数量</li>
+<li>Critical Value(5%) : 显著性水平为5%的临界值。</li>
+</ul>
+<p>ADF检验</p>
+<ul>
+<li>假设是存在单位根，即不平稳； </li>
+<li>显著性水平，1%：严格拒绝原假设；5%：拒绝原假设，10%类推。</li>
+<li>看P值和显著性水平a的大小，p值越小，小于显著性水平的话，就拒绝原假设，认为序列是平稳的；大于的话，不能拒绝，认为是不平稳的</li>
+<li>看检验统计量和临界值，检验统计量小于临界值的话，就拒绝原假设，认为序列是平稳的；大于的话，不能拒绝，认为是不平稳的</li>
+</ul>
+<p>根据上文提到的p值检验以及上面的结果，我们可以发现p=0.99&gt;10%&gt;5%&gt;1%, 并且检验统计量0.815&gt;&gt;-2.58&gt;-2.88&gt;-3.48，因此可以认定原序列不平稳。</p>
+<p>先让我们弄明白是什么导致时间序列不稳定。两个主要原因。</p>
+<ul>
+<li><strong>趋势-随着时间产生不同的平均值。</strong>举例：在飞机乘客这个案例中，我们看到总体上，飞机乘客的数量是在不断增长的。</li>
+<li><strong>季节性-特定时间框架内的变化。</strong>举例：在特定的月份购买汽车的人数会有增加的趋势，因为车价上涨或者节假日到来。</li>
+</ul>
+<p>我们的基本原理是，通过建模并估计趋势和季节性这些因素，并从时间序列中移除，来获得一个稳定的时间序列，然后再使用统计预测技术来处理时间序列，最后将预测得到的数据，通过加入趋势和季节性等约束，来回退到原始时间序列数据。</p>
+<h1 id="平稳性处理"><a href="#平稳性处理" class="headerlink" title="平稳性处理"></a>平稳性处理</h1><p>　　消除趋势的第一个方法是转换。例如,在本例中,我们可以清楚地看到该时间序列有显著趋势。所以我们可以通过变换，惩罚较高值而不是较小值。这可以采用对数,  平方根,立方跟等等。</p>
+<h2 id="对数变换"><a href="#对数变换" class="headerlink" title="对数变换"></a>对数变换</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ts_log = np.log(ts)</div><div class="line">plt.plot(ts_log)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima10.jpg" alt="arma"></p>
+<p>在这个例子中,很容易看到一个向前的趋势。但是它表现的不是很直观。我们可以使用一些技术来对这个趋势建模, 然后将它从序列中删除。最常用的方法有:</p>
+<ul>
+<li><strong>平滑-取滚动平均数</strong></li>
+<li><strong>差分</strong></li>
+<li><strong>分解</strong></li>
+</ul>
+<h2 id="移动平均数"><a href="#移动平均数" class="headerlink" title="移动平均数"></a>移动平均数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">moving_avg = pd.rolling_mean(ts_log,<span class="number">12</span>)</div><div class="line">plt.plot(ts_log)</div><div class="line">plt.plot(moving_avg,color=<span class="string">'red'</span>)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima11.jpg" alt="arma"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#做差</span></div><div class="line">ts_log_moving_avg_diff = ts_log - moving_avg</div><div class="line">ts_log_moving_avg_diff.head(<span class="number">12</span>)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima12.jpg" alt="arma"></p>
+<p>前11个数是NA</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">adf_test(ts_log_moving_avg_diff)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima13.jpg" alt="arma"></p>
+<p>可以发现通过了5%和10%的显著性检验，即在该水平下，拒绝原假设，认为序列是平稳的，但是没有通过1%的检验。</p>
+<p><strong>指数加权移动平均</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">expwighted_avg=pd.ewma(ts_log,halflife=<span class="number">12</span>)</div><div class="line">plt.plot(ts_log)</div><div class="line">plt.plot(expwighted_avg, color=<span class="string">'red'</span>)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima14.jpg" alt="arma"></p>
+<p>前面移动平均数需要指定window,并且对所有的数一视同仁；这里采用指数加权移动平均方法，会对当前的数据加大权重，对过去的数据减小权重。halflife半衰期，用来定义衰减量。其他参数,如跨度span和质心com也可以用来定义衰减。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#做差</span></div><div class="line">ts_log_ewma_diff = ts_log - expwighted_avg</div><div class="line">adf_test(ts_log_ewma_diff)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima15.jpg" alt="arma"></p>
+<p>可以发现，经过指数移动平均后，再做差的结果，已经能够通过1%显著性水平检验了。</p>
+<h2 id="差分"><a href="#差分" class="headerlink" title="差分"></a>差分</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#步长为1的一阶差分</span></div><div class="line">ts_log_diff = ts_log - ts_log.shift(periods=<span class="number">1</span>)</div><div class="line">plt.plot(ts_log_diff)</div></pre></td></tr></table></figure>
+<p>我们首先使用步长为1的一阶差分，得到如下图：</p>
+<p><img src="/picture/machine-learning/arima16.jpg" alt="arma"></p>
+<p>接着进行adf检验，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#只通过了10%的检验</div><div class="line">ts_log_diff.dropna(inplace=True)</div><div class="line">test_stationarity(ts_log_diff)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima17.jpg" alt="arma"></p>
+<p>可以发现只通过了10%的显著性水平检验。</p>
+<p><strong>二阶差分</strong></p>
+<p>我们继续进行二阶差分</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#一阶差分：Y(k)=X(k+1)-X(k)</span></div><div class="line"><span class="comment">#二阶差分：Y(k)的一阶差分Z(k)=Y(k+1)-Y(k)=X(k+2)-2*X(k+1)+X(k)为此函数的二阶差分</span></div><div class="line">ts_log_diff = ts_log - ts_log.shift(periods=<span class="number">1</span>)</div><div class="line">ts_log_diff2 = ts_log_diff - ts_log_diff.shift(periods=<span class="number">1</span>)</div><div class="line">plt.plot(ts_log_diff2)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima18.jpg" alt="arma"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#二阶差分检验</div><div class="line">#可以看到，二阶差分，p值非常小，小于1%，检验统计量也明显小于%1的临界值。因此认定为很平稳</div><div class="line">ts_log_diff2.dropna(inplace=True)</div><div class="line">adf_test(ts_log_diff2)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima19.jpg" alt="arma"></p>
+<p>对二阶差分进行adf检验,可以看到，二阶差分，p值非常小，小于1%，检验统计量也明显小于%1的临界值。因此认定为很平稳.</p>
+<h2 id="分解"><a href="#分解" class="headerlink" title="分解"></a>分解</h2><p>建立有关趋势和季节性的模型，并从模型中删除它们。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">#时间序列分解</div><div class="line">from statsmodels.tsa.seasonal import seasonal_decompose</div><div class="line">decomposition = seasonal_decompose(ts_log)</div><div class="line">trend = decomposition.trend</div><div class="line">seasonal = decomposition.seasonal</div><div class="line">residual = decomposition.resid</div><div class="line"></div><div class="line">plt.subplot(411)</div><div class="line">plt.plot(ts_log,label=&apos;Original&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.subplot(412)</div><div class="line">plt.plot(trend, label=&apos;Trend&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.subplot(413);</div><div class="line">plt.plot(seasonal,label=&apos;Seasonality&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.subplot(414)</div><div class="line">plt.plot(residual, label=&apos;Residuals&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.tight_layout()</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima20.jpg" alt="arma"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#对残差进行ADF检验</div><div class="line">#可以发现序列非常平稳</div><div class="line">ts_log_decompose = residual</div><div class="line">ts_log_decompose.dropna(inplace=True)</div><div class="line">adf_test(ts_log_decompose)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima21.jpg" alt="arma"></p>
+<p>对残差进行ADF检验，可以发现序列非常平稳。</p>
+<h1 id="时间序列建模"><a href="#时间序列建模" class="headerlink" title="时间序列建模"></a>时间序列建模</h1><h2 id="平稳性检验"><a href="#平稳性检验" class="headerlink" title="平稳性检验"></a>平稳性检验</h2><p>平稳性检验的目的是为了判断序列是否平稳，如果不平稳，需要采取一定的措施进行平稳性处理，常见的方法是差分，我们需要选择合适的差分阶数。只要能够通过1%显著性检测，差分阶数就是合理的，我们希望阶数越小越好。</p>
+<h3 id="ADF检验-1"><a href="#ADF检验-1" class="headerlink" title="ADF检验"></a>ADF检验</h3><p>ADF检验前文已经说过，用于判断序列是否平稳。</p>
+<h3 id="自相关图和偏自相关图"><a href="#自相关图和偏自相关图" class="headerlink" title="自相关图和偏自相关图"></a>自相关图和偏自相关图</h3><p>前面我们对数据进行ADF检验，判断序列是否平稳，这里我们使用自相关图和偏自相关图对数据平稳性再次进行验证，一阶差分如下图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> statsmodels.api <span class="keyword">as</span> sm</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">acf_pacf_plot</span><span class="params">(ts_log_diff)</span>:</span></div><div class="line">    sm.graphics.tsa.plot_acf(ts_log_diff,lags=<span class="number">40</span>) <span class="comment">#ARIMA,q</span></div><div class="line">    sm.graphics.tsa.plot_pacf(ts_log_diff,lags=<span class="number">40</span>) <span class="comment">#ARIMA,p</span></div><div class="line">acf_pacf_plot(ts_log_diff) <span class="comment">#调用一阶差分</span></div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima22.jpg" alt="arma"></p>
+<p>可以看出，一阶差分自相关和偏相系数拖尾特点明显。p=1,q=1</p>
+<h2 id="参数选择"><a href="#参数选择" class="headerlink" title="参数选择"></a>参数选择</h2><h3 id="差分阶数选择"><a href="#差分阶数选择" class="headerlink" title="差分阶数选择"></a>差分阶数选择</h3><p>我们发现，ARIMA该开源库，不支持3阶以上的差分。我们唯一的办法是先数据差分好，再传入模型进行建模。但是这样也带来了回退数据到原始序列数据的难度。</p>
+<p><img src="/picture/machine-learning/arima26.jpg" alt="arma"></p>
+<p>这里开发了差分和回退的方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 差分操作,d代表差分序列，比如[1,1,1]可以代表3阶差分。  [12,1]可以代表第一次差分偏移量是12，第二次差分偏移量是1</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">diff_ts</span><span class="params">(ts, d)</span>:</span></div><div class="line">    <span class="keyword">global</span> shift_ts_list</div><div class="line">    <span class="comment">#  动态预测第二日的值时所需要的差分序列</span></div><div class="line">    <span class="keyword">global</span> last_data_shift_list <span class="comment">#这个序列在恢复过程中需要用到</span></div><div class="line">    shift_ts_list = []</div><div class="line">    last_data_shift_list = []</div><div class="line">    tmp_ts = ts</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> d:</div><div class="line">        last_data_shift_list.append(tmp_ts[-i])</div><div class="line">        <span class="keyword">print</span> last_data_shift_list</div><div class="line">        shift_ts = tmp_ts.shift(i)</div><div class="line">        shift_ts_list.append(shift_ts)</div><div class="line">        tmp_ts = tmp_ts - shift_ts</div><div class="line">    tmp_ts.dropna(inplace=<span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> tmp_ts</div><div class="line"></div><div class="line"><span class="comment"># 还原操作</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">predict_diff_recover</span><span class="params">(predict_value, d)</span>:</span></div><div class="line">    <span class="keyword">if</span> isinstance(predict_value, float):</div><div class="line">        tmp_data = predict_value</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(d)):</div><div class="line">            tmp_data = tmp_data + last_data_shift_list[-i<span class="number">-1</span>]</div><div class="line">    <span class="keyword">elif</span> isinstance(predict_value, np.ndarray):</div><div class="line">        tmp_data = predict_value[<span class="number">0</span>]</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(d)):</div><div class="line">            tmp_data = tmp_data + last_data_shift_list[-i<span class="number">-1</span>]</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        tmp_data = predict_value</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(d)):</div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                tmp_data = tmp_data.add(shift_ts_list[-i<span class="number">-1</span>])</div><div class="line">            <span class="keyword">except</span>:</div><div class="line">                <span class="keyword">raise</span> ValueError(<span class="string">'What you input is not pd.Series type!'</span>)</div><div class="line">        tmp_data.dropna(inplace=<span class="keyword">True</span>)</div><div class="line">    <span class="keyword">return</span> tmp_data <span class="comment"># return np.exp(tmp_data)也可以return到最原始，tmp_data是对原始数据取对数的结果</span></div></pre></td></tr></table></figure>
+<p>使用的时候，必须先调用diff_ts进行差分处理，然后进行建模，将预测数据传入predict_diff_recover方法进行还原。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">d=[<span class="number">1</span>, <span class="number">1</span>] <span class="comment"># 定义差分序列</span></div><div class="line">ts_log = np.log(ts)</div><div class="line">diffed_ts = diff_ts(ts_log, d) </div><div class="line"><span class="comment"># model = arima_model(diffed_ts)构建模型</span></div><div class="line">predict_ts = model.properModel.predict() <span class="comment">#预测，这是对训练数据的预测</span></div><div class="line">diff_recover_ts = predict_diff_recover(predict_ts, d)</div><div class="line">log_recover = np.exp(diff_recover_ts) <span class="comment">#恢复对数前数据，该数据可以和原始数据ts进行作图对比</span></div></pre></td></tr></table></figure>
+<p>差分阶数的选择通常越小越好，只要能够使得序列稳定就行。我们可以通过选择不同的阶数，然后进行平稳性检测，选择平稳性表现良好的阶数就行，一般一阶和二阶用的比较多。</p>
+<h3 id="p和q选择"><a href="#p和q选择" class="headerlink" title="p和q选择"></a>p和q选择</h3><p>　　差分阶数确定后，我们需要确定p和q. 对于个数不多的时序数据，我们可以通过观察自相关图和偏相关图来进行模型识别，倘若我们要分析的时序数据量较多，例如要预测每只股票的走势，我们就不可能逐个去调参了。这时我们可以依据BIC准则识别模型的p, q值，通常认为BIC值越小的模型相对更优。这里我简单介绍一下BIC准则，它综合考虑了残差大小和自变量的个数，残差越小BIC值越小，自变量个数越多BIC值越大。个人觉得BIC准则就是对模型过拟合设定了一个标准。当然，我们也可以使用AIC指标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#注意这里面使用的ts_log_diff是经过合适阶数的差分之后的数据，上文中提到ARIMA该开源库，不支持3阶以上的#差分。所以我们需要提前将数据差分好再传入</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">from</span> statsmodels.tsa.arima_model <span class="keyword">import</span> ARMA</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">_proper_model</span><span class="params">(ts_log_diff, maxLag)</span>:</span></div><div class="line">    best_p = <span class="number">0</span> </div><div class="line">    best_q = <span class="number">0</span></div><div class="line">    best_bic = sys.maxint</div><div class="line">    best_model=<span class="keyword">None</span></div><div class="line">    <span class="keyword">for</span> p <span class="keyword">in</span> np.arange(maxLag):</div><div class="line">        <span class="keyword">for</span> q <span class="keyword">in</span> np.arange(maxLag):</div><div class="line">            model = ARMA(ts_log_diff, order=(p, q))</div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                results_ARMA = model.fit(disp=<span class="number">-1</span>)</div><div class="line">            <span class="keyword">except</span>:</div><div class="line">                <span class="keyword">continue</span></div><div class="line">            bic = results_ARMA.bic</div><div class="line">            <span class="keyword">print</span> bic, best_bic</div><div class="line">            <span class="keyword">if</span> bic &lt; best_bic:</div><div class="line">                best_p = p</div><div class="line">                best_q = q</div><div class="line">                best_bic = bic</div><div class="line">                best_model = results_ARMA</div><div class="line">    <span class="keyword">return</span> best_p,best_q,best_model</div><div class="line">_proper_model(ts_log_diff, <span class="number">10</span>) <span class="comment">#对一阶差分求最优p和q</span></div></pre></td></tr></table></figure>
+<p>通过上述方法可以得到最优的p和q。</p>
+<h2 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h2><p>我们使用一阶差分进行构建。</p>
+<h3 id="AR-p-模型"><a href="#AR-p-模型" class="headerlink" title="AR(p)模型"></a>AR(p)模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># AR模型，q=0</span></div><div class="line"><span class="comment">#RSS是残差平方和</span></div><div class="line"><span class="comment"># disp为-1代表不输出收敛过程的信息，True代表输出</span></div><div class="line">model = ARIMA(ts_log,order=(<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>)) <span class="comment">#第二个参数代表使用了一阶差分</span></div><div class="line">results_AR = model.fit(disp=<span class="number">-1</span>)</div><div class="line">plt.plot(ts_log_diff)</div><div class="line">plt.plot(results_AR.fittedvalues, color=<span class="string">'red'</span>) <span class="comment">#红色线代表预测值</span></div><div class="line">plt.title(<span class="string">'RSS:%.4f'</span> % sum((results_AR.fittedvalues-ts_log_diff)**<span class="number">2</span>))<span class="comment">#残差平方和</span></div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima23.jpg" alt="arma"></p>
+<h3 id="MA-q-模型"><a href="#MA-q-模型" class="headerlink" title="MA(q)模型"></a>MA(q)模型</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#MA模型 p=0</div><div class="line">model = ARIMA(ts_log,order=(0,1,1))</div><div class="line">results_MA = model.fit(disp=-1)</div><div class="line">plt.plot(ts_log_diff)</div><div class="line">plt.plot(results_MA.fittedvalues, color=&apos;red&apos;)</div><div class="line">plt.title(&apos;RSS: %.4f&apos;% sum((results_MA.fittedvalues-ts_log_diff)**2))</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima24.jpg" alt="arma"></p>
+<h3 id="ARIMA-p-q-模型"><a href="#ARIMA-p-q-模型" class="headerlink" title="ARIMA(p,q)模型"></a>ARIMA(p,q)模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#ARIMA</span></div><div class="line">model = ARIMA(ts_log, order=(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>))  </div><div class="line">results_ARIMA = model.fit(disp=<span class="number">-1</span>)  <span class="comment">#不展示信息</span></div><div class="line">plt.plot(ts_log_diff)</div><div class="line">plt.plot(results_ARIMA.fittedvalues, color=<span class="string">'red'</span>)<span class="comment">#和下面这句结果一样</span></div><div class="line">plt.plot(results_ARIMA.predict(), color=<span class="string">'black'</span>)<span class="comment">#predict得到的就是fittedvalues，只是差分的结果而已。还需要继续回退</span></div><div class="line">plt.title(<span class="string">'RSS: %.4f'</span>% sum((results_ARIMA.fittedvalues-ts_log_diff)**<span class="number">2</span>))</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima25.jpg" alt="arma"></p>
+<p>可以发现，ARIMA在AR和MA基础上，RSS有所减少，故模型有所提高。</p>
+<p>我们使用上文中提高的p和q选择方法，对一阶差分结果进行p和q选择。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">_proper_model(ts_log_diff, <span class="number">9</span>)</div><div class="line"><span class="comment"># 输出最优结果如下：</span></div><div class="line">(<span class="number">8</span>, <span class="number">7</span>, &lt;statsmodels.tsa.arima_model.ARMAResultsWrapper at <span class="number">0xb4e2898</span>&gt;)</div></pre></td></tr></table></figure>
+<p>故可以使用p=8,q=7再次进行测试。得到如下结果：</p>
+<p><img src="/picture/machine-learning/arima27.jpg" alt="arma"></p>
+<p>可以发现，残差平方和RSS已经优化到0.40了。</p>
+<h2 id="数据还原"><a href="#数据还原" class="headerlink" title="数据还原"></a>数据还原</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">ts_log_diff = diff_ts(ts_log, d=[1])#调用差分方法，方便后续还原</div><div class="line">model = ARIMA(ts_log, order=(8, 1, 7))  #建模</div><div class="line">results_ARIMA = model.fit(disp=-1)  #fit</div><div class="line">predict_ts = model.predict() #对训练数据进行预测</div><div class="line"></div><div class="line">#还原</div><div class="line">diff_recover_ts = predict_diff_recover(predict_ts, d=[1])#恢复数据</div><div class="line">log_recover = np.exp(diff_recover_ts)#还原对数前数据</div><div class="line"></div><div class="line">#绘图</div><div class="line">#ts = ts[log_recover.index]#排除空的数据</div><div class="line">plt.plot(ts,color=&quot;blue&quot;,label=&apos;Original&apos;)</div><div class="line">plt.plot(log_recover,color=&apos;red&apos;,label=&apos;Predicted&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.title(&apos;RMSE: %.4f&apos;% np.sqrt(sum((log_recover-ts)**2)/len(ts)))#RMSE,残差平方和开根号，即标准差</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima28.jpg" alt="arma"></p>
+<h2 id="预测未来走势"><a href="#预测未来走势" class="headerlink" title="预测未来走势"></a>预测未来走势</h2><p>使用forecast进行预测，参数为预测值个数。这个得到的就是进行自动差分还原后的数据，因为我们建立模型的时候ARIMA(p,1,q), 第二个参数就是差分阶数，forecast会将结果恢复回差分前的数据，因此我们直接将结果通过np.exp来恢复到最原始数据即可。但是ARIMA只支持最多2阶差分，因此我们可以使用ARMA模型，将我们手动差分完的数据传入。最后预测的时候，使用我们自定义的差分还原方法，对预测得到的值进行差分还原。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># forecast方法会自动进行差分还原，当然仅限于支持的1阶和2阶差分</div><div class="line">forecast_n = 12 #预测未来12个月走势</div><div class="line">forecast_ARIMA_log = results_ARIMA.forecast(forecast_n)</div><div class="line">forecast_ARIMA_log = forecast_ARIMA_log[0]</div><div class="line">print forecast_ARIMA_log</div><div class="line"></div><div class="line">##如下是差分还原后的数据：</div><div class="line">[6.15487901  6.12150398  6.13788758  6.19511156  6.27419885  6.40259838</div><div class="line">  6.57706431  6.49128697  6.35429917  6.2679321   6.13597822  6.18507789</div><div class="line">  6.26245365  6.24740859  6.24775066  6.29778253  6.3935587   6.54015482</div><div class="line">  6.67409705  6.62124844]</div></pre></td></tr></table></figure>
+<p>我们希望能够将预测的数据和原来的数据绘制在一起，为了实现这一目的，我们需要增加数据索引，使用开源库arrow:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#定义获取连续时间，start是起始时间，limit是连续的天数,level可以是day,month,year</span></div><div class="line"><span class="keyword">import</span> arrow</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_date_range</span><span class="params">(start, limit, level=<span class="string">'month'</span>,format=<span class="string">'YYYY-MM-DD'</span>)</span>:</span></div><div class="line">    start = arrow.get(start, format)  </div><div class="line">    result=(list(map(<span class="keyword">lambda</span> dt: dt.format(format) , arrow.Arrow.range(level, start, 		   limit=limit))))</div><div class="line">    dateparse2 = <span class="keyword">lambda</span> dates:pd.datetime.strptime(dates,<span class="string">'%Y-%m-%d'</span>)</div><div class="line">    <span class="keyword">return</span> map(dateparse2, result)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># 预测从1961-01-01开始，也就是我们训练数据最后一个数据的后一个日期</div><div class="line">new_index = get_date_range(&apos;1961-01-01&apos;, forecast_n)</div><div class="line">forecast_ARIMA_log = pd.Series(forecast_ARIMA_log, copy=True, index=new_index)</div><div class="line">print forecast_ARIMA_log.head()</div><div class="line"></div><div class="line"># 直接取指数，即可恢复至原数据</div><div class="line">forecast_ARIMA = np.exp(forecast_ARIMA_log)</div><div class="line">print forecast_ARIMA</div><div class="line">plt.plot(ts,label=&apos;Original&apos;,color=&apos;blue&apos;)</div><div class="line">plt.plot(forecast_ARIMA, label=&apos;Forcast&apos;,color=&apos;red&apos;)</div><div class="line">plt.legend(loc=&apos;best&apos;)</div><div class="line">plt.title(&apos;forecast&apos;)</div></pre></td></tr></table></figure>
+<p><img src="/picture/machine-learning/arima29.jpg" alt="arma"></p>
+<p><strong>遗留问题：</strong></p>
+<p>如果直接将差分处理的结果传入ARMA模型，再进行forecast预测，如果对预测的结果进行还原至原始序列？</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.analyticsvidhya.com/blog/2016/02/time-series-forecasting-codes-python/" target="_blank" rel="external">Complete guide to create a Time Series Forecast (with Codes in Python)</a></p>
+<p><a href="http://www.cnblogs.com/foley/p/5582358.html" target="_blank" rel="external">时间序列分析</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前面花了两章篇幅介绍了时间序列模型的数学基础。 &lt;a href=&quot;/2017/03/07/ARIMA时间序列模型/&quot;&gt;ARIMA时间序列模型(一)&lt;/a&gt;和&lt;a href=&quot;/2017/03/07/ARIMA时间序列模型-二/&quot;&gt;ARIMA时间序列模型(二)&lt;/a&gt; 。本文
+    
+    </summary>
+    
+      <category term="统计学" scheme="xtf615.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
+    
+    
+      <category term="统计学" scheme="xtf615.com/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
+    
+      <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+  </entry>
+  
+  <entry>
     <title>ARIMA时间序列模型(二)</title>
     <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B-%E4%BA%8C/"/>
     <id>xtf615.com/2017/03/07/ARIMA时间序列模型-二/</id>
     <published>2017-03-07T05:49:28.000Z</published>
-    <updated>2017-03-07T13:28:41.650Z</updated>
+    <updated>2017-03-10T09:28:12.937Z</updated>
     
     <content type="html"><![CDATA[<p>　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。</p>
 <h1 id="一般线性过程"><a href="#一般线性过程" class="headerlink" title="一般线性过程"></a>一般线性过程</h1><h2 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h2><ul>
@@ -99,10 +260,10 @@
     
     </summary>
     
-      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="统计学" scheme="xtf615.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="统计学" scheme="xtf615.com/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
@@ -117,7 +278,7 @@
     <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B/"/>
     <id>xtf615.com/2017/03/07/ARIMA时间序列模型/</id>
     <published>2017-03-07T01:33:02.000Z</published>
-    <updated>2017-03-07T05:52:14.034Z</updated>
+    <updated>2017-03-10T09:27:51.452Z</updated>
     
     <content type="html"><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="时间序列是什么？"><a href="#时间序列是什么？" class="headerlink" title="时间序列是什么？"></a>时间序列是什么？</h2><p>定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。</p>
 <p>所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$</p>
@@ -267,16 +428,16 @@
     
     </summary>
     
-      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="统计学" scheme="xtf615.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="统计学" scheme="xtf615.com/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
     
   </entry>
   
@@ -302,11 +463,11 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
       <category term="支持向量机" scheme="xtf615.com/tags/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
   </entry>
   
@@ -356,9 +517,9 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
       <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
@@ -408,9 +569,9 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
       <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
@@ -479,9 +640,9 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
-    
       <category term="逻辑回归" scheme="xtf615.com/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/"/>
+    
+      <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
     
   </entry>
   
@@ -654,9 +815,9 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
-      <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
-    
       <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+      <category term="线性回归" scheme="xtf615.com/tags/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
     
       <category term="梯度下降" scheme="xtf615.com/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/"/>
     
@@ -735,9 +896,9 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
       <category term="概念" scheme="xtf615.com/tags/%E6%A6%82%E5%BF%B5/"/>
     
@@ -954,7 +1115,7 @@
     <link href="xtf615.com/2016/12/29/hadoop%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
     <id>xtf615.com/2016/12/29/hadoop分布式环境搭建教程/</id>
     <published>2016-12-29T10:53:29.000Z</published>
-    <updated>2016-12-29T15:44:31.304Z</updated>
+    <updated>2017-03-08T02:32:14.342Z</updated>
     
     <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
 <h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
@@ -989,9 +1150,9 @@
 <li><p><strong>配置主机域名</strong></p>
 <ul>
 <li><p>配置hostname</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">172.16.21.121(master): </div><div class="line">hostname master</div><div class="line">vim /etc/hostname 输入master</div><div class="line"></div><div class="line">172.16.21.129(node1): </div><div class="line">hostname node1</div><div class="line">vim /etc/hostname 输入node1</div><div class="line"></div><div class="line">172.16.21.130(node2): </div><div class="line">hostname node2</div><div class="line">vim /etc/hostname 输入node2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">172.16.21.121(master)主机上: </div><div class="line">先输入命令：hostname master，临时修改主机名</div><div class="line">编辑 vim /etc/hostname 输入master，永久修改主机名</div><div class="line"></div><div class="line">172.16.21.129(node1)节点1上: </div><div class="line">输入 hostname node1</div><div class="line">编辑 vim /etc/hostname 输入node1</div><div class="line"></div><div class="line">172.16.21.130(node2)节点2上: </div><div class="line">输入hostname node2</div><div class="line">编辑vim /etc/hostname 输入node2</div></pre></td></tr></table></figure>
 </li>
-<li><p>配置host(3台服务器同时输入)</p>
+<li><p>配置host(3台服务器同时输入) 增加ip到name的映射，在/etc/hosts文件中。<br>编辑该文件，输入如下三句：</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">172.16.21.121 master</div><div class="line">172.16.21.129 node1</div><div class="line">172.16.21.130 node2</div></pre></td></tr></table></figure>
 </li>
 </ul>
