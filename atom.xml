@@ -182,7 +182,7 @@
     <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B-%E4%BA%8C/"/>
     <id>xtf615.com/2017/03/07/ARIMA时间序列模型-二/</id>
     <published>2017-03-07T05:49:28.000Z</published>
-    <updated>2017-03-10T09:28:12.937Z</updated>
+    <updated>2017-03-11T05:05:41.860Z</updated>
     
     <content type="html"><![CDATA[<p>　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。</p>
 <h1 id="一般线性过程"><a href="#一般线性过程" class="headerlink" title="一般线性过程"></a>一般线性过程</h1><h2 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h2><ul>
@@ -191,7 +191,7 @@
 <li>时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).</li>
 </ul>
 <p>因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。</p>
-<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)</p>
+<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)<br><a id="more"></a>  </p>
 <h2 id="均值，自协方差，自相关系数"><a href="#均值，自协方差，自相关系数" class="headerlink" title="均值，自协方差，自相关系数"></a>均值，自协方差，自相关系数</h2><p>一般线性过程：<br>$$E(Z_t)=\mu$$<br>$$\gamma_0=var(Z_t)=\sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>$$\gamma_k=cov(Z_t,Z_{t-k})=\sigma_a^2\sum_{j=0}^{\infty}\psi_j\psi_{j+k},k \geq 0$$<br>$$\rho_k=\frac{cov(Z_t,Z_{t-k})}{var(Z_t)}=\frac{\sum_{j=0}^{\infty}\psi_j\psi_{j+k}}{\sum_{j=0}^{\infty}\psi_j^2},k &gt; 0$$</p>
 <h1 id="移动平均MA过程"><a href="#移动平均MA过程" class="headerlink" title="移动平均MA过程"></a>移动平均MA过程</h1><p>定义：q阶移动平均过程，简记为：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q} \\\\<br>其中，q \in \mathbb{N}, 并且 {a_t} \sim WN(0,\sigma_a^2)$$</p>
 <ul>
@@ -257,7 +257,14 @@
     
     <summary type="html">
     
-      &lt;p&gt;　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving aver
+      &lt;p&gt;　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。&lt;/p&gt;
+&lt;h1 id=&quot;一般线性过程&quot;&gt;&lt;a href=&quot;#一般线性过程&quot; class=&quot;headerlink&quot; title=&quot;一般线性过程&quot;&gt;&lt;/a&gt;一般线性过程&lt;/h1&gt;&lt;h2 id=&quot;定义：&quot;&gt;&lt;a href=&quot;#定义：&quot; class=&quot;headerlink&quot; title=&quot;定义：&quot;&gt;&lt;/a&gt;定义：&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值是白噪声系列的线性函数。&lt;/li&gt;
+&lt;li&gt;时间序列\({Z_t}\)是有因果的(causal),当且仅当\(Z_t\)的值只受到目前为止的信息影响，换句话说\(Z_t\)是独立于未来信息\(a_s\)的，s&amp;gt;t&lt;/li&gt;
+&lt;li&gt;时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。&lt;/p&gt;
+&lt;p&gt;一般线性过程具有如下形式：&lt;br&gt;$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\&lt;br&gt;其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&amp;lt;\infty$$&lt;br&gt;不失一般性，我们可以设\(\psi_0=1\)&lt;br&gt;
     
     </summary>
     

@@ -40,12 +40,13 @@
   
 
   
-    
-    
-  
 
   
 
+  
+    
+
+    
   
 
   
@@ -100,7 +101,7 @@
 <meta property="og:image" content="xtf615.com/picture/machine-learning/arima2.jpg">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/arima4.jpg">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/arima3.jpg">
-<meta property="og:updated_time" content="2017-03-10T09:28:12.937Z">
+<meta property="og:updated_time" content="2017-03-11T05:05:41.860Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ARIMA时间序列模型(二)">
 <meta name="twitter:description" content="前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。
@@ -412,7 +413,7 @@
 <li>时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).</li>
 </ul>
 <p>因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。</p>
-<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)</p>
+<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)<br><a id="more"></a>  </p>
 <h2 id="均值，自协方差，自相关系数"><a href="#均值，自协方差，自相关系数" class="headerlink" title="均值，自协方差，自相关系数"></a>均值，自协方差，自相关系数</h2><p>一般线性过程：<br>$$E(Z_t)=\mu$$<br>$$\gamma_0=var(Z_t)=\sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>$$\gamma_k=cov(Z_t,Z_{t-k})=\sigma_a^2\sum_{j=0}^{\infty}\psi_j\psi_{j+k},k \geq 0$$<br>$$\rho_k=\frac{cov(Z_t,Z_{t-k})}{var(Z_t)}=\frac{\sum_{j=0}^{\infty}\psi_j\psi_{j+k}}{\sum_{j=0}^{\infty}\psi_j^2},k &gt; 0$$</p>
 <h1 id="移动平均MA过程"><a href="#移动平均MA过程" class="headerlink" title="移动平均MA过程"></a>移动平均MA过程</h1><p>定义：q阶移动平均过程，简记为：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q} \\\\<br>其中，q \in \mathbb{N}, 并且 {a_t} \sim WN(0,\sigma_a^2)$$</p>
 <ul>
