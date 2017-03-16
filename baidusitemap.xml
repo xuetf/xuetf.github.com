@@ -4,6 +4,30 @@
 
     
   <url>
+    <loc>xtf615.com/2017/02/11/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
+    <lastmod>2017-03-16T14:34:17.400Z</lastmod>
+    <data>
+        <display>
+        <title>逻辑回归</title>
+        <pubTime>2017-02-11T07:30:53.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>广义线性模型</tag>
+         
+        <tag>逻辑回归</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</loc>
     <lastmod>2017-03-15T04:14:33.637Z</lastmod>
     <data>
@@ -194,30 +218,6 @@
         <tag>机器学习</tag>
          
         <tag>神经网络</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/02/11/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
-    <lastmod>2017-02-13T03:22:26.236Z</lastmod>
-    <data>
-        <display>
-        <title>逻辑回归</title>
-        <pubTime>2017-02-11T07:30:53.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>广义线性模型</tag>
-         
-        <tag>逻辑回归</tag>
          
          
            
