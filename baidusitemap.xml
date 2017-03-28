@@ -4,8 +4,36 @@
 
     
   <url>
+    <loc>xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
+    <lastmod>2017-03-28T02:56:42.824Z</lastmod>
+    <data>
+        <display>
+        <title>SVM支持向量机</title>
+        <pubTime>2017-03-28T00:26:31.000Z</pubTime>
+        
+        <tag>人工智能</tag>
+         
+        <tag>支持向量机</tag>
+         
+        <tag>SVM</tag>
+         
+        <tag>非线性分类器</tag>
+         
+        <tag>机器学习</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/03/25/%E7%94%9F%E6%88%90%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2017-03-26T03:53:52.506Z</lastmod>
+    <lastmod>2017-03-27T15:54:15.135Z</lastmod>
     <data>
         <display>
         <title>生成算法</title>
@@ -93,9 +121,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -119,9 +147,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -145,9 +173,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>ARMA</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -179,30 +207,6 @@
            
              
               <breadCrumb title="hadoop" url="xtf615.com/categories/hadoop/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/02/22/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
-    <lastmod>2017-03-07T05:47:07.501Z</lastmod>
-    <data>
-        <display>
-        <title>SVM支持向量机</title>
-        <pubTime>2017-02-22T00:26:31.000Z</pubTime>
-        
-        <tag>人工智能</tag>
-         
-        <tag>支持向量机</tag>
-         
-        <tag>机器学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
