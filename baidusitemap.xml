@@ -4,6 +4,32 @@
 
     
   <url>
+    <loc>xtf615.com/2017/03/29/Learning-Theory/</loc>
+    <lastmod>2017-03-29T12:40:58.340Z</lastmod>
+    <data>
+        <display>
+        <title>Learning Theory</title>
+        <pubTime>2017-03-29T04:59:14.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>经验风险最小化</tag>
+         
+        <tag>方差</tag>
+         
+        <tag>偏差</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
     <lastmod>2017-03-28T12:56:28.860Z</lastmod>
     <data>
@@ -13,6 +39,8 @@
         
         <tag>人工智能</tag>
          
+        <tag>机器学习</tag>
+         
         <tag>支持向量机</tag>
          
         <tag>SVM</tag>
@@ -20,8 +48,6 @@
         <tag>线性分类器</tag>
          
         <tag>非线性分类器</tag>
-         
-        <tag>机器学习</tag>
          
          
            
@@ -123,9 +149,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -149,9 +175,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -175,9 +201,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARMA</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>ARMA</tag>
          
          
            
