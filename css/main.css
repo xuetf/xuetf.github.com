@@ -1795,7 +1795,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #a804f7;
+  background: #2ff;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2619,4 +2619,6 @@ embed {
 }
 body {
   font-size: 16px;
+  font-family: 'microsoft yahei';
+  color: #000;
 }

@@ -69,7 +69,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="spark,大数据,分布式,内存,环境," />
+  <meta name="keywords" content="蘑菇先生学习记" />
 
 
 
@@ -87,28 +87,12 @@
 
 
 
-<meta name="description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
-三种集群资源管理概述
-Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
-<meta property="og:type" content="article">
-<meta property="og:title" content="spark分布式环境搭建教程">
-<meta property="og:url" content="xtf615.com/2016/12/29/Spark分布式环境搭建教程/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="蘑菇先生学习记">
+<meta property="og:url" content="xtf615.com/tags/正则化/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
-<meta property="og:description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
-三种集群资源管理概述
-Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
-<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-node1-jps.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-node2-jps.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-8081.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/xuetf/spark/master/sparkpi.png">
-<meta property="og:updated_time" content="2016-12-29T15:34:47.954Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="spark分布式环境搭建教程">
-<meta name="twitter:description" content="概述  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。
-三种集群资源管理概述
-Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png">
+<meta name="twitter:title" content="蘑菇先生学习记">
 
 
 
@@ -136,13 +120,13 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
 
 
 
-  <link rel="canonical" href="xtf615.com/2016/12/29/Spark分布式环境搭建教程/"/>
+  <link rel="canonical" href="xtf615.com/tags/正则化/"/>
 
 
 
 
 
-  <title> spark分布式环境搭建教程 | 蘑菇先生学习记 </title>
+  <title> 标签: 正则化 | 蘑菇先生学习记 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -163,7 +147,7 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container one-collumn sidebar-position-left  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -295,276 +279,46 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/Spark分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
+  <div id="posts" class="posts-collapse">
+    <div class="collection-title">
+      <h2 >
+        正则化
+        <small>标签</small>
+      </h2>
+    </div>
 
     
-      <header class="post-header">
+      
 
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h1 class="post-title">
         
+            <a class="post-title-link" href="/2017/03/30/Learning-Theory-2/" itemprop="url">
+              
+                <span itemprop="name">Learning Theory(2)</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                spark分布式环境搭建教程
-              
-            
-          </h1>
-        
+      </h1>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T21:31:00+08:00">
-                2016-12-29
-              </time>
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2017-03-30T11:44:06+08:00"
+              content="2017-03-30" >
+          03-30
+        </time>
+      </div>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spark/" itemprop="url" rel="index">
-                    <span itemprop="name">spark</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
-            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
-<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
-<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
-</li>
-<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
-</li>
-<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
-</li>
-</ul>
-<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br><a id="more"></a></p>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
-<li><p><strong>装有centOS7的3台服务器</strong></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">master 172.16.21.121</div><div class="line">node1  172.16.21.129</div><div class="line">node2  172.16.21.130</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>搭建hadoop集群环境</strong><br><a href="/2016/12/29/hadoop%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">hadoop分布式环境搭建教程</a></p>
-</li>
-<li><p><strong>scala: scala-2.12.1.tgz</strong></p>
-</li>
-<li><strong>spark: sprak-2.0.2-bin-hadoop2.7.tgz</strong></li>
-<li><strong>上传sacala和spark到3台服务器</strong><!--more-->
-<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1></li>
-<li><strong>解压到/usr/local/scala</strong></li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export PATH=$PATH:$SCALA_HOME/bin</div></pre></td></tr></table></figure>
-<p>  scala -version查看版本</p>
-</li>
-</ul>
-<h1 id="安装spark"><a href="#安装spark" class="headerlink" title="安装spark"></a>安装spark</h1><ul>
-<li><strong>解压</strong><br>  tar -zxvf spark-2.0.2-bin-hadoop2.7.tgz到/usr/local/spark</li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=/usr/local/spark/spark-2.0.2-bin-hadoop2.7</div><div class="line">export PATH=$PATH:$SPARK_HOME/bin</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>配置集群</strong></p>
-<ul>
-<li><p>master上：$SPARK_HOME/conf/slaves 添加:</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">node1 </div><div class="line">node2</div></pre></td></tr></table></figure>
-</li>
-<li><p>spark-env.sh： 添加SCALA_HOME和JAVA_HOME</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_73</div></pre></td></tr></table></figure>
-</li>
-<li><p>修改spark web 默认端口为8081</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME/sbin</div><div class="line">vim start-master.sh</div><div class="line">if [ &quot;$SPARK_MASTER_WEBUI_PORT&quot; = &quot;&quot; ]; then</div><div class="line">  SPARK_MASTER_WEBUI_PORT=8081</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>启动</strong></p>
-<ul>
-<li>启动hadoop集群,master上执行<br>  $HADOOP_HOME/sbin/start-all.sh</li>
-<li>启动spark集群，master上执行<br>  $SPARK_HOME/sbin/start-all.sh</li>
-<li><p>jps查看<br>  master:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png" alt="spark-master-jps"></p>
-<p>  node1:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node1-jps.png" alt="spark-node1-jps"></p>
-<p>  node2:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node2-jps.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p><strong>验证</strong></p>
-<ul>
-<li>访问master的8081<br>  <a href="http://172.16.21.121:8081/" target="_blank" rel="external">http://172.16.21.121:8081/</a><br>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-8081.png" alt="spark-node2-jps"></li>
-<li><p>运行SparkPi例子</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME</div><div class="line">bin/spark-submit --class org.apache.spark.examples.SparkPi --master     spark://master:7077 examples/jars/spark-examples_2.11-2.0.2.jar 100 2&gt;&amp;1 | grep &quot;Pi is roughly&quot;</div></pre></td></tr></table></figure>
-<p>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/sparkpi.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.voidcn.com/blog/dream_broken/article/p-6319289.html" target="_blank" rel="external">http://www.voidcn.com/blog/dream_broken/article/p-6319289.html</a>    </p>
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-      <span>赏</span>
-    </button>
-    <div id="QR" style="display: none;">
-      
-        <div id="wechat" style="display: inline-block">
-          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
-          <p>微信打赏</p>
-        </div>
-      
-      
-        <div id="alipay" style="display: inline-block">
-          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
-          <p>支付宝打赏</p>
-        </div>
-      
-    </div>
-  </div>
-
-
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/spark/" rel="tag"># spark</a>
-          
-            <a href="/tags/大数据/" rel="tag"># 大数据</a>
-          
-            <a href="/tags/分布式/" rel="tag"># 分布式</a>
-          
-            <a href="/tags/内存/" rel="tag"># 内存</a>
-          
-            <a href="/tags/环境/" rel="tag"># 环境</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2016/12/29/hadoop分布式环境搭建教程/" rel="next" title="hadoop分布式环境搭建教程">
-                <i class="fa fa-chevron-left"></i> hadoop分布式环境搭建教程
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/12/30/windows下idea编程实现远程发布任务到Spark集群/" rel="prev" title="windows下idea编程实现远程发布任务到Spark集群">
-                windows下idea编程实现远程发布任务到Spark集群 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
-      
-    </div>
+    
   </div>
+
+  
 
 
           </div>
@@ -572,12 +326,6 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
 
 
           
-  <div class="comments" id="comments">
-    
-         <div id="uyan_frame"></div>
-    
-  </div>
-
         </div>
         
           
@@ -596,17 +344,8 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
@@ -687,22 +426,6 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三种集群资源管理概述"><span class="nav-number">2.</span> <span class="nav-text">三种集群资源管理概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Scala"><span class="nav-number">4.</span> <span class="nav-text">安装Scala</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装spark"><span class="nav-number">5.</span> <span class="nav-text">安装spark</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
     </div>
@@ -832,10 +555,6 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
 
   
 
@@ -856,10 +575,6 @@ Spark Standalone作为Spark的一部分,Standalone是一个简单的集群管理
     
   
  
-      <!-- UY BEGIN -->
-      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
-      <!-- UY END -->
-  
 
 
 
