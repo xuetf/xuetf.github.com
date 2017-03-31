@@ -5,7 +5,7 @@
     
   <url>
     <loc>xtf615.com/2017/03/30/Learning-Theory-2/</loc>
-    <lastmod>2017-03-31T07:02:35.903Z</lastmod>
+    <lastmod>2017-03-31T07:19:33.634Z</lastmod>
     <data>
         <display>
         <title>Learning Theory(2)</title>
@@ -17,7 +17,13 @@
          
         <tag>特征选择</tag>
          
-        <tag>贝叶斯</tag>
+        <tag>贝叶斯估计</tag>
+         
+        <tag>概率论</tag>
+         
+        <tag>极大似然估计</tag>
+         
+        <tag>最大后验估计</tag>
          
          
            
@@ -123,9 +129,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>逻辑回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
@@ -147,9 +153,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>线性回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>线性回归</tag>
          
         <tag>梯度下降</tag>
          
