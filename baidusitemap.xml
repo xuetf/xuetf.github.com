@@ -4,6 +4,36 @@
 
     
   <url>
+    <loc>xtf615.com/2017/04/01/ml-advice/</loc>
+    <lastmod>2017-04-02T01:53:07.123Z</lastmod>
+    <data>
+        <display>
+        <title>Advice for applying Machine Learning</title>
+        <pubTime>2017-04-01T09:24:05.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>算法诊断</tag>
+         
+        <tag>偏差方差分析</tag>
+         
+        <tag>学习曲线</tag>
+         
+        <tag>误差分析</tag>
+         
+        <tag>销蚀分析</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
     <lastmod>2017-04-01T03:19:20.239Z</lastmod>
     <data>
@@ -129,9 +159,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>逻辑回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
@@ -153,9 +183,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>线性回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>线性回归</tag>
          
         <tag>梯度下降</tag>
          
@@ -255,13 +285,13 @@
         <title>hadoop分布式环境搭建教程</title>
         <pubTime>2016-12-29T10:53:29.000Z</pubTime>
         
-        <tag>hadoop</tag>
-         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
         <tag>环境</tag>
+         
+        <tag>hadoop</tag>
          
          
            
@@ -433,15 +463,15 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
+        <tag>spark</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
          
-        <tag>环境</tag>
-         
-        <tag>spark</tag>
-         
         <tag>内存</tag>
+         
+        <tag>环境</tag>
          
          
            
