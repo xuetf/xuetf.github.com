@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-04-04T09:19:39.897Z</updated>
+  <updated>2017-05-15T02:06:49.881Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -16,11 +16,98 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>基于股评的情感分析和股市投资策略研究</title>
+    <link href="xtf615.com/2017/05/14/stock-sentiment-analysis/"/>
+    <id>xtf615.com/2017/05/14/stock-sentiment-analysis/</id>
+    <published>2017-05-14T13:26:39.000Z</published>
+    <updated>2017-05-15T02:06:49.881Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本次双学位论文的题目是基于股评的情感分析和投资策略研究。阐述围绕四个方面展开，研究背景和内容、构建情感分析模型、构建时间序列预测模型以及总结展望。<br><a id="more"></a></p>
+<h1 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h1><p>　　首先是研究背景。<br>　　本文的研究是基于股票市场，股市是一国经济的晴雨表，然而股市受政策、新闻、舆论的影响非常大，容易波动剧烈。因此对股市进行研究很有必要。<br>　　其次随着互联网新媒体的发展，人们越来越倾向于通过互联网平台来交流信息。实时股评中包含丰富的金融信息，体现投资者的情绪变化。因此对股市的研究可以考虑从股评入手进行挖掘分析。<br>　　最后新理论和技术的兴起。行为金融学使得对于股评的挖掘有了理论基础。文本挖掘、机器学习、时间序列模型等技术兴起使得股评挖掘成为了可能。<br><img src="/picture/machine-learning/double-degree2.png" alt="double-degree"></p>
+<h1 id="研究内容"><a href="#研究内容" class="headerlink" title="研究内容"></a>研究内容</h1><p>　　因此本文的研究内容是，<strong>对股评进行情感分析并构建情感指标，结合股价建立时间序列模型，对股票走势提供一定的预测能力</strong>。这里面主要包含两方面的工作：</p>
+<ul>
+<li>第一，构建情感分析分类模型，实现对股票评论情感倾向的快速判断。</li>
+<li>第二，构建时间序列预测模型，对股市走势提供一定的预测能力。<br><img src="/picture/machine-learning/double-degree3.png" alt="double-degree"><h1 id="构建情感分析模型"><a href="#构建情感分析模型" class="headerlink" title="构建情感分析模型"></a>构建情感分析模型</h1><h2 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h2>　　首先是数据的获取。对于股评数据，选择东方财富网的“上证指数吧”提取股评数据。为此我专门使用Python语言设计了一款爬虫程序，爬取了3554页评论，时间跨度从2016-08-25到2017-3-15，共包含283905条股票评论。如图是其中几条股评以及设计的爬虫程序目录。<br><img src="/picture/machine-learning/double-degree4.png" alt="double-degree"><br><img src="/picture/machine-learning/double-degree5.png" alt="double-degree"><br>　　对于股票行情数据，使用开源财经接口包TuShare获取数据，采集的数据包括：日期、开盘价、最高价、收盘价、最低价、成交量、价格变动、涨跌幅等数据，实现对股票数据采集、清洗加工到存储的过程。<br><img src="/picture/machine-learning/double-degree6.png" alt="double-degree"><h2 id="构建流程"><a href="#构建流程" class="headerlink" title="构建流程"></a>构建流程</h2>　　接着是情感分析模型的构建流程。<strong>目标是构建一套情感分析和机器学习模型，挖掘股评中的情绪，实现对股票评论情感倾向的快速判断</strong>。<br>　　具体流程包括使用有监督机器学习分类方法、使用向量空间模型来进行文本表示、使用中文分词对句子进行切分，使用卡方统计量作为特征选择的指标、使用文本挖掘算法进行模型训练。<br><img src="/picture/machine-learning/double-degree7.png" alt="double-degree"><br>　　在构建过程中，首先我人工标注了5000条左右的看涨看跌数据，然后将数据集进行划分，3份作为训练，1份作为测试。最后进行模型训练以及使用多种指标在测试集上进行评估。如准确率、召回率等。如图，这是特征选择时得到的有用的特征项。可以看到“跑”这个词很大程度上反映了看跌股评。<br><img src="/picture/machine-learning/double-degree8.png" alt="double-degree"><br>　　下图是不同模型得到的指标。可以看到基于多项式的贝叶斯估计分类器在各项指标上综合表现最好，准确率得到了90%。我们选择该分类器来对28万多条的股评进行看涨看跌倾向判断。<br><img src="/picture/machine-learning/double-degree9.png" alt="double-degree"><h1 id="构建时间序列预测模型"><a href="#构建时间序列预测模型" class="headerlink" title="构建时间序列预测模型"></a>构建时间序列预测模型</h1><h2 id="指标选择"><a href="#指标选择" class="headerlink" title="指标选择"></a>指标选择</h2>　　首先是指标的选择。对于情感指标，本文选择看涨指数。计算得到以日为单位的情感指标时间序列数据。如下公式所示：<br>$$BI=ln(\frac{1+M^{bull}}{1+M^{bear}})$$<br>　　对于股票指标，选择收盘价和涨跌幅进行研究。得到以日为单位的收盘价和涨跌幅时间序列数据。<br><img src="/picture/machine-learning/double-degree10.png" alt="double-degree"><h2 id="基于股票价格的股票预测模型"><a href="#基于股票价格的股票预测模型" class="headerlink" title="基于股票价格的股票预测模型"></a>基于股票价格的股票预测模型</h2>　　首先是基于股票价格的股票预测模型。这里面先不考虑情感指标，单纯的基于股票价格。具体的构建步骤包括：<br>　　平稳性检验。使用ADF单位根检验。如下图是原始的收盘价时间序列，明显有个趋势，检验结果p值大于显著性水平也表明序列不平稳。<br><img src="/picture/machine-learning/double-degree11.png" alt="double-degree"><br><img src="/picture/machine-learning/double-degree12.png" alt="double-degree"><br>　　进行一阶差分后，进行ADF检验，发现序列已经平稳了。<br><img src="/picture/machine-learning/double-degree13.png" alt="double-degree"><br><img src="/picture/machine-learning/double-degree14.png" alt="double-degree"><br>　　接着是参数的选择。ARMA(p,q)有p,q两个参数。根据自相关图拖尾特征得到q=1，根据偏自相关图的拖尾特征得到p=2。进一步使用AIC准则进行参数选择，AIC越小表明模型越好，使用AIC准则同样得到q=1,p=2。<br><img src="/picture/machine-learning/double-degree15.png" alt="double-degree"><br>　　最后使用该模型进行预测。如图是原始数据和预测数据绘制的图。<br><img src="/picture/machine-learning/double-degree16.png" alt="double-degree"><br>　　根据均方根误差指标来检验：<br>$$RMSE=\sqrt{\frac{\sum_{i=1}^n(Y_{obs,i}-Y_{model,i})^2}{n}}$$<br>　　发现均方根误差为19.4138，偏大一点，不够理想。<h2 id="相关性分析"><a href="#相关性分析" class="headerlink" title="相关性分析"></a>相关性分析</h2>　　我们考虑基于情感看涨指数序列进行改进。<br>　　首先进行看涨指数序列和过去股票涨跌幅序列相关性分析。如下图是二者绘制在一起的图，可以看出来趋势挺一致的。<br><img src="/picture/machine-learning/double-degree17.png" alt="double-degree"><br>　　进一步使用pearson相关系数分析：<br>$$\rho_{X,Y}=corr(X,Y)=\frac{cov(X,Y)}{\sigma_X \sigma_Y}=\frac{E[(X-\mu_X)(Y-\mu_Y)]}{\sigma_X \sigma_Y}$$<br>　　得到相关系数为0.677，属于较强相关，因此看涨指数一定程度上反映了股价涨跌幅趋势。<br>　　注意：这里的相关性分析的主体是看涨指数序列与过去股票涨跌幅。看涨指数不受未来股票价格走势的影响。这个是下文构建带外生变量的ARIMA模型的前提。<h2 id="基于外生变量的ARIMA模型"><a href="#基于外生变量的ARIMA模型" class="headerlink" title="基于外生变量的ARIMA模型"></a>基于外生变量的ARIMA模型</h2>　　进一步我们构建基于外生变量的ARIMA模型。外生变量是指在经济机制中受外部因素影响的变量，可以影响内部变量。股评情感指数可以看作是很多外生变量的综合反映，反映了宏观经济、公司基本面信息、政策、重大事件等诸多股票价格变动的外在因素。<br>　　因此本文构建以收盘价为内生变量，股评看涨指数为外生变量的ARIMA模型，如图是拟合结果，均方差误差已经缩小至5.7。<br><img src="/picture/machine-learning/double-degree18.png" alt="double-degree"><br>　　进一步输出模型的AIC值，足够小表明模型稳定。<br><img src="/picture/machine-learning/double-degree19.png" alt="double-degree"><br>　　最后对模型进行系数检验，系数标准差很小且z值检验接近于0，可认为显著性水平高，为下面进一步预测奠定基础。<br><img src="/picture/machine-learning/double-degree20.png" alt="double-degree"><br>　　最后我们使用外生变量的ARIMA模型进行未来股价的预测及投资策略研究。本文主要研究短期预测。首先是静态预测，我们使用模型对未来n天数据进行预测，得到该表，可以看到3-15预测很准，3-16号预测数值相差较大，3-17趋势预测错误。<br><img src="/picture/machine-learning/double-degree21.png" alt="double-degree"><br>　　上面我们发现对第二天预测的结果表现不错，我们使用滚动预测，通过添加最新的数据预测第二天的数据，得到该表。发现趋势全部预测正确，数值方面存在一点偏差。<br><img src="/picture/machine-learning/double-degree22.png" alt="double-degree"><br>　　最后总结下投资策略选择，如图是预测的走势和实际走势图，很一致。<br><img src="/picture/machine-learning/double-degree23.png" alt="double-degree"><br>　　将其和历史数据一起绘制，从整体来看，更加吻合。<br><img src="/picture/machine-learning/double-degree24.png" alt="double-degree"><br>　　因此既可以根据看涨指数和涨跌幅的强相关性，能够大致得到股票收盘价格的整体趋势变化情况。也可以结合股票历史收盘价格序列以及看涨指数，使用带外生变量的ARIMA模型，来对股票走势进行预测。</li>
+</ul>
+<h1 id="总结展望"><a href="#总结展望" class="headerlink" title="总结展望"></a>总结展望</h1><p>　　最后总结展望一下。本文结合股票价格和情感指标，构建时间序列预测模型，对股市短期投资策略提供一定的参考。后续的工作：</p>
+<ul>
+<li>可以使用算法融合思想提高情感分析的精度。</li>
+<li>推广研究对象，不局限于上证指数，实现对单一股票的分析。</li>
+<li>也可以推广研究指标，不局限于收盘价格和看涨指数，可以对开盘价、转手率等进行研究或构建新的情感指标。</li>
+<li>最后，也可以不局限于短期预测，探索长期预测的模型和方法。<br><img src="/picture/machine-learning/double-degree25.png" alt="double-degree"></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本次双学位论文的题目是基于股评的情感分析和投资策略研究。阐述围绕四个方面展开，研究背景和内容、构建情感分析模型、构建时间序列预测模型以及总结展望。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="金融学" scheme="xtf615.com/categories/%E9%87%91%E8%9E%8D%E5%AD%A6/"/>
+    
+    
+      <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="金融" scheme="xtf615.com/tags/%E9%87%91%E8%9E%8D/"/>
+    
+      <category term="情感分析" scheme="xtf615.com/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>聚类算法</title>
+    <link href="xtf615.com/2017/04/07/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/"/>
+    <id>xtf615.com/2017/04/07/聚类算法/</id>
+    <published>2017-04-07T12:14:27.000Z</published>
+    <updated>2017-05-15T02:09:43.872Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文主要的内容包括：无监督学习中的K均值(k-means)聚类算法、混合高斯分布模型(Mixture of Gaussians, MoG)、求解MoG模型的期望最大化(EM)算法，以及EM一般化形式。<br><a id="more"></a></p>
+<h1 id="k-means算法"><a href="#k-means算法" class="headerlink" title="k-means算法"></a>k-means算法</h1><p>　　在聚类问题中，给定一组数据\(\{x^{(1)},…,x^{(m)}\}\)，\(x^{(i)} \in \mathbb{R}^n\)，但是未给标签\(y^{(i)}\)。因此这是个无监督学习问题，需要聚类算法取发掘数据中的隐藏结构。</p>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>　　k-means算法的具体流程如下：</p>
+<ul>
+<li>1）随机初始化k个聚类中心\(\mu_1,\mu_2,…,\mu_k \in \mathbb{R}^n\)</li>
+<li>2）为每个样本数据选择聚类中心，即将其类别标号设为距离其最近的聚类中心的标号：<br>  $$c^{(i)}:=arg \min_j ||x^{(i)}-\mu_j||^2$$</li>
+<li>3）更新聚类中心，即更新为属于该聚类中心的所有样本的平均值：<br>  $$\mu_j=\frac{\sum_{i=1}^m I\{c^{(i)}=j\}x^{(i)}}{\sum_{i=1}^m I\{c^{(i)}=j\}}$$</li>
+<li>4）重复2、3步骤，直到聚类中心不变或变化低于阈值为止。</li>
+</ul>
+<p>　　在上述问题中，k是k-means算法的参数，是聚类中心的数量。\(\mu_j\)代表目前对某个聚类中心的猜测。为了初始化聚类中心，我们可以随机选取k个训练样本作为聚类中心初始值。下图是k=2时的一个聚类算法演示过程：<br>![cluster][1]</p>
+<h2 id="优化函数"><a href="#优化函数" class="headerlink" title="优化函数"></a>优化函数</h2><p>　　聚类算法能够保证收敛吗？我们定义k-means的优化函数为：<br>$$J(c,\mu)=\sum_{i=1}^m ||x^{(i)}-\mu_{c^{(i)}}||^2$$<br>　　\(J\)衡量了每个样本距离其中心的距离平方和。可以将k-means算法看作是目标函数J的坐标下降(coordinate descent，在SVM中SMO算法中介绍过)过程。在第2步中，我们保持聚类中心不变，将样本类别设为距离最近的中心的类别，此时对于修改了类别中心的样本，其距离的平方会变小，即\(\sum_{修改类别的样本}||x-\mu||^2\)的值变小，而没有修改类别的样本J不变，从而整体变小。在第三步中，我们保持样本类别不变，更新了聚类中心点的值，这样使得对每个类别而言，其目标函数项会变小，即\(\sum_{属于某类的样本}||x-\mu||^2\)变小，从而整体变小。因此\(J\)会不断减小，从而保证收敛，通常这也意味着\(c、\mu\)也会收敛。理论上，不同的聚类中心可能会导致相同的收敛值J，称作震荡。但在实际中很少发生。<br>　　上述目标函数\(J\)是非凸的(non-convex)，因此坐标下降法不能保证收敛到全局最优值，容易陷入局部最优值。一个较为简单的解决方法是随机初始化多次，以最优的聚类结果(即J最小)为最终结果。<br>　　在聚类结束后，如果一个中心没有得到任何样本，那么需要去除这个中心点或者重新初始化。<br>　　聚类算法可用于离群点检测。比如飞机零件评测、信用卡消费行为异常监控等。</p>
+<h1 id="混合高斯分布"><a href="#混合高斯分布" class="headerlink" title="混合高斯分布"></a>混合高斯分布</h1><p>　　混合高斯分布(MoG)也是一种无监督学习算法，常用于聚类。当聚类问题中各个类别的尺寸不同、聚类间有相关关系的时候，往往使用MoG更合适。对一个样本来说，MoG得到的是其属于各个类的概率(通过计算后验概率得到)，而不是完全的属于某个类，这种聚类方法被称作软聚类。一般来说，任意形状的概率分布都可以用多个高斯分布函数取近似，因而MoG的应用比较广泛。</p>
+<h2 id="形式化表述"><a href="#形式化表述" class="headerlink" title="形式化表述"></a>形式化表述</h2><p>　　在MoG问题中，数据属于哪个分布可以看成是一个隐含变量\(z\)。我们使用联合概率分布来进行建模，即:\(p(x^{(i)},z^{(i)})=p(x^{(i)}|z^{(i)})p(z^{(i)})\)。其中，\(z^{(i)} \sim Multinomial(\phi)\)即z服从多项式分布(\(\phi_j \geq 0, \sum_{j=1}^k \phi_j=1,\phi_j=p(z^{(i)}=j)\))。\(x^{(i)}|z^{(i)} \sim \mathcal{N}(\mu_j,\Sigma_j)\),即在给定z的条件下，x服从高斯分布。令\(k\)为\(z^{(i)}\)取值范围的数量。MoG模型假设每个\(x^{(i)}\)的产生有两个步骤，首先随机选择\(z^{(i)}\)，然后在给定\(z^{(i)}\)条件下，从k个高斯分布中选择使得联合概率最大的高斯分布，并从该分布中生成数据\(x^{(i)}\)。注意到，\(z^{(i)}\)是隐含随机变量(latent random variables)。<br>　　因此我们模型的参数是:\(\phi,\mu,\Sigma\)，为了估计这些参数，我们写出似然函数：<br>$$\mathcal{l}(\phi,\mu,\Sigma)=\sum_{i=1}^m log \ p(x^{(i)};\phi,\mu,\Sigma) \\\ = \sum_{i=1}^m log \ \sum_{z^{(i)}=1}$^k p(x^{(i)}|z^{(i)};\mu,\Sigma)p(z^{(i)};\phi)$$<br>　　由于\(z^{(i)}\)是未知的，如果对上述求导并设为0来求解问题，会很难求解出最大似然估计值。<br>　　随机变量\(z^{(i)}\)指明了每个样本x^{(i)}到底是从哪个高斯分布生成的。如果\(z^{(i)}\)已知，则极大似然估计就变得很容易，重写为：<br>$$\mathcal{l}(\phi,\mu,\Sigma) = \sum_{i=1}^m log \ \sum_{z^{(i)}=1}$^k p(x^{(i)}|z^{(i)};\mu,\Sigma)+log \ p(z^{(i)};\phi)$$<br>　　极大似然估计结果为：<br>$$phi_j=\frac{1}{m}\sum_{i=1}^m I\{z^{i}=j\}\\\\<br>mu_j=\frac{\sum_{i=1}^m I\{z^{i}=j\}x^{(i)}}{\sum_{i=1}^m I\{z^{(i)}=j\}}\\\\<br>\Sigma_j=\frac{\sum_{i=1}^m I\{z^{(i)}=j\}(x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m I\{z^{(i)}=j\}}<br>$$<br>　　实际上，如果\(z^{(i)}\)的值已知，那么极大似然估计和之前生成算法中的GDA很类似，这里的\(z^{(i)}\)就相当于生成算法的类标签。<br>　　然而在我们的问题中，\(z^{(i)}\)是未知的，该如何解决？</p>
+<h1 id="EM算法"><a href="#EM算法" class="headerlink" title="EM算法"></a>EM算法</h1><p>　　最大期望算法是一种迭代算法，主要有两个步骤。在我们的问题中，第一步E-step，尝试猜测\(z^{(i)}\)的值；第二步M-step,基于猜测，更新模型参数的值。</p>
+<p>未完待续……</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文主要的内容包括：无监督学习中的K均值(k-means)聚类算法、混合高斯分布模型(Mixture of Gaussians, MoG)、求解MoG模型的期望最大化(EM)算法，以及EM一般化形式。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="无监督学习" scheme="xtf615.com/tags/%E6%97%A0%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="k-means" scheme="xtf615.com/tags/k-means/"/>
+    
+      <category term="混合高斯分布" scheme="xtf615.com/tags/%E6%B7%B7%E5%90%88%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83/"/>
+    
+      <category term="期望最大化算法" scheme="xtf615.com/tags/%E6%9C%9F%E6%9C%9B%E6%9C%80%E5%A4%A7%E5%8C%96%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Advice for applying Machine Learning(2)</title>
     <link href="xtf615.com/2017/04/03/practice-ml-advice/"/>
     <id>xtf615.com/2017/04/03/practice-ml-advice/</id>
     <published>2017-04-03T07:21:13.000Z</published>
-    <updated>2017-04-04T09:19:39.897Z</updated>
+    <updated>2017-04-04T09:25:50.068Z</updated>
     
     <content type="html"><![CDATA[<p>　　本文对<a href="/2017/04/01/ml-advice/">Advice for applying Machine Learning</a>一文中提到的算法诊断等理论方法进行实践，使用Python工具，具体包括数据的可视化(data visualizing)、模型选择(choosing a machine learning method suitable for the problem at hand)、过拟合和欠拟合识别和处理(identifying and dealing with over and underfitting)、大数据集处理（dealing with large datasets）以及不同代价函数(pros and cons of different loss functions)优缺点等。<br><a id="more"></a></p>
 <h1 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h1><h2 id="数据集获取"><a href="#数据集获取" class="headerlink" title="数据集获取"></a>数据集获取</h2><p>　　使用\(sklearn\)自带的\(make\_classification\)方法获取数据。</p>
@@ -56,7 +143,7 @@
 <p><img src="/picture/machine-learning/practice-advice18.png" alt="practice"><br>　　注意上述建模使用的是原始数据集X，而没有用新的特征。可以发现结果很理想，RBF核会将特征映射到高维空间，因此得到的非线性模型效果很好。</p>
 <h1 id="大数据集和高维特征处理"><a href="#大数据集和高维特征处理" class="headerlink" title="大数据集和高维特征处理"></a>大数据集和高维特征处理</h1><h2 id="SGDClassfier增量学习"><a href="#SGDClassfier增量学习" class="headerlink" title="SGDClassfier增量学习"></a>SGDClassfier增量学习</h2><p>　　如果数据集增大，特征增多，那么上述SVM运行会变慢很多。根据之前的图谱推荐，此时可以使用\(SGDClassifier\)，该分类器也是一个线性模型,但是使用随机梯度下降法(stochastic gradient descent),\(SGDClassifier\)对特征缩放很敏感，因此可以考虑标准化数据集，使特征均值为0，方差为1.<br>　　\(SGDClassifier\)允许增量学习，会在线学习，在数据量很大的时候很有用。此时不适合采用交叉验证，我们采取progressive validation方法，即将数据集等分成块，每次在前一块训练，在后一块验证，并且使用增量学习，后面块的学习是在前面块学习的基础上继续学习的。　<br>　　首先生成数据，20万+200特征+10个类别。　<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">X, y = make_classification(<span class="number">200000</span>, n_features=<span class="number">200</span>, n_informative=<span class="number">25</span>, </div><div class="line">                           n_redundant=<span class="number">0</span>, n_classes=<span class="number">10</span>, class_sep=<span class="number">2</span>,</div><div class="line">                           random_state=<span class="number">0</span>)</div></pre></td></tr></table></figure></p>
 <p>　　建模和验证：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> SGDClassifier</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">sgd_score</span><span class="params">(X,y)</span>:</span></div><div class="line">    est = SGDClassifier(penalty=<span class="string">"l2"</span>, alpha=<span class="number">0.001</span>)</div><div class="line">    progressive_validation_score = []</div><div class="line">    train_score = []</div><div class="line">    <span class="keyword">for</span> datapoint <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">199000</span>, <span class="number">1000</span>):</div><div class="line">        X_batch = X[datapoint:datapoint+<span class="number">1000</span>]</div><div class="line">        y_batch = y[datapoint:datapoint+<span class="number">1000</span>]</div><div class="line">        <span class="keyword">if</span> datapoint &gt; <span class="number">0</span>:</div><div class="line">            progressive_validation_score.append(est.score(X_batch, y_batch))</div><div class="line">        est.partial_fit(X_batch, y_batch, classes=range(<span class="number">10</span>)) <span class="comment">#增量学习或称为在线学习</span></div><div class="line">        <span class="keyword">if</span> datapoint &gt; <span class="number">0</span>:</div><div class="line">            train_score.append(est.score(X_batch, y_batch))</div><div class="line">            </div><div class="line">    plt.plot(train_score, label=<span class="string">"train score"</span>,color=<span class="string">'blue'</span>)</div><div class="line">    plt.plot(progressive_validation_score, label=<span class="string">"progressive validation score"</span>,color=<span class="string">'red'</span>)</div><div class="line">    plt.xlabel(<span class="string">"Mini-batch"</span>)</div><div class="line">    plt.ylabel(<span class="string">"Score"</span>)</div><div class="line">    plt.axhline(y=<span class="number">0.8</span>,color=<span class="string">'red'</span>,linewidth=<span class="number">5</span>,label=<span class="string">'Desired Performance'</span>) <span class="comment">#baseline</span></div><div class="line">    plt.legend(loc=<span class="string">'best'</span>)</div><div class="line">sgd_score(X,y)</div></pre></td></tr></table></figure></p>
-<p><img src="/picture/machine-learning/practice-advice19.png" alt="practice"><br>　　上图表明，在50次mini-batches滞后，分数提高就很少了，因此我们可以提前停止训练。由于训练分数和泛化分数差距很小，其训练分数较低，因此可能存在欠拟合的可能。<br>然而SGDClassifier不支持核技巧，根据图谱可以使用kernel approximation。<br>　　The advantage of using approximate explicit feature maps compared to the kernel trick, which makes use of feature maps implicitly, is that explicit mappings can be better suited for online learning and can significantly reduce the cost of learning with very large datasets. The combination of kernel map approximations with SGDClassifier can make non-linear learning on large datasets possible.<br>　　相较于核函数隐示的映射，kernel approximation使用显示的映射方法，这对在线学习非常重要，可以较少超大数据集的学习代价。使用SGDClassifier配合kernel approximation可以在大数据集上实现非线性学习的目的。</p>
+<p><img src="/picture/machine-learning/practice-advice19.png" alt="practice"><br>　　上图表明，在50次mini-batches滞后，分数提高就很少了，因此我们可以提前停止训练。由于训练分数和泛化分数差距很小，其训练分数较低，因此可能存在欠拟合的可能。<br>然而SGDClassifier不支持核技巧，根据图谱可以使用kernel approximation。<br>　　The advantage of using approximate explicit feature maps compared to the kernel trick, which makes use of feature maps implicitly, is that explicit mappings can be better suited for online learning and can significantly reduce the cost of learning with very large datasets. The combination of kernel map approximations with SGDClassifier can make non-linear learning on large datasets possible.<br>　　相较于核函数隐示的映射，kernel approximation使用显示的映射方法，这对在线学习非常重要，可以减少超大数据集的学习代价。使用SGDClassifier配合kernel approximation可以在大数据集上实现非线性学习的目的。</p>
 <h2 id="手写体数字识别"><a href="#手写体数字识别" class="headerlink" title="手写体数字识别"></a>手写体数字识别</h2><p>　　现在尝试对手写体数字问题进行建模。</p>
 <h3 id="可视化-1"><a href="#可视化-1" class="headerlink" title="可视化"></a>可视化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># http://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html#sklearn.datasets.load_digits</span></div><div class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_digits</div><div class="line">digits = load_digits(n_class=<span class="number">6</span>)</div><div class="line">X = digits.data</div><div class="line">y = digits.target</div><div class="line">n_samples, n_features = X.shape</div><div class="line"><span class="keyword">print</span> <span class="string">"Dataset consist of %d samples with %d features each"</span> % (n_samples, n_features)</div><div class="line"></div><div class="line"><span class="comment"># Plot images of the digits</span></div><div class="line">n_img_per_row = <span class="number">20</span> <span class="comment">#最大为32，即展示1024个样本</span></div><div class="line">img = np.zeros((<span class="number">10</span> * n_img_per_row, <span class="number">10</span> * n_img_per_row)) <span class="comment"># 200*200规格的像素矩阵</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(n_img_per_row):</div><div class="line">    ix = <span class="number">10</span> * i + <span class="number">1</span> <span class="comment">#空1个像素点</span></div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(n_img_per_row):</div><div class="line">        iy = <span class="number">10</span> * j + <span class="number">1</span></div><div class="line">        img[ix:ix + <span class="number">8</span>, iy:iy + <span class="number">8</span>] = X[i * n_img_per_row + j].reshape((<span class="number">8</span>, <span class="number">8</span>))<span class="comment">#1行64个特征是通过8*8展平的,存入分块矩阵</span></div><div class="line"></div><div class="line">plt.imshow(img, cmap=plt.cm.binary)</div><div class="line">plt.xticks([])</div><div class="line">plt.yticks([])</div><div class="line">_ = plt.title(<span class="string">'A selection from the 8*8=64-dimensional digits dataset'</span>)</div></pre></td></tr></table></figure>
 <p><img src="/picture/machine-learning/practice-advice20.png" alt="practice"><br>　　手写体数字的64维特征就是一个8*8数字图片每个像素点平铺开来的。因此我们可以通过上面代码进行重建图片。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> digits.images.shape <span class="comment">#三维数组(1083L, 8L, 8L)，1083个样本</span></div><div class="line"><span class="keyword">print</span> img.shape <span class="comment">#二维数组(200L,200L),每个样本占8*8小分块矩阵。每8行20个样本，一共可以放400个样本。</span></div><div class="line"><span class="comment">#可以扩大该二维数组，例如(320L,320L), 每个样本占8*8小分块矩阵， 每8行展示32个样本，最大可以展示1024个样本。即32*32</span></div><div class="line"><span class="comment"># digits.images[0] == img[1:9,1:9]</span></div><div class="line"><span class="comment"># digits.images[1] == img[1:9,11:19]</span></div><div class="line">plt.matshow(digits.images[<span class="number">1</span>],cmap=plt.cm.gray)  <span class="comment">#第二个样本为数字1</span></div><div class="line">plt.matshow(img[<span class="number">1</span>:<span class="number">9</span>,<span class="number">11</span>:<span class="number">19</span>],cmap=plt.cm.gray)  <span class="comment">#第二个样本数字1</span></div></pre></td></tr></table></figure></p>
@@ -78,8 +165,9 @@
 <li>Exponential loss: 指数代价，在Boost中使用，容易受离群点影响，在AdaBoost中能够实现简单有效的算法。</li>
 <li>perceptron loss:在感知机算法中使用。类似hinge loss，左移了一下。不同于hinge loss,percptron loss不对离超平面近的点进行惩罚。</li>
 <li>squared hinge loss: 对hinge loss进行改进，平方损失。</li>
-<li>modified huber loss: 对squared hinge loss进一步改进，是一种平滑损失，能够容忍离群点的影响。<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><a href="https://see.stanford.edu/materials/aimlcs229/ML-advice.pdf" target="_blank" rel="external">斯坦福机器学习：Advice for applying Machine Learning</a><br><a href="https://jmetzen.github.io/2015-01-29/ml_advice.html" target="_blank" rel="external">Advice for applying Machine Learning</a></li>
+<li>modified huber loss: 对squared hinge loss进一步改进，是一种平滑损失，能够容忍离群点的影响。</li>
 </ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://see.stanford.edu/materials/aimlcs229/ML-advice.pdf" target="_blank" rel="external">斯坦福机器学习：Advice for applying Machine Learning</a><br><a href="https://jmetzen.github.io/2015-01-29/ml_advice.html" target="_blank" rel="external">Advice for applying Machine Learning</a></p>
 ]]></content>
     
     <summary type="html">
@@ -1103,13 +1191,13 @@
     
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
+      <category term="情感分析" scheme="xtf615.com/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
+    
       <category term="自然语言处理" scheme="xtf615.com/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
     
       <category term="分词" scheme="xtf615.com/tags/%E5%88%86%E8%AF%8D/"/>
     
       <category term="NLTK" scheme="xtf615.com/tags/NLTK/"/>
-    
-      <category term="情感分析" scheme="xtf615.com/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
@@ -1621,60 +1709,6 @@
       <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
     
       <category term="hadoop" scheme="xtf615.com/tags/hadoop/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>redis分布式环境搭建教程</title>
-    <link href="xtf615.com/2016/12/29/redis%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
-    <id>xtf615.com/2016/12/29/redis分布式环境搭建教程/</id>
-    <published>2016-12-29T07:56:43.000Z</published>
-    <updated>2016-12-29T15:42:48.219Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
-<li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
-<li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。<a id="more"></a>
-</li>
-</ul>
-<h1 id="安装具体步骤"><a href="#安装具体步骤" class="headerlink" title="安装具体步骤"></a>安装具体步骤</h1><ul>
-<li>解压</li>
-<li>安装gcc</li>
-<li>进入redis的bin目录，先执行 make MALLOC=libc； 再执行make install</li>
-<li>配置文件：先拷贝redis目录下的配置文件redis.conf和sentinel.conf到/usr/local/etc(或其他任意目录)，再修改<ul>
-<li><strong>redis节点配置</strong><br>  <code><strong>bind 主机ip</strong>                        #主机ip<br>  <strong>protected-mode no</strong>                     #保护模式关闭，否则不能通过远程连接，哨兵机制也不起作用，下面使用密码进行安全保证<br>  <strong>port 端口</strong>                          #端口<br>  <strong>daemonize yes</strong>                       #守护进程<br>  <strong>pidfile  /var/run/redis_端口.pid</strong>            #进程号，命名规则redis_端口号.pid<br>  logfile /usr/local/logs/redis/redis_端口.log   #日志文件<br>  <strong>dir  /usr/local/data/redis/端口</strong>          #持久化文件夹，必须是空文件夹<br>  <strong>requirepass 密码</strong>    #认证密码<br>  <strong>masterauth 密码</strong>    #和认证密码一致<br>  <strong>maxmemory 最大内存</strong>  #eg:10g<br>  <strong>maxmemory-policy</strong>        allkeys-lru   #lru算法回收<br>  </code></li>
-<li><strong>从节点需要额外配置</strong><br>  <code>slaveof 主机 ip  #例如slaveof  172.16.21.127  6379</code></li>
-<li><strong>Sentinel哨兵节点</strong><br><code>port  端口    #命名规则： 本机redis端口前加个2,比如redis:6379: 则sentinel：26379<br>  <strong>sentinel announce-ip</strong>  主机ip<br>  <strong>protected-mode  no</strong>  #需要手动添加这条。<br>  <strong>dir</strong>  /usr/local/data/sentinel_端口    #空文件夹<br>  <strong>logfile</strong>  /usr/local/logs/redis/sentinel_端口.log<br>  <strong>sentinel monitor 主节点名称 主节点ip 主节点端口 仲裁至少需要的哨兵数</strong> #eg：sentinel monitor mymaster  172.16.21.127 6379 2<br>  <strong>sentinel auth-pass 主节点名称 密码</strong>   #认证<br>  </code></li>
-</ul>
-</li>
-<li><strong>进入redis的src目录启动redis和sentinel</strong><br>  <code><strong>reids-server redis配置文件</strong><br>  #eg:redis-server /usr/local/etc/redis_6379.conf<br>  <strong>redis-sentinel sentinel配置文件</strong> &amp;<br>  #eg:redis-sentinel /usr/local/etc/sentinel_26379.conf &amp;<br>  </code></li>
-<li><strong>依次启动主节点和从节点后，使用redis-cli连接</strong><br>  <code><strong>reids-cli -h ip地址 -p 端口 -a 密码</strong><br> <strong>sentinel reset mymaster</strong> #重置哨兵状态*<br>  使用命令查看部署情况，info replication可查看集群状态<br>  </code></li>
-</ul>
-<h1 id="具体配置参见"><a href="#具体配置参见" class="headerlink" title="具体配置参见"></a>具体配置参见</h1><p><a href="https://github.com/xuetf/redis" target="_blank" rel="external">https://github.com/xuetf/redis</a></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://blog.csdn.net/ownfire/article/details/51546543" target="_blank" rel="external">http://blog.csdn.net/ownfire/article/details/51546543</a><br><a href="http://www.ilanni.com/?p=11838" target="_blank" rel="external">http://www.ilanni.com/?p=11838</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;redis部署说明&quot;&gt;&lt;a href=&quot;#redis部署说明&quot; class=&quot;headerlink&quot; title=&quot;redis部署说明&quot;&gt;&lt;/a&gt;redis部署说明&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;版本&lt;/strong&gt;&lt;br&gt;使用redis最新版3.2.3进行安装&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;主从关系&lt;/strong&gt;&lt;br&gt;使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;哨兵机制&lt;/strong&gt;&lt;br&gt;配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-    
-    </summary>
-    
-      <category term="redis" scheme="xtf615.com/categories/redis/"/>
-    
-    
-      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-      <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
-    
-      <category term="redis" scheme="xtf615.com/tags/redis/"/>
-    
-      <category term="缓存" scheme="xtf615.com/tags/%E7%BC%93%E5%AD%98/"/>
-    
-      <category term="HA方案" scheme="xtf615.com/tags/HA%E6%96%B9%E6%A1%88/"/>
     
   </entry>
   

@@ -4,8 +4,62 @@
 
     
   <url>
+    <loc>xtf615.com/2017/04/07/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2017-05-15T02:09:43.872Z</lastmod>
+    <data>
+        <display>
+        <title>聚类算法</title>
+        <pubTime>2017-04-07T12:14:27.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>无监督学习</tag>
+         
+        <tag>k-means</tag>
+         
+        <tag>混合高斯分布</tag>
+         
+        <tag>期望最大化算法</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/05/14/stock-sentiment-analysis/</loc>
+    <lastmod>2017-05-15T02:06:49.881Z</lastmod>
+    <data>
+        <display>
+        <title>基于股评的情感分析和股市投资策略研究</title>
+        <pubTime>2017-05-14T13:26:39.000Z</pubTime>
+        
+        <tag>时间序列</tag>
+         
+        <tag>机器学习</tag>
+         
+        <tag>金融</tag>
+         
+        <tag>情感分析</tag>
+         
+         
+           
+             
+              <breadCrumb title="金融学" url="xtf615.com/categories/%E9%87%91%E8%9E%8D%E5%AD%A6/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/04/03/practice-ml-advice/</loc>
-    <lastmod>2017-04-04T09:19:39.897Z</lastmod>
+    <lastmod>2017-04-04T09:25:50.068Z</lastmod>
     <data>
         <display>
         <title>Advice for applying Machine Learning(2)</title>
@@ -389,13 +443,13 @@
         
         <tag>机器学习</tag>
          
+        <tag>情感分析</tag>
+         
         <tag>自然语言处理</tag>
          
         <tag>分词</tag>
          
         <tag>NLTK</tag>
-         
-        <tag>情感分析</tag>
          
          
            
