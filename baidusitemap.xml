@@ -4,39 +4,11 @@
 
     
   <url>
-    <loc>xtf615.com/2017/06/23/distributed-data-processing/</loc>
-    <lastmod>2017-06-23T07:26:32.233Z</lastmod>
-    <data>
-        <display>
-        <title>基于ActiveMQ和Redis的分布式车辆实时数据处理</title>
-        <pubTime>2017-06-23T06:12:09.000Z</pubTime>
-        
-        <tag>大数据</tag>
-         
-        <tag>redis</tag>
-         
-        <tag>ActiveMQ</tag>
-         
-        <tag>车联网</tag>
-         
-        <tag>分布式</tag>
-         
-         
-           
-             
-              <breadCrumb title="大数据" url="xtf615.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>xtf615.com/2017/04/07/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2017-05-15T02:09:43.872Z</lastmod>
+    <lastmod>2017-07-05T02:18:41.186Z</lastmod>
     <data>
         <display>
-        <title>聚类算法</title>
+        <title>K-means和混合高斯模型</title>
         <pubTime>2017-04-07T12:14:27.000Z</pubTime>
         
         <tag>机器学习</tag>
@@ -53,6 +25,34 @@
            
              
               <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/06/23/distributed-data-processing/</loc>
+    <lastmod>2017-06-23T07:26:32.233Z</lastmod>
+    <data>
+        <display>
+        <title>基于ActiveMQ和Redis的分布式车辆实时数据处理</title>
+        <pubTime>2017-06-23T06:12:09.000Z</pubTime>
+        
+        <tag>大数据</tag>
+         
+        <tag>分布式</tag>
+         
+        <tag>redis</tag>
+         
+        <tag>ActiveMQ</tag>
+         
+        <tag>车联网</tag>
+         
+         
+           
+             
+              <breadCrumb title="大数据" url="xtf615.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
           
         </display>
     </data>
@@ -321,9 +321,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -347,9 +347,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -373,9 +373,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>ARMA</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -545,11 +545,11 @@
         <title>redis分布式环境搭建教程</title>
         <pubTime>2016-12-29T07:56:43.000Z</pubTime>
         
-        <tag>redis</tag>
-         
         <tag>分布式</tag>
          
         <tag>环境</tag>
+         
+        <tag>redis</tag>
          
         <tag>缓存</tag>
          
@@ -573,11 +573,11 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
+        <tag>spark</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
-         
-        <tag>spark</tag>
          
         <tag>内存</tag>
          
