@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-06-23T07:26:32.233Z</updated>
+  <updated>2017-07-10T02:52:20.020Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -14,6 +14,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>主成分分析</title>
+    <link href="xtf615.com/2017/07/08/PCA/"/>
+    <id>xtf615.com/2017/07/08/PCA/</id>
+    <published>2017-07-08T00:38:56.000Z</published>
+    <updated>2017-07-10T02:52:20.020Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文主要介绍主成分分析算法(Principal Components Analysis,PCA)。该算法尝试搜寻数据所处的子空间，只需计算特征向量就可以进行降维。本文将尝试解释为什么通过特征向量计算能够实现降维。<br><a id="more"></a></p>
+<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>　　PCA解决了什么样的问题呢? 下面举一个例子来回答。<br>　　设想有一个数据集\(\{x^{(i)};i=1,…,m\}\),其中\(x^{(i)} \in \mathbb{R}^n \)。比如每个\(x\)代表一辆车，\(x\)的属性可能是车的最高速度，每公里耗油量等。如果有这样两个属性，一个以千米为单位的最大速度，一个以英里为单位的最大速度。这两个速度很显然是线性关系，可能因为数字取整等缘故有一点点扰动，但不影响整体线性关系。因此实际上，数据的信息量是n-1维度的。多一维度并不包括更多信息。PCA解决的就是将多余的属性去掉的问题。<br>　　再考虑这样一个例子，直升飞机驾驶员。每个驾驶员都有两个属性，第一个表示驾驶员的技能评估，第二个表示驾驶员对驾驶的兴趣程度。由于驾驶直升机难度较大，所以一般只有对其有很大的兴趣，才能较好的掌握这项技能。因此这两个属性是强相关的。实际上，根据已有的数据，可以将这两个属性使用坐标图进行展示，如下：<br><img src="/picture/machine-learning/pca1.png" alt="pca1"><br>　　由图可知，\(u_1\)展示了数据的相关性，称为主方向；\(u_2\)则反映了主方向之外的噪声，那么如何计算出主方向呢？</p>
+<h1 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h1><p>　　运行PCA算法之前，数据一般需要预处理，预处理步骤如下：<br>1）令\(\mu=\frac{1}{m}\sum_{i=1}^m x^{(i)}\)<br>2) 使用\(x^{(i)}-\mu替换x^{(i)}\)<br>3）令\(\sigma_j^2=\frac{1}{m} \sum_i (x_j^{(i)})^2\)<br>4) 使用\(\frac{x_j^{(i)}}{\sigma_j}替换x_j^{(i)}\)<br>　　步骤1-2将数据的均值变成0，当已知数据的均值为0时，可以省略这两步。步骤3-4将数据的每个维度的方差变为1(此时均值已处理为0，故只需要求平方即可)，从而使得每个维度都在同一尺度都下被衡量，不会造成某些维度因数值较大而影响到。当预先知道数据处于同一尺度下时，可以忽略3-4步，比如图像处理中，已经预知了图像的每个像素都在0-255范围内，因而没有必要再进行归一化了。</p>
+<h1 id="PCA算法"><a href="#PCA算法" class="headerlink" title="PCA算法"></a>PCA算法</h1><h2 id="直观理解"><a href="#直观理解" class="headerlink" title="直观理解"></a>直观理解</h2><p>　　如何找到数据的主方向呢？在二维空间下可以这样理解，有一个单位向量u，若从原点出发，这样定义u以后就相当于定义了一条直线。每个数据点在该直线上都有一个投影点，寻找主方向的任务就是寻找一个u使得投影点的方差最大化。<br>　　那么问题来了。问题1，能不能不从原点出发？可以，但那样计算就复杂了，我们归一化时已经将均值变为0，就是为了在寻找方向的时候使向量可以从原点出发，便于计算。问题2，多维空间下，多个主方向时怎么办？ 那就是不止寻找一个单位向量了，找到一个主方向后，将该主方向的方差影响去掉，然后再找主方向。如何去掉前一个主方向的方差影响呢？对于二维数据来说，是将所有数据点在垂直于该主方向的另一个方向上做投影，比如上图，要去掉主方向\(u_1\)的方差影响，需要在\(u_2\)方向上进行投影，多维空间上也可以类推。<br>　　以方差最大化来理解寻找主方向的依据是什么？直观上看，数据初始时会有一个方差，我们把这个方差当作数据包含的信息，我们找主方向的时候尽量使方差在子空间中最大化，从而能保留更多的信息。<br>　　再举一个例子来说明如何寻找主方向。比如下面图中的五个点。<br><img src="/picture/machine-learning/pca2.png" alt="pca2"><br>　　其中一个方向如下图所示:<br><img src="/picture/machine-learning/pca3.png" alt="pca3"><br>　　可以发现，上图中，直线上的黑点即原始数据在直线上的投影，投影的数据仍然保留着较大的方差。<br>　　相反如果取方向如下图所示：<br><img src="/picture/machine-learning/pca4.png" alt="pca4"><br>　　可以发现上图中，投影数据的方差很小。</p>
+<h2 id="形式化定义"><a href="#形式化定义" class="headerlink" title="形式化定义"></a>形式化定义</h2><p>　　下面给出求主方向的形式化定义。<br>　　假设给定一个单位向量\(u\)和点\(x\),\(x\)到\(u\)的投影长度为\(x^T u\),即点\(x\)在\(u\)上的投影点，到坐标原点的距离为\(x^T u\).如下图所示:<br><img src="/picture/machine-learning/pca5.png" alt="pca5"><br>　　实际上就是向量内积。<br>　　因此，我们希望最大化投影方差，选择单位向量u使得下式最大化：<br>$$\frac{1}{m}\sum_{i=1}^m ({x^{(i)}}^T u)^2 = \frac{1}{m}\sum_{i=1}^m u^T x^{(i)} {x^{(i)}}^T u \\\\<br>=u^T \left(\frac{1}{m} \sum_{i=1}^m x^{(i)} {x^{(i)}}^T \right)u$$<br>　　上述平方展开可以根据\(X^2=X^T X\)得到，即\(({x^{(i)}}^T u)^2=({x^{(i)}}^T u)^T ({x^{(i)}}^T u)=u^T x^{(i)} {x^{(i)}}^T u\)<br>　　注意到，对于归一化后的数据，其投影点的均值也为0，因而才可以在方差的计算中直接平方。另外，该公式有一个约束条件,即\(||u||_2=1\)。这个最大化问题的解就是矩阵\(\Sigma=\frac{1}{m}\sum_{i=1}^m x^{(i)} {x^{(i)}}^T\)的特征向量。这是如何得到的呢？如下。<br>　　使用拉格朗日方程求解该最大化问题，则：<br>$$\ell=u^T \left(\frac{1}{m} \sum_{i=1}^m x^{(i)} {x^{(i)}}^T \right)u-\lambda(||u||_2-1)=u^T \Sigma u - \lambda(u^Tu-1)$$<br>　　对u求导：<br>$$\nabla_u \ell=\nabla_u(u^T (\Sigma)-\lambda(u^Tu-1))=\nabla_u u^T\Sigma u-\lambda \nabla_u u^T u \\\\<br>=\nabla_u tr(u^T\Sigma u)-\lambda \nabla_u tr(u^T u)=(\nabla_{u^T}tr(u^T \Sigma u))^T-\lambda(\nabla_{u^T}tr(u^T u))^T \\\\<br>={(\Sigma u)^T}^T-\lambda{u^T}^T=\Sigma u-\lambda u$$<br>令倒数为0，可知u就是\(\Sigma\)特征向量。<br>　　因为\(\Sigma\)是对称矩阵，因而可以得到相互正交的n个特征向量\(U^T=\{u^1,u^2,…,u^n\}\),那么如何达到降维的效果呢？选取最大的k个特征值所对应的特征向量即可。降维后的数据可以用如下式子来表达：<br>$$y^{(i)}=U^T x^{(i)}=\begin{bmatrix}u_1^T x^{(i)} \\\ u_2^T x^{(i)} \\\ … \\\ u_k^T x^{(i)}\end{bmatrix}$$<br>　　注意到，实际上通过特征向量来降维能够保证投影方差最大化，这也是我们的优化目标。</p>
+<h1 id="PCA的应用"><a href="#PCA的应用" class="headerlink" title="PCA的应用"></a>PCA的应用</h1><p>　　压缩与可视化，如果将数据由高维降至2维和3维，那么可以使用一些可视化工具进行查看。同时数据的量也减少了。<br>　　预处理与降噪，很多监督算法在处理数据前都对数据进行降维，降维不仅使数据处理更快，还去除了数据中的噪声。是的数据的稀疏性变低，减少了模型假设的复杂度，从而降低了过拟合的概率。<br>　　具体的应用中，比如图片处理，对于一个100*100的图片，其原始特征长度为10000，，使用PCA降维后，大大减少了维度，形成了“特征脸”图片。而且还减少了噪声如光照等影响，使用PCA降维后的数据可以进行图片相似度计算，在图片检索中和人脸检测中都能达到很好的效果。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://open.163.com/special/opencourse/machinelearning.html" target="_blank" rel="external">斯坦福大学机器学习视频教程</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文主要介绍主成分分析算法(Principal Components Analysis,PCA)。该算法尝试搜寻数据所处的子空间，只需计算特征向量就可以进行降维。本文将尝试解释为什么通过特征向量计算能够实现降维。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="降维" scheme="xtf615.com/tags/%E9%99%8D%E7%BB%B4/"/>
+    
+      <category term="主成分分析" scheme="xtf615.com/tags/%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>基于ActiveMQ和Redis的分布式车辆实时数据处理</title>
@@ -484,13 +517,13 @@
     <link href="xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
     <id>xtf615.com/2017/03/28/SVM支持向量机/</id>
     <published>2017-03-28T00:26:31.000Z</published>
-    <updated>2017-04-03T09:09:46.004Z</updated>
+    <updated>2017-07-09T01:55:48.554Z</updated>
     
     <content type="html"><![CDATA[<p>　　本文将介绍SVM(Support Vector Machine)学习算法。SVM是现有的最强大的监督学习算法。我们首先讨论什么是间隔以及使用最大间隔来分类数据的思想。接着讨论最优间隔分类器，这里面会涉及拉格朗日对偶问题。我们也会讨论关于核方法以及如何有效地应用核方法到高维特征空间。最后我们会讨论SMO算法，它是SVM的一种实现方法。</p>
 <h1 id="间隔的直观理解"><a href="#间隔的直观理解" class="headerlink" title="间隔的直观理解"></a>间隔的直观理解</h1><p>　　要理解支持向量机，首先必须先了解间隔以及关于预测置信度的概念。考虑一下逻辑回归，模型是\(h_\theta(x)=g(\theta^Tx)\),当且仅当\(h_\theta(x) \geq 0.5\),也即\(\theta^Tx \geq 0\)时，我们预测结果为1。考虑一个正例样本，显然\(\theta^Tx\)的值越大，\(h_\theta(x)=p(y=1|x;w;b)\)的值也越大，则预测样本label为1的置信程度也越高。更正式的，当\(\theta^Tx \gg 0\)时，可以认为我们的预测样本label为1的置信程度很高，同样，当\(\theta^Tx \ll 0\)时,可以认为我们的预测样本label为0的置信程度很高。给定一个训练集，如果我们能够在标签为1的样本中，找到合适的\(\theta\)，使得\(\theta^Tx^{(i)} \gg 0\)，那么这样拟合的效果就很好。同样，在标签为0的样本中，找到合适的\(\theta\)，使得\(\theta^Tx^{(i)} \ll 0\)。这样的拟合效果能够体现出分类器对于样本分类的置信程度很高。后面我们会使用函数间隔来形式化该思想。<br><a id="more"></a><br>　　我们可以换一种方式来理解。考虑下图，X代表正例，O代表反例，判定边界或称作分离超平面(separating hyperplane)将正反例分开，边界上，我们有\(\theta^T X = 0\)。考虑三个点A,B,C。<br><img src="/picture/machine-learning/svm1.jpg" alt="svm"><br>如上图所示，A点离判定边界很远。如果要预测A点的y值,显然可以很自信的预测y=1. 相反，C点离判定边界很近，尽管目前看我们可以判定C点y=1，但是如果我们对判定稍微移动一点，就很容易导致C点跑到另一侧y=0。因此可以说对A点预测的置信程度是高于C点的。B点介于两种情况之间。更通用的，对于离分离超平面远的点，我们可以对我们的预测结果很自信。因此，对于给定的训练集，我们希望找到一个判定边界，能够使得对于所有的样本都分类正确并且置信程度高，这也就意味着样本点要离判定边界远一点。后面我们会使用几何间隔来形式化该思想。</p>
 <h1 id="符号变化"><a href="#符号变化" class="headerlink" title="符号变化"></a>符号变化</h1><p>　　为了使SVMs的讨论更加容易，我们需要对以前习惯的符号进行略微修正。我们首先考虑二分类线性分类器。对于标签y，我们现在不使用\(y \in \{0,1\}\),而使用\(y \in \{-1,1\}\)。对于线性分类器的参数，我们不使用向量\(\theta\),而使用参数\(w,b\)来表示：<br>$$h_{w,b}(x)=g(w^T x + b)$$<br>因此当\(z \geq 0\)时，g(z)=1, 当\(z&lt;0\)时，g(z)=-1。新的标志可以使得我们将截距项b和其他参数分开讨论。我们不再使用之前的\(x_0=1\), b相当于之前的\(\theta_0\),\(w\)相当于之前的\([\theta_1,\theta_2,…,\theta_n]^T\)<br>　　根据上文g的定义，我们的分类器会直接预测样本为1或者-1，而不是像逻辑回归那样先预测样本类别如果为1的概率，再根据概率大小确定样本类别。</p>
 <h1 id="函数间隔和几何间隔"><a href="#函数间隔和几何间隔" class="headerlink" title="函数间隔和几何间隔"></a>函数间隔和几何间隔</h1><h2 id="函数间隔"><a href="#函数间隔" class="headerlink" title="函数间隔"></a>函数间隔</h2><p>　　对于一个给定的训练样本\((x^{(i)},y^{(i)})\), 我们定义该样本到w,b确定的分离超平面的函数间隔为：<br>$$\hat{\gamma}^{(i)}=y^{(i)}(w^T x + b)$$<br>　　注意为了使得预测更准确并且置信度更高，函数间隔越大越好。当\(y^{(i)}=1\)时,即\(w^T x + b\)在正方向越大越好。当当\(y^{(i)}=-1\)时,即\(w^T x + b\)在负方向越大越好。归纳起来，当\(y^{(i)}(w^T x + b)&gt;0\)时，我们对该样本的预测结果就是正确的。而最大函数间隔可以代表我们的预测结果是正确并且置信度高。<br>　　对于一个线性分类器, 在我们选择的g函数的基础上(取值为-1和1)，函数间隔的问题在于，只要成倍增大\(w,b\)，\(g(w^Tx+b)=g(2w^Tx+2b)\)，这不会改变\(h_{w,b}\)的值，因为\(h_{w,b}\)的值只取决于其符号，即正负性，而不取决于\(w^T x + b\)的数量级。但是我们发现函数间隔却变大了2倍。这意味着，放大\(w,b\),会使得函数间隔任意大，但是却对模型的改进没有任何帮助。我们可以引入正则化条件，例如规定\(||w||_2=1\)，即二阶范式的值。然后将\((w,b)\)替换成，\((\frac{w}{||w||_2},\frac{b}{||w||_2})\).<br>　　对于给定的训练集\(S=\{(x^{(i)},y^{(i)});i=1,…,m\}\),我们定义训练集S相对于\((w,b)\)决定的分离超平面的函数间隔为，每个样本相对于分离超平面函数间隔中的最小的那个值。即：<br>$$\hat{\gamma}=\min_\limits{i=1,…,m} \hat{\gamma}^{(i)}$$</p>
-<h2 id="几何间隔"><a href="#几何间隔" class="headerlink" title="几何间隔"></a>几何间隔</h2><p><img src="/picture/machine-learning/svm2.jpg" alt="svm"><br>　　如上图，\((w,b)\)决定了分离超平面。可以证明\(w\)就是分离超平面的法向量。证明如下，考虑在分离超平面上取两点，\(x^{\\’}和x^{\\’’}\)<br>，则\(w^Tx^{\\’}+b=0\),\(w^Tx^{\\’’}+b=0\),两式相减有：<br>$$w^T(x^{\\’}-x^{\\’’})=0$$<br>因为\(x^{\\’}-x^{\\’’}\)是超平面上的向量，则根据垂直向量乘积为0，可以得到\(w\)就是分离超平面的法向量。<br>　　考虑点Ａ，Ａ代表了某个输入样本\(x^{(i)}\)且标签\(y^{(i)}=1\),设它到分离超平面的距离为\(\gamma^{(i)}\),就是图中AB代表的线段。<br>　　如何求\(\gamma^{(i)}\)的值呢？因为\(\frac{w}{||w||}\)代表和法向量同方向的单位向量，A点为\(x^{(i)}\),设B点位\(x^{(j)}\),BA和法向量同方向。则:<br>$$x^{(i)}-x^{(j)}=\gamma^{(i)}\frac{w}{||w||}$$<br>得出B点为：<br>$$x^{(j)}=x^{(i)}-\gamma^{(i)}\frac{w}{||w||}$$<br>因为B点位于分离超平面上，则：<br>$$w^T\left(x^{(i)}-\gamma^{(i)}\frac{w}{||w||}\right)+b=0$$<br>解的：<br>$$\gamma^{(i)}=\frac{w^Tx^{(i)}+b}{||w||}=\left(\frac{w}{||w||}\right)^T x^{(i)}+\frac{b}{||w||}$$<br>　　上面的结果是针对正样本，对于负样本，结果是一样的。<br>　　更通用的，我们定义某个训练样本\(x^{(i)},y^{(i)})\)相对于由\((w,b)\)决定的分离超平面的几何间隔为：<br>$$\gamma^{(i)}=y^{(i)}\left(\left(\frac{w}{||w||}\right)^T x^{(i)}+\frac{b}{||w||}\right)$$<br>注意到，如果\(||w||=1\),函数间隔等于几何间隔。这也是两种间隔之间的联系。几何间隔不受参数量级的影响，如果同时成倍放大w和b，几何间隔不会改变。正因为如此，在使用训练集拟合w和b的时候，我们可以施加任意的放大缩小约束条件，例如，可以限制||w||=1或者\(||w_1||=5\),或者||w_1+b||+|w_2|=2,所有的这些可以通过重新调整w和b来恢复。<br>　　对于给定的训练集\(S=\{(x^{(i)},y^{(i)});i=1,…,m\}\),我们定义训练集S相对于\((w,b)\)决定的分离超平面的几何间隔为，每个样本相对于分离超平面几何间隔中的最小的那个值。即：<br>$$\gamma=\min_\limits{i=1,…,m} \gamma^{(i)}$$</p>
+<h2 id="几何间隔"><a href="#几何间隔" class="headerlink" title="几何间隔"></a>几何间隔</h2><p><img src="/picture/machine-learning/svm2.jpg" alt="svm"><br>　　如上图，\((w,b)\)决定了分离超平面。可以证明\(w\)就是分离超平面的法向量。证明如下，考虑在分离超平面上取两点，\(x^{\\’}和x^{\\’’}\)<br>，则\(w^Tx^{\\’}+b=0\),\(w^Tx^{\\’’}+b=0\),两式相减有：<br>$$w^T(x^{\\’}-x^{\\’’})=0$$<br>因为\(x^{\\’}-x^{\\’’}\)是超平面上的向量，则根据垂直向量乘积为0，可以得到\(w\)就是分离超平面的法向量。<br>　　考虑点Ａ，Ａ代表了某个输入样本\(x^{(i)}\)且标签\(y^{(i)}=1\),设它到分离超平面的距离为\(\gamma^{(i)}\),就是图中AB代表的线段。<br>　　如何求\(\gamma^{(i)}\)的值呢？因为\(\frac{w}{||w||}\)代表和法向量同方向的单位向量，A点为\(x^{(i)}\),设B点位\(x^{(j)}\),BA和法向量同方向。则:<br>$$x^{(i)}-x^{(j)}=\gamma^{(i)}\frac{w}{||w||}$$<br>得出B点为：<br>$$x^{(j)}=x^{(i)}-\gamma^{(i)}\frac{w}{||w||}$$<br>因为B点位于分离超平面上，则：<br>$$w^T\left(x^{(i)}-\gamma^{(i)}\frac{w}{||w||}\right)+b=0$$<br>解的：<br>$$\gamma^{(i)}=\frac{w^Tx^{(i)}+b}{||w||}=\left(\frac{w}{||w||}\right)^T x^{(i)}+\frac{b}{||w||}$$<br>　　上面的结果是针对正样本，对于负样本，结果是一样的。<br>　　更通用的，我们定义某个训练样本\(x^{(i)},y^{(i)})\)相对于由\((w,b)\)决定的分离超平面的几何间隔为：<br>$$\gamma^{(i)}=y^{(i)}\left(\left(\frac{w}{||w||}\right)^T x^{(i)}+\frac{b}{||w||}\right)$$<br>注意到，如果\(||w||=1\),函数间隔等于几何间隔。这也是两种间隔之间的联系。几何间隔不受参数量级的影响，如果同时成倍放大w和b，几何间隔不会改变。正因为如此，在使用训练集拟合w和b的时候，我们可以施加任意的放大缩小约束条件，例如，可以限制\(||w||=1\)或者\(||w_1||=5\),或者\(||w_1+b||+|w_2|=2\),所有的这些可以通过重新调整w和b来恢复。<br>　　对于给定的训练集\(S=\{(x^{(i)},y^{(i)});i=1,…,m\}\),我们定义训练集S相对于\((w,b)\)决定的分离超平面的几何间隔为，每个样本相对于分离超平面几何间隔中的最小的那个值。即：<br>$$\gamma=\min_\limits{i=1,…,m} \gamma^{(i)}$$</p>
 <h1 id="最优间隔分类器"><a href="#最优间隔分类器" class="headerlink" title="最优间隔分类器"></a>最优间隔分类器</h1><p>　　对于给定的训练集，根据前面的讨论，我们很自然的希望能够找到一个分离超平面使得几何间隔最大化，只有这样，对于预测结果我们的置信度才足够高，样本拟合的结果才足够好。<br>　　开始前，我们要强调下，本文所讨论的内容仍然是假设数据集市线性可分的。我们可以写出如下的优化问题：<br>$$\max_{\gamma,w,b} \gamma \\\\<br>使得，y^{(i)}(w^T x^{(i)} + b) \geq \gamma,　　i=1,2,…,m \\\\<br>||w||=1<br>$$<br>　　我们要最大化\(\gamma\)，使得每一个训练样本的函数间隔都至少为\(\gamma\)。\(||w||=1\)约束保证了函数间隔等于几何间隔。也即，我们保证了每一个训练样本的几何间隔都至少为\(\gamma\)。因此，解决该优化问题的方法就是不断调整\((w,b)\)，来最大化几何间隔。<br>　　但是||w||=1的约束条件是非凸性约束，最优解容易陷入局部最优，因此我们无法使用现成的标准优化方法来解该优化问题。我们尝试修改该优化问题，考虑如下：<br>$$\max_{\gamma,w,b} \frac{\hat{\gamma}}{||w||} \\\\<br>使得，y^{(i)}(w^T x^{(i)} + b) \geq \hat{\gamma},　　i=1,…,m<br>$$<br>　　我们尝试最大化几何间隔\(\frac{\hat{\gamma}}{||w||}\),使得每个样本的函数间隔都至少为\(\hat{\gamma}\)。几何间隔和函数间隔通过\(\gamma=\frac{\hat{\gamma}}{||w||}\)来联系。我们去掉了非凸约束||w||。我们通过将非凸约束转移到目标函数上，从而使得问题变成了非凸性问题。该问题目前仍然无法用标准通用方法解决。<br>　　对于上式，我们还可以再做一次变换。我们知道，等比例对\(w,b\)进行缩放，不会改变分离超平面的位置，假设已经得到了\(w,b\)，那么就能求得\(\hat{\gamma}\)的值，那么我们可以通过缩放w,b(同时除以\(\hat{\gamma}\)),使得\(\hat{\gamma}\)变为1.这样得到的分离超平面与最开始就将\(\hat{\gamma}\)设为1是一样的。因此优化问题可以改写成：<br>$$\max_{\gamma,w,b} \frac{1}{||w||}$$<br>也即：（加上1/2系数是为了使结果更漂亮）<br>$$\min_{\gamma,w,b} \frac{1}{2}{||w||}^2 \\\\<br>使得, y^{(i)}(w^T x^{(i)} + b) \geq 1, 　　i=1,…,m<br>$$<br>　　上述问题已经转换成凸性问题了，约束条件只有线性约束。该优化问题的结果就是最优间隔分类器。为了更好解决该问题，需要使用它的对偶问题，下面首先介绍拉格朗日对偶性。</p>
 <h2 id="拉格朗日对偶性"><a href="#拉格朗日对偶性" class="headerlink" title="拉格朗日对偶性"></a>拉格朗日对偶性</h2><p>　　下面回顾一下线性约束优化问题。如下形式：<br>$$\min_w f(w) \\\\<br>使得， h_i(w)=0,　　i=1,…,l<br>$$<br>　　我们使用拉格朗日乘子(Lagrange multipliers)，拉格朗日方程如下：<br>$$L(w,\beta)=f(w)+\sum_{i=1}^l \beta_i h_i(w)$$<br>　　这里，\(\beta_i\)称作拉格朗日乘子，我们对其求偏导数并设为0.求得的值就是原问题的解了。<br>$$\frac{\partial L}{\partial w_i}=0; \frac{\partial L}{\partial \beta_i}=0$$<br>　　至于为什么引入拉格朗日算子可以求出极值，原因是f(w)的方向导数dw受等式的约束，dw的变化方向与f(w)的梯度度垂直时才能获得极值，而且在极值处，f(w)的梯度与其他等式梯度的线性组合平行，因此他们之间存在线性关系。<br>　　上述问题对应的是等式约束条件，我们需要将其扩展为不等式约束条件。考虑如下原始优化问题(primal optimization problem):<br>$$\min_w f(w) \\\\<br>使得， g_i(w) \leq 0,　　i=1,…,k \\\\<br>h_i(w)=0,　　i=1,…,l<br>$$<br>　　我们定义通用的拉格朗日方程(generalized Lagrangian)：<br>$$L(w,\alpha,\beta)=f(w)+\sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^l \beta_i h_i(w)$$<br>\(\alpha_i和\beta_i\)是拉格朗日乘子。考虑如下等式:<br>$$\theta_p(w)=\max_{\alpha,\beta:\alpha_i \geq 0} L(w,\alpha,\beta)$$<br>  　这里的下标p代表原始Primal。对于某些给定的\(w\)，如果w不符合约束条件，例如当某个\(g_i(w)&gt;0\)时，我们可以使得和该\(g_i(w)&gt;0\)相乘的乘子\(\alpha_i\)趋向于正无穷，则\(\theta_p(w)\)也趋向于正无穷；同样，当\(h_i(w) \neq 0\)时，根据\(h_i(w)\)的正负性，选择相应的\(\beta_i\)趋向于正无穷或负无穷，则\(\theta_p(w)\)也趋向于正无穷。因此对于不满足约束条件时，上述问题结果是：<br>  $$\theta_p(w)=\max_{\alpha,\beta:\alpha_i \geq 0} L(w,\alpha,\beta) \\\\<br>  =f(w)+\sum_{i=1}^k \alpha_i g_i(w) + \sum_{i=1}^l \beta_i h_i(w) \\\\<br>  =\infty$$<br>  　　相反，如果约束条件满足的话，对于给定的\(w\)，我们有,\(\theta_p(w)=f(w)\),这里的关键是我们的\(\alpha_i \geq 0且g_i(w) \leq 0\), 则\(\sum_{i=1}^k \alpha_i g_i(w) \leq 0\)，那么为了最大化\(\theta_p(w)\),有\(\sum_{i=1}^k \alpha_i g_i(w)=0\)。<br>  　　因此，我们有：<br>  $$<br>\begin{eqnarray} \theta_p(w)=\begin{cases} f(w),　　if \ w \ satisfies \ primal \ constraints \cr \infty,　　otherwise. \end{cases} \end{eqnarray}<br>  $$<br>　　因而，我们可以认为\(\theta_p(w)\)即使将约束条件与目标函数融合在一起的表达方法，考虑最小化问题，我们得到了如下公式：<br>$$\min_w \theta_p(w) = \min_w \max_{\alpha,\beta:\alpha_i \geq 0} L(w,\alpha,\beta) 　　　　　　　　　　　(1)$$<br>　　因为,\(\theta_p(w)\)在满足约束条件下等价于\(f(w)\)问题，则\(\min_w \theta_p(w)\)问题等价于我们最初的原始优化问题(primal problem) \(\min_w f(w)\)。<br>　　我们定义\(p^{*}\)为原始问题取得最优解时的函数值，也即:<br>$$p^{*} = \min_w \theta_p(w)$$<br>　　接着定义：<br>$$\theta_D(\alpha,\beta)=\min_w L(w,\alpha,\beta)$$<br>　　上式中的下标D代表对偶(dual)。注意，\(\theta_p(w)\)优化的参数是\(\alpha,\beta\)，而这里\(\theta_D\)优化的参数是w.<br>　　我们可以得到对偶问题：<br>$$\max_{\alpha,\beta:\alpha_i \geq 0} \theta_D(\alpha,\beta)=\max_{\alpha,\beta:\alpha_i \geq 0} \min_w L(w,\alpha,\beta)　　　　　　　　　　(2)$$<br>　　该式就是我们原始问题的对偶形式，我们对比(1)和(2)发现：两个式子很相似，只是max和min位置调换了。<br>　　我们定义对偶问题的最优解为:<br>$$d^{*}=\max_{\alpha,\beta:\alpha_i \geq 0} \theta_D(w)$$<br>　　对偶问题和原始问题的关联如下：<br>$$d^{*}=\max_{\alpha,\beta:\alpha_i \geq 0} \min_w L(w,\alpha,\beta) \leq \min_w \max_{\alpha,\beta:\alpha_i \geq 0} L(w,\alpha,\beta) = p^{*}$$<br>　　可以证明,对于任意函数,max min的结果总是小于等于min max。在特定条件下, 我们有：<br>$$d^{*}=p^{*}$$<br>　　这些特定的条件包括，约束不等式\(g_i\)都是凸函数(线性函数都属于凸函数);约束\(h_i\)都是仿射函数(其实就是在线性函数基础上加上截距b);不等式\(g_i(w)\)约束条件严格可行,即对于任意的i,存在w,使得\(g_i(w)&lt;0\)<br>　　在这些假设下，肯定存在\(w^{*},\alpha^{*},\beta^{*}\),使得\(w^{*}\)是原始问题的解，\(\alpha^{*},\beta^{*}\)是对偶问题的解,且\(p^{*}=d^{*}=L(w^{*},\alpha^{*},\beta^{*})\),这样的\(w^{*},\alpha^{*},\beta^{*}\)需要满足KKT(Karush-Kuhn-Tucker)条件，KKT条件如下：<br>$$\frac{\partial}{\partial w_i}L(w^{*},\alpha^{*},\beta^{*})=0,　i=1,…,n \\\\<br>\frac{\partial}{\partial \beta_i}L(w^{*},\alpha^{*},\beta^{*})=0,　i=1,…,l \\\\<br>\alpha_i^{*}g_i(w^{*})=0,　i=1,…,k \\\\<br>g_i(w^{*}) \leq 0,　i=1,…,k \\\\<br>\alpha^{*} \geq 0,　i=1,…,k<br>$$<br>注意第3个式子，特别的:<br>$$当\alpha_i^{*}大于0时,g_i(w^{*})=0$$<br>我们称之为KKT互补条件。也就是说，\(g_i(w^{*})=0\)时，w处于可行域的边界上，这时才是起作用的约束，其他位于可行域内内部(\(g_i(w^{*})小于0\)的点都是不起作用的约束,其\(\alpha_i^{*}=0\))。KKT的总体思想是将极值会在可行域边界上取得，也就是不等式为0或等式约束里取得，而最优下降方向一般是这些等式的线性组合，其中每个元素要么是不等式为0的约束，要么是等式约束。对于在可行域边界内的点，对最优解不起作用，因此前面的系数为0。这个条件比较重要，在后文中，它将展示SVM只有一些支持向量点会起作用，在SMO算法中会给出收敛测试。</p>
 <h2 id="最优间隔分类器求解"><a href="#最优间隔分类器求解" class="headerlink" title="最优间隔分类器求解"></a>最优间隔分类器求解</h2><p>　　上面讲述的原始／对偶优化问题(primal/dual optimal problem)，其目的在于对原始问题上不易求解的问题进行转换，使之更易求解。下面介绍通过对最优间隔分类器的对偶问题进行求解，得到的简化后的问题的过程。之前我们的优化问题是：<br>$$\min_{\gamma,w,b} \frac{1}{2}{||w||}^2 \\\ 使得, y^{(i)}(w^T x^{(i)} + b) \geq 1, 　　i=1,…,m$$<br>　　我们将约束条件改写成:<br>$$g_i(w)=-y^{(i)}(w^T x^{(i)} + b)+1 \leq 0$$<br>　　该约束条件对每个样本都成立，根据KKT对偶互补条件，对于函数间隔为1(即满足约束g_i(w)=0)的样本点，我们有\(\alpha_i &gt; 0\)<br>　　考虑下图，最大间隔分离超平面是图中的实线。<br><img src="/picture/machine-learning/svm3.jpg" alt="svm"><br>　　最小间隔的点是那些靠近分离超平面的点，这里有3个这样的点，位于图中虚线处，1个负样本，2个正样本，因此只有该3个点对应的\(\alpha_i\)非零。这3个点叫做该问题的支持向量，意味着在求解问题时，使用到的支持向量数比样本大小少的多。<br>　　上述问题对应的拉格朗日方程是：<br>$$L(w,b,\alpha)=\frac{1}{2}{||w||}^2-\sum_{i=1}^m \alpha_i[y^{(i)}(w^T x^{(i)}+b)-1]$$<br>　　我们的问题只有不等式约束，没有等式约束，故拉格朗日乘子只有\(\alpha\)。并且该问题符合\(d^{*}=p^{*}\)的假设，肯定存在\(w^{*},\alpha^{*},\beta^{*}\)使得原始问题和对偶问题共用最优解。<br>　　求解对偶问题时，首先要固定\(\alpha\),以w,b为变量，最小化L；最小化L时，求解L对w和b的偏导，并将导数设为0，可以得到：<br>$$\nabla_w L(w,b,\alpha)=w-\sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}=0$$<br>得到:<br>$$w=\sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}$$<br>对b求偏导，得到：<br>$$\frac{\partial}{\partial b}(w,b,\alpha)=\sum_{i=1}^m \alpha_i y^{(i)}=0$$<br>我们将上式代入拉格朗日方程得到：<br>$$L(w,b,\alpha)=\frac{1}{2}{||w||}^2-\sum_{i=1}^m \alpha_i[y^{(i)}(w^T x^{(i)}+b)-1] \\\\<br>= \frac{1}{2}w^T w-\sum_{i=1}^m \alpha_i y^{(i)} w^T x^{(i)}-\sum_{i=1}^m \alpha_i y^{(i)} b + \sum_{i=1}^m \alpha_i \\\\<br>= \frac{1}{2}w^T \sum_{i=1}^m \alpha_i y^{(i)}x^{(i)} - \sum_{i=1}^m \alpha_i y^{(i)} w^T x^{(i)} + \sum_{i=1}^m \alpha_i \\\\<br>= \sum_{i=1}^m \alpha_i - \frac{1}{2}\sum_{i=1}^m \alpha_i y^{(i)} w^T x^{(i)} \\\\<br>= \sum_{i=1}^m \alpha_i - \frac{1}{2}\sum_{i=1}^m \alpha_i y^{(i)} \left(\sum_{j=1}^m \alpha_j y^{(j)} (x^{(j)})^T \right)x^{(i)} \\\\<br>= \sum_{i=1}^m \alpha_i - \frac{1}{2}\sum_{i=1}^m \sum_{j=1}^m \alpha_i \alpha_j y^{(i)} y^{(j)} (x^{(j)})^T x^{(i)} \\\\<br>=\sum_{i=1}^m \alpha_i - \frac{1}{2}\sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j (x^{(j)})^T x^{(i)}<br>$$<br>得到如下对偶优化问题：<br>$$<br>\max_{\alpha} W(\alpha) = \sum_{i=1}^m \alpha_i - \frac{1}{2}\sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j ＜x^{(i)},x^{(j)}＞ \\\\<br>使得， \alpha_i \geq 0,　　i=1,…,m \\\\<br>\sum_{i=1}^m \alpha_i y^{(i)} = 0<br>$$<br>　　\(＜x^{(i)},x^{(j)}＞\)代表向量的内积,该式子可以当作一个整体，在后续核技巧中发挥重要作用。<br>　　上式第一步为原问题，第二部将累加和展开，第三步代入w和b求导并设置为0后的结果，第四步合并系数，第五步代入w求导结果。<br>　　再强调一次，该问题符合\(d^{*}=p^{*}\)的假设和KKT条件。因此我们可以求解对偶优化问题，从而求得原始优化问题。上述对偶优化问题求解的参数只有\(\alpha_i\)。如果我们能够求解使得对偶问题最大化的\(\alpha\), 我们就可以通过\(w=\sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}\)推出原始优化问题的\(w\).如果找到了\(w^{*}\),可以得到截距b的值：<br>$$b^{*}=-\frac{\max_{i:y^{(i)}=-1} {w^{*}}^T x^{(i)} + \min_{i:y^{(i)}=1} {w^{*}}^T x^{(i)}}{2}$$<br>　　上式是在确定\(w^{*}\)后，正例和负例的支持向量所对应的截距的平均值，为了更直观的理解，考虑下图：<br><img src="/picture/machine-learning/svm3.jpg" alt="svm"><br>　　上式即是两条虚线与纵轴的截距的平均值。也可以理解为离超平面最近的正的函数间隔要等于离超平面最近的负的函数间隔，可以将分母2乘到b，再整理式子：<br>$$(\max_{i:y^{(i)}=-1} {w^{*}}^T x^{(i)}+b^{*}) + (\min_{i:y^{(i)}=1} {w^{*}}^T x^{(i)}+b^{*})=0$$<br>　　可以理解为二者函数间隔互为相反数，抵消了。<br>　　我们进一步考察一下式子\(w=\sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}\)，假设我们已经找到了优化问题的最优解，现在需要对新样本ｘ作出预测,我们可以通过计算\(w^T x+b\)来判断，大于等于0则预测y=1,否则y=0.但是使用上述式子，我们有：<br>$$w^T x+b=\left(\sum_{i=1}^m \alpha_i y^{(i)}x^{(i)}\right)^T x + b \\\\<br>=\sum_{i=1}^m \alpha_i y^{(i)}＜x^{(i)},x＞+b$$<br>　　根据上式，如果我们求得了\(\alpha_i\)，为了对新样本做出预测，我们可以只计算x和每一个训练样本的内积。更进一步，前面我们讨论过，只有在支持向量处，\(\alpha_i\)才非零，因此我们只需要计算新样本和每一个支持向量之间的内积，这样计算数据量就少了很多。相当于只有这些支持向量为目标函数的计算做出贡献。<br>　　下文将引入核技巧到目标函数中，从而得到完全的支持向量机算法，然后介绍SMO序列最小化算法，该算法是优化问题的一种较快的解决方法。</p>
@@ -732,9 +765,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
     
   </entry>
   
@@ -836,9 +869,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
     
   </entry>
   
@@ -1004,9 +1037,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
-    
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
     
   </entry>
   
@@ -1549,113 +1582,6 @@
       <category term="idea" scheme="xtf615.com/tags/idea/"/>
     
       <category term="scala" scheme="xtf615.com/tags/scala/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>spark分布式环境搭建教程</title>
-    <link href="xtf615.com/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/"/>
-    <id>xtf615.com/2016/12/29/Spark分布式环境搭建教程/</id>
-    <published>2016-12-29T13:31:00.000Z</published>
-    <updated>2016-12-29T15:34:47.954Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。</p>
-<h1 id="三种集群资源管理概述"><a href="#三种集群资源管理概述" class="headerlink" title="三种集群资源管理概述"></a>三种集群资源管理概述</h1><ul>
-<li><p>Spark Standalone<br>作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。</p>
-</li>
-<li><p>Apache Mesos<br>Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。</p>
-</li>
-<li><p>Hadoop YARN<br>Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。</p>
-</li>
-</ul>
-<p><strong>本文将使用Hadoop YARN方式进行集群搭建。</strong><br><a id="more"></a></p>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
-<li><p><strong>装有centOS7的3台服务器</strong></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">master 172.16.21.121</div><div class="line">node1  172.16.21.129</div><div class="line">node2  172.16.21.130</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>搭建hadoop集群环境</strong><br><a href="/2016/12/29/hadoop%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">hadoop分布式环境搭建教程</a></p>
-</li>
-<li><p><strong>scala: scala-2.12.1.tgz</strong></p>
-</li>
-<li><strong>spark: sprak-2.0.2-bin-hadoop2.7.tgz</strong></li>
-<li><strong>上传sacala和spark到3台服务器</strong><!--more-->
-<h1 id="安装Scala"><a href="#安装Scala" class="headerlink" title="安装Scala"></a>安装Scala</h1></li>
-<li><strong>解压到/usr/local/scala</strong></li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export PATH=$PATH:$SCALA_HOME/bin</div></pre></td></tr></table></figure>
-<p>  scala -version查看版本</p>
-</li>
-</ul>
-<h1 id="安装spark"><a href="#安装spark" class="headerlink" title="安装spark"></a>安装spark</h1><ul>
-<li><strong>解压</strong><br>  tar -zxvf spark-2.0.2-bin-hadoop2.7.tgz到/usr/local/spark</li>
-<li><p><strong>配置环境变量</strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SPARK_HOME=/usr/local/spark/spark-2.0.2-bin-hadoop2.7</div><div class="line">export PATH=$PATH:$SPARK_HOME/bin</div></pre></td></tr></table></figure>
-</li>
-<li><p><strong>配置集群</strong></p>
-<ul>
-<li><p>master上：$SPARK_HOME/conf/slaves 添加:</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">node1 </div><div class="line">node2</div></pre></td></tr></table></figure>
-</li>
-<li><p>spark-env.sh： 添加SCALA_HOME和JAVA_HOME</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export SCALA_HOME=/usr/local/scala/scala-2.12.1</div><div class="line">export JAVA_HOME=/usr/local/java/jdk1.8.0_73</div></pre></td></tr></table></figure>
-</li>
-<li><p>修改spark web 默认端口为8081</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME/sbin</div><div class="line">vim start-master.sh</div><div class="line">if [ &quot;$SPARK_MASTER_WEBUI_PORT&quot; = &quot;&quot; ]; then</div><div class="line">  SPARK_MASTER_WEBUI_PORT=8081</div></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>启动</strong></p>
-<ul>
-<li>启动hadoop集群,master上执行<br>  $HADOOP_HOME/sbin/start-all.sh</li>
-<li>启动spark集群，master上执行<br>  $SPARK_HOME/sbin/start-all.sh</li>
-<li><p>jps查看<br>  master:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-master-jps.png" alt="spark-master-jps"></p>
-<p>  node1:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node1-jps.png" alt="spark-node1-jps"></p>
-<p>  node2:<br>  <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-node2-jps.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p><strong>验证</strong></p>
-<ul>
-<li>访问master的8081<br>  <a href="http://172.16.21.121:8081/" target="_blank" rel="external">http://172.16.21.121:8081/</a><br>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/spark-8081.png" alt="spark-node2-jps"></li>
-<li><p>运行SparkPi例子</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $SPARK_HOME</div><div class="line">bin/spark-submit --class org.apache.spark.examples.SparkPi --master     spark://master:7077 examples/jars/spark-examples_2.11-2.0.2.jar 100 2&gt;&amp;1 | grep &quot;Pi is roughly&quot;</div></pre></td></tr></table></figure>
-<p>   <img src="https://raw.githubusercontent.com/xuetf/spark/master/sparkpi.png" alt="spark-node2-jps"></p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.voidcn.com/blog/dream_broken/article/p-6319289.html" target="_blank" rel="external">http://www.voidcn.com/blog/dream_broken/article/p-6319289.html</a>    </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;  本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。&lt;/p&gt;
-&lt;h1 id=&quot;三种集群资源管理概述&quot;&gt;&lt;a href=&quot;#三种集群资源管理概述&quot; class=&quot;headerlink&quot; title=&quot;三种集群资源管理概述&quot;&gt;&lt;/a&gt;三种集群资源管理概述&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Spark Standalone&lt;br&gt;作为Spark的一部分,Standalone是一个简单的集群管理器。它具有master的HA，弹性应对WorkerFailures，对每个应用程序的管理资源的能力，并且可以在现有的Hadoop一起运行和访问HDFS的数据。该发行版包括一些脚本，可以很容易地部署在本地或在AmazonEC2云计算。它可以在Linux，Windows或Mac OSX上运行。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Apache Mesos&lt;br&gt;Apache Mesos ,分布式系统内核，具有HA的masters和slaves，可以管理每个应用程序的资源，并对Docker容器有很好的支持。它可以运行Spark工作， Hadoop的MapReduce的，或任何其他服务的应用程序。它有Java， Python和C ++ 的API。它可以在Linux或Mac OSX上运行。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Hadoop YARN&lt;br&gt;Hadoop YARN，作业调度和集群资源管理的分布式计算框架，具有HA为masters和slaves，在非安全模式下支持Docker容器，在安全模式下支持Linux和Windows Container executors，和可插拔的调度器。它可以运行在Linux和Windows上运行。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;本文将使用Hadoop YARN方式进行集群搭建。&lt;/strong&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="spark" scheme="xtf615.com/categories/spark/"/>
-    
-    
-      <category term="spark" scheme="xtf615.com/tags/spark/"/>
-    
-      <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-      <category term="内存" scheme="xtf615.com/tags/%E5%86%85%E5%AD%98/"/>
-    
-      <category term="环境" scheme="xtf615.com/tags/%E7%8E%AF%E5%A2%83/"/>
     
   </entry>
   
