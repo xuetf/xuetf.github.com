@@ -4,6 +4,58 @@
 
     
   <url>
+    <loc>xtf615.com/2017/07/10/Factor-Analysis/</loc>
+    <lastmod>2017-07-11T09:13:28.649Z</lastmod>
+    <data>
+        <display>
+        <title>因子分析</title>
+        <pubTime>2017-07-10T08:41:30.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>无监督学习</tag>
+         
+        <tag>空间映射</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/04/07/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2017-07-10T08:40:54.653Z</lastmod>
+    <data>
+        <display>
+        <title>K-means和混合高斯模型</title>
+        <pubTime>2017-04-07T12:14:27.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>无监督学习</tag>
+         
+        <tag>k-means</tag>
+         
+        <tag>混合高斯分布</tag>
+         
+        <tag>期望最大化算法</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/07/08/PCA/</loc>
     <lastmod>2017-07-10T08:13:12.749Z</lastmod>
     <data>
@@ -46,34 +98,6 @@
         <tag>线性分类器</tag>
          
         <tag>非线性分类器</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/04/07/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2017-07-05T02:18:41.186Z</lastmod>
-    <data>
-        <display>
-        <title>K-means和混合高斯模型</title>
-        <pubTime>2017-04-07T12:14:27.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>无监督学习</tag>
-         
-        <tag>k-means</tag>
-         
-        <tag>混合高斯分布</tag>
-         
-        <tag>期望最大化算法</tag>
          
          
            
@@ -345,9 +369,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -371,9 +395,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -397,9 +421,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARMA</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>ARMA</tag>
          
          
            

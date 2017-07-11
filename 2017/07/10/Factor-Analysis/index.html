@@ -1,0 +1,1044 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,无监督学习,空间映射," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文主要介绍因子分析模型(Factor Analysis Model)。因子分析模型是对高斯混合模型存在的问题进行解决的一种途径。同时也是属于“空间映射”思想的一种算法。本文将对因子分析模型进行介绍，并使用EM算法进行求解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="因子分析">
+<meta property="og:url" content="xtf615.com/2017/07/10/Factor-Analysis/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本文主要介绍因子分析模型(Factor Analysis Model)。因子分析模型是对高斯混合模型存在的问题进行解决的一种途径。同时也是属于“空间映射”思想的一种算法。本文将对因子分析模型进行介绍，并使用EM算法进行求解。">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis1.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis2.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis3.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis4.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis5.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/factor-analysis1.png">
+<meta property="og:updated_time" content="2017-07-11T09:13:28.649Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="因子分析">
+<meta name="twitter:description" content="本文主要介绍因子分析模型(Factor Analysis Model)。因子分析模型是对高斯混合模型存在的问题进行解决的一种途径。同时也是属于“空间映射”思想的一种算法。本文将对因子分析模型进行介绍，并使用EM算法进行求解。">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/factor-analysis1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/07/10/Factor-Analysis/"/>
+
+
+
+
+
+  <title> 因子分析 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/07/10/Factor-Analysis/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                因子分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-10T16:41:30+08:00">
+                2017-07-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　本文主要介绍因子分析模型(Factor Analysis Model)。因子分析模型是对高斯混合模型存在的问题进行解决的一种途径。同时也是属于“空间映射”思想的一种算法。本文将对因子分析模型进行介绍，并使用EM算法进行求解。<br><a id="more"></a></p>
+<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>　　在上一篇笔记中<a href="/2017/04/07/聚类算法/">混合高斯模型</a>，对于混合高斯模型来说，当训练数据样本数据小于样本的维度时，因为协方差矩阵是奇异的，导致不能得到高斯概率密度函数的问题。（\(\Sigma\)出现在分母）<br>　　追本溯源，这个问题可以认为数据信息缺乏的问题，即从训练数据中得不到模型所需要的全部信息。解决方法就是减少模型所需要的信息。本文提到的手段有两个，第一个就是不改变现有模型，但是加强模型的假设，例如可以对协方差矩阵进行限制，使协方差矩阵为对角矩阵，或者进一步假设对角矩阵上的对角线数值都相等，此时只要样本大于1就可以估计出限定的协方差矩阵。第二个手段则是降低模型的复杂度，提出一个需要更少参数的模型，因子分析模型就属于此类方法。本文重点讨论该模型。</p>
+<h1 id="边缘和条件高斯分布"><a href="#边缘和条件高斯分布" class="headerlink" title="边缘和条件高斯分布"></a>边缘和条件高斯分布</h1><p>　　在讨论因子分析之前，先看看多元高斯分布中，条件和边缘高斯分布的求法，这个在后面因子分析的EM推导中有用。<br>　　假设x是有两个随机向量组成（可以看作将之前的\(x^{(i)}\)分成了两部分）<br>$$x=\begin{bmatrix}x_1 \\\ x_2 \end{bmatrix}$$<br>　　其中，\(x_1 \in \mathbb{R}^r, x_2 \in \mathbb{R}^s, 则x \in \mathbb{R}^{r+s}\)。假设x服从多元高斯分布\(x \sim N(\mu,\Sigma)\),其中：<br>$$\mu = \begin{bmatrix}\mu_1 \\\ \mu_2 \end{bmatrix}$$<br>$$\Sigma=\begin{bmatrix}\Sigma_{11} \ \Sigma_{12} \\\ \Sigma_{21} \ \Sigma_{22} \end{bmatrix}$$<br>　　其中，\(\mu_1 \in \mathbb{R}^r,\mu_2 \in \mathbb{R}^s,则\Sigma_{11} \in \mathbb{R}^{r*r},\Sigma_{12} \in \mathbb{R}^{r*s}\),由于协方差矩阵是对称的，故\(\Sigma_{12}=\Sigma_{21}^T \)。整体上看，\(x_1,x_2\)联合分布符合多元高斯分布。<br>　　那么只知道联合分布的情况下，如何求\(x_1\)的边缘分布呢？从上面\(\mu,\Sigma\)可以得出：<br>$$E[x_1]=\mu_1, \ Cov(x_1)=E[(x_1-\mu_1)(x_1-\mu_1)^T]=\Sigma_{11}$$<br>　　下面我们验证第二个结果：<br>$$Cov(x)=\Sigma \\\\<br>=\begin{bmatrix}\Sigma_{11} \ \Sigma_{12} \\\ \Sigma_{21} \ \Sigma_{22} \end{bmatrix} \\\\<br>=E[(x-\mu)(x-\mu)^T] \\\\<br>=E\left[\begin{bmatrix}x_1-\mu_1 \\\ x_2-\mu_2 \end{bmatrix} {\begin{bmatrix}x_1-\mu_1 \\\ x_2-\mu_2 \end{bmatrix}}^T \right] \\\\<br>=E \begin{bmatrix} (x_1-\mu_1)(x_1-\mu_1)^T \ (x_1-\mu_1)(x_2-\mu_2)^T \\\ (x_2-\mu_2)(x_1-\mu_1)^T \ (x_2-\mu_2)(x_2-\mu_2)^T \end{bmatrix}<br>$$<br>　　由此可见，多元高斯分布的边缘分布仍然是多元高斯分布。也就是说:<br>$$x_1 \sim N(\mu_1, \Sigma_{11})$$<br>　　上面求得是边缘分布，让我们考虑一下条件分布的问题，也就是\(x_1|x_2\)。根据多元高斯分布的定义：<br>$$x_1|x_2 \sim N(\mu_{1|2},\Sigma_{1|2})$$<br>　　且：<br>$$\mu_{1|2}=\mu_1 + \Sigma_{12} \Sigma_{22}^{-1}(x_2-\mu_2)$$<br>$$\Sigma_{1|2}=\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1} \Sigma_{21}$$<br>　　这是接下来计算时需要的公式，这两个公式直接给出。</p>
+<h1 id="因子分析模型"><a href="#因子分析模型" class="headerlink" title="因子分析模型"></a>因子分析模型</h1><h2 id="形式化定义"><a href="#形式化定义" class="headerlink" title="形式化定义"></a>形式化定义</h2><p>　　在因子分析模型中，我们假设有如下关于(x,z)的联合分布，其中z是隐含随机变量，且\( z \in \mathbb{R}^k\)<br>$$z \sim N(0,I)$$<br>$$x|z \sim N(\mu+\Lambda z,\Psi)$$<br>　　其中，模型的参数是向量\(\mu \in \mathbb{R}^n\),矩阵\(\Lambda \in \mathbb{R}^{n*k}\)以及对角矩阵\(\Psi \in \mathbb{R}^{n*n}\)。\(k\)的值通常取小于\(n\)。<br>　　因子分析模型<strong>数据产生过程</strong>的假设如下：</p>
+<ul>
+<li>1) 首先，在一个低维空间内用均值为0，协方差为单位矩阵的多元高斯分布生成m个隐含变量\(z^{(i)}\),\(z^{(i)}\)是k维向量，m是样本数目。</li>
+<li>2) 然后使用变换矩阵\(\Lambda\)将z映射到n维空间\(\Lambda z\)。此时因为z的均值为0，映射后的均值仍然为0。</li>
+<li>3) 再然后将n维向量\(\Lambda z\)再加上一个均值\(\mu\),对应的意义就是将变换后的z的均值在n维空间上平移。</li>
+<li>4）由于真实样例x会有误差，在上述变换的基础上再加上误差\(\epsilon \in N(0,\Psi)\)</li>
+<li>5) 最后的结果是认为训练样例生成公式为\(x=\mu+\Lambda z + \epsilon\)</li>
+</ul>
+<p>　　因此，我们也可以等价地定义因子分析模型如下：<br>$$z \sim N(0,I) \\\ \epsilon \sim N(0,\Psi) \\\ x=\mu+\Lambda z + \epsilon$$<br>　　其中，\(\epsilon和z\)是独立的。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>　　让我们看一个样本生成的例子方便理解因子分析模型。假设：\(z \in \mathbb{R}^1, x \in \mathbb{R}^2\)。z是一维向量，x为二维向量，再假设\(\Lambda=[1 \ 2]^T, \Psi=\begin{bmatrix} 1 \ 0 \\\ 0 \ 2 \end{bmatrix} \mu=[3 \ 1]^T\)<br>　　假设我们有m=5个二维样本点\(x^{(i)}\),两个特征如下：<br><img src="/picture/machine-learning/factor-analysis1.png" alt="factor1"><br>　　按照生成过程的5步。<br>　　１.第一步，我们首先认为在一维空间(这里k=1),存在着按高斯分布\(N(0,I)\)生成m个隐含变量\(z^{(i)}\)。如下：<br><img src="/picture/machine-learning/factor-analysis2.png" alt="factor2"><br>　　2. 然后使用某个\(\Lambda\)将一维的z映射到二维，图下：<br><img src="/picture/machine-learning/factor-analysis3.png" alt="factor3"><br>　　3. 之后加上\(\mu(\mu_1,\mu_2)^T\)，即将所有点的横坐标移动\(\mu_1\),纵坐标移动\(\mu_2\)，将直线移到一个位置，使得直线过点\(\mu\),原始左边轴的原点现在为\(\mu\)(红色点)<br><img src="/picture/machine-learning/factor-analysis4.png" alt="factor4"><br>　　4. 然而，样本点不可能这么规则，在模型上会有一定偏差，因此我们需要将上步生成的店做一些扰动，扰动\(\epsilon \sim N(0,\Psi)\).加入扰动后，得到黑色样本\(x^{(i)}\),如下：<br><img src="/picture/machine-learning/factor-analysis5.png" alt="factor5"><br>　　５.得到最终的训练样本，其中\(z,\epsilon\)均值均为0，因此\(\mu\)是原始样本点的均值。<br><img src="/picture/machine-learning/factor-analysis1.png" alt="factor1"><br>　　为了方便大家理解，在此举一个实际中使用因子分析模型的例子。<br>　　在企业形象或品牌形象的研究中，消费者可以通过一个有24个指标构成的评价体系，评价百货商场24个方面的优劣。但消费者主要关心的是三个方面，即商店的环境、商店的服务和商品的价格。因子分析方法可以通过24个变量，找出反映商店环境、商店服务水平和商店价格的三个潜在因子，对商店进行综合评价。<br>　　<strong>由以上的直观分析，我们知道了因子分析其实就是认为高维样本点实际上是由低维样本点经过高斯分布、线性变换、误差扰动生成的，因此高维数据可以使用低维来表示。</strong></p>
+<h1 id="因子分析模型的推导"><a href="#因子分析模型的推导" class="headerlink" title="因子分析模型的推导"></a>因子分析模型的推导</h1><h2 id="似然函数推导"><a href="#似然函数推导" class="headerlink" title="似然函数推导"></a>似然函数推导</h2><p>　　上一节对因子分析模型进行了定义，以及从数据生成的角度对它进行了进一步阐述。本节则介绍上一节中定义的参数在模型中是如何被使用的。具体来讲，就是<strong>该模型对训练数据的似然函数是什么</strong>。<br>　　首先，重新列出模型的定义公式：<br>$$z \sim N(0,I) \\\ \epsilon \sim N(0,\Psi) \\\ x=\mu+\Lambda z + \epsilon$$<br>　　其中，误差\(\epsilon\)和隐含变量\(z\)是相互独立的。<br>　　使用高斯分布的矩阵表示法对模型进行分析。该方法认为z和x符合多元高斯分布，即:<br>$$\begin{bmatrix}z \\\ x \end{bmatrix} \sim N(\mu_{zx},\Sigma)$$<br>　　接下来就是求解\(\mu_{zx},\Sigma\)。<br>　　已知\(E[z]=0,E[\epsilon]=0\),则：<br>$$E[x]=E[\mu+\Lambda z + \epsilon]=\mu$$<br>　　故：<br>$$\mu_{zx}=\begin{bmatrix} \vec{0} \\\ \mu\end{bmatrix}$$<br>　　为了求解\(\Sigma\)，需要计算:<br>$$\Sigma_{zz}=E[(z-E[z])(z-E[z])^T] \\\ \Sigma_{zx}=\Sigma_{xz}^T=E[(z-E[z])(x-E[x])^T] \\\ \Sigma_{xx}=E[(x-E[x])(x-E[x])^T]$$<br>　　根据定义，可知\(\Sigma_{zz}=Cov(z)=I\),另外：<br>$$\Sigma_{zx}=E[(z-E[z])(x-E[x])^T] \\\ =E[z(\mu+\Lambda z + \epsilon - \mu)^T] \\\ =E[zz^T]\Lambda^T+E[z \epsilon^T]=\Lambda^T$$<br>　　上述公式最后一步,\(E[zz^T]=Cov(z)=I\)。并且，\(z,\epsilon\)相互独立，有\(E[z\epsilon^T]=E[z]E[\epsilon^T]=0\)<br>$$\Sigma_{xx}=E[(x-E[x])(x-E[x])^T]=E[(\Lambda z+\epsilon)(\Lambda z + \epsilon)^T]  \\\ =E[\Lambda z z^T \Lambda^T + \epsilon z^T \Lambda^T + \Lambda z \epsilon^T + \epsilon \epsilon^T] \\\ = \Lambda E[z z^T]\Lambda^T + E[\epsilon \epsilon^T]=\Lambda \Lambda^T + \Psi$$<br>　　将上述求解结果放在一起，得到：<br>$$\begin{bmatrix}z \\\ x \end{bmatrix} \sim N(\begin{bmatrix} \vec{0} \\\ \mu \end{bmatrix}, \begin{bmatrix}I \ 　\ \ \Lambda^T \\\ \Lambda \ \  \Lambda \Lambda^T + \Psi \end{bmatrix})$$<br>　　所以，得到ｘ的边际分布为：<br>$$x \sim N(\mu, \Lambda \Lambda^T + \Psi)$$<br>　　因而，对于一个训练集\(\{x^{(i)};i=1,2…,m\}\),我们可以写出参数的似然函数:<br>$$\ell(\mu,\Lambda,\Psi)=log \prod_{i=1}^m \frac{1}{(2\pi)^{n/2}|\Lambda \Lambda^T + \Psi|^{\frac{1}{2}}} * \\\ exp \left(-\frac{1}{2}(x^{(i)}-\mu)(\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)}-\mu)^T \right)$$<br>　　由上式，若是直接最大化似然函数的方法求解参数的话，你会发现很难，因而下一节会介绍使用EM算法求解因子分析的参数。</p>
+<h2 id="EM求解参数"><a href="#EM求解参数" class="headerlink" title="EM求解参数"></a>EM求解参数</h2><p>　　因子分析模型的EM求解直接套EM一般化算法中的E-step和M-step公式，对于E-step来说：<br>$$Q_i(z^{(i)})=p(z^{(i)}|x^{(i)};\mu,\Lambda,\Psi)$$<br>　　前面我们已经得到条件分布的期望和方差：<br>$$\mu_{z^{(i)}|x^{(i)}}=\Lambda^T(\Lambda \Lambda^T +\Psi)^{-1} (x^{(i)}-\mu) \\\ \Sigma_{z^{(i)}|x^{(i)}}=I-\Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} \Lambda$$<br>　　代入上面两个公式，可以得到\(Q_i(z^{(i)})\)的概率密度函数了，即：<br>$$Q_i(z^{(i)})=\frac{1}{(2\pi)^{k/2}|\Sigma_{z^{(i)}|x^{(i)}}|^{1/2}}exp \left(-\frac{1}{2}(z^{(i)}-\mu_{z^{(i)}}|x^{(i)})^T \Sigma^{-1}_{z^{(i)}|x^{(i)}}(z^{(i)})-\mu_{z^{(i)}|x^{(i)}}) \right) $$　<br>　　在M-step中，需要最大化如下公式来求取<strong>参数\(\mu,\Lambda,\Psi\)</strong>:<br>$$\sum_{i=1}^m \int_{z^{(i)}} Q_i(z^{(i)}) log \frac{p(x^{(i)},z^{(i)};\mu,\Lambda,\Psi)}{Q_i(z^{(i)})}dz^{(i)} \\\\<br>=\sum_{i=1}^m \int_{z^{(i)}} Q_i(z^{(i)}) [log \ p(x^{(i)}|z^{(i)};\mu,\Lambda,\Psi) +log \ p(z^{(i)}) - log \ Q_i(z^{(i)})] dz^{(i)} \\\\<br>=\sum_{i=1}^m E_{z^{(i)} \sim Q_i}[log \ p(x^{(i)}|z^{(i)};\mu,\Lambda,\Psi) +log \ p(z^{(i)}) - log \ Q_i(z^{(i)})]$$<br>　　具体求解只需要分别对上述式子参数求偏导，令偏导函数为0即可求解。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://open.163.com/special/opencourse/machinelearning.html" target="_blank" rel="external">斯坦福大学机器学习视频教程</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/无监督学习/" rel="tag"># 无监督学习</a>
+          
+            <a href="/tags/空间映射/" rel="tag"># 空间映射</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/08/PCA/" rel="next" title="主成分分析">
+                <i class="fa fa-chevron-left"></i> 主成分分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引入"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#边缘和条件高斯分布"><span class="nav-number">2.</span> <span class="nav-text">边缘和条件高斯分布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#因子分析模型"><span class="nav-number">3.</span> <span class="nav-text">因子分析模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#形式化定义"><span class="nav-number">3.1.</span> <span class="nav-text">形式化定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.2.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#因子分析模型的推导"><span class="nav-number">4.</span> <span class="nav-text">因子分析模型的推导</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#似然函数推导"><span class="nav-number">4.1.</span> <span class="nav-text">似然函数推导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EM求解参数"><span class="nav-number">4.2.</span> <span class="nav-text">EM求解参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
