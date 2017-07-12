@@ -4,6 +4,32 @@
 
     
   <url>
+    <loc>xtf615.com/2017/07/08/PCA/</loc>
+    <lastmod>2017-07-12T01:51:28.525Z</lastmod>
+    <data>
+        <display>
+        <title>主成分分析</title>
+        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>空间映射</tag>
+         
+        <tag>降维</tag>
+         
+        <tag>主成分分析</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/07/10/Factor-Analysis/</loc>
     <lastmod>2017-07-11T09:13:28.649Z</lastmod>
     <data>
@@ -44,30 +70,6 @@
         <tag>混合高斯分布</tag>
          
         <tag>期望最大化算法</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/07/08/PCA/</loc>
-    <lastmod>2017-07-10T08:13:12.749Z</lastmod>
-    <data>
-        <display>
-        <title>主成分分析</title>
-        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>降维</tag>
-         
-        <tag>主成分分析</tag>
          
          
            
@@ -369,9 +371,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -395,9 +397,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
          
          
            
@@ -421,9 +423,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>ARMA</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
