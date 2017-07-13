@@ -4,6 +4,28 @@
 
     
   <url>
+    <loc>xtf615.com/2017/07/12/ICA/</loc>
+    <lastmod>2017-07-13T08:46:11.812Z</lastmod>
+    <data>
+        <display>
+        <title>独立成分分析</title>
+        <pubTime>2017-07-12T07:26:23.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>独立成分分析</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/07/08/PCA/</loc>
     <lastmod>2017-07-12T01:51:28.525Z</lastmod>
     <data>
@@ -371,9 +393,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -397,9 +419,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -423,9 +445,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARMA</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>ARMA</tag>
          
          
            
