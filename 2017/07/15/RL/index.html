@@ -1,0 +1,1044 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,强化学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="强化学习（Reinforcement Learning, RL）又叫做增强学习，是近年来机器学习和智能控制领域的主要方法之一。本文将重点介绍强化学习的概念以及马尔科夫决策过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="强化学习">
+<meta property="og:url" content="xtf615.com/2017/07/15/RL/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="强化学习（Reinforcement Learning, RL）又叫做增强学习，是近年来机器学习和智能控制领域的主要方法之一。本文将重点介绍强化学习的概念以及马尔科夫决策过程。">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/rl1.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/rl2.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/rl3.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/rl4.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/rl5.png">
+<meta property="og:updated_time" content="2017-07-15T09:18:38.497Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="强化学习">
+<meta name="twitter:description" content="强化学习（Reinforcement Learning, RL）又叫做增强学习，是近年来机器学习和智能控制领域的主要方法之一。本文将重点介绍强化学习的概念以及马尔科夫决策过程。">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/rl1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/07/15/RL/"/>
+
+
+
+
+
+  <title> 强化学习 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/07/15/RL/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                强化学习
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-15T09:18:10+08:00">
+                2017-07-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　强化学习（Reinforcement Learning, RL）又叫做增强学习，是近年来机器学习和智能控制领域的主要方法之一。本文将重点介绍强化学习的概念以及马尔科夫决策过程。<br><a id="more"></a></p>
+<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>　　英文定义：Reinforcement learning is learning what to do —-how to map situations to actions —- so as to maximize a numerical reward signal.<br>　　也就是说强化学习关注的是智能体如何在环境中采取一系列行为，从而获得最大的累积回报。通过强化学习，一个智能体应该知道在<strong>什么状态下应该采取什么行为</strong>。RL是从环境状态到动作的映射的学习，我们把这个映射称为策略。</p>
+<h2 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h2><p>　　那么强化学习具体解决哪些问题呢，我们来举几个例子：<br>　　flappy bird 是现在很流行的一款小游戏，现在我们假设有一只机器小鸟，让它自行进行游戏，但是我们却没有小鸟的动力学模型，也不打算了解它的动力学。要怎么做呢？ 这时就可以给它设计一个增强学习算法，然后让小鸟不断的进行游戏，如果小鸟撞到柱子了，那就获得-1的回报，否则获得0回报。通过这样的若干次训练，我们最终可以得到一只飞行技能高超的小鸟，它知道在什么情况下采取什么动作来躲避柱子。<br>　　假设我们要构建一个下国际象棋的机器，这种情况不能使用监督学习，首先，我们本身不是优秀的棋手，而请象棋老师来遍历每个状态下的最佳棋步则代价过于昂贵。其次，每个棋步好坏判断不是孤立的，要依赖于对手的选择和局势的变化。是一系列的棋步组成的策略决定了是否能赢得比赛。下棋过程的唯一的反馈是在最后赢得或是输掉棋局时才产生的。这种情况我们可以采用增强学习算法，通过不断的探索和试错学习，增强学习可以获得某种下棋的策略，并在每个状态下都选择最有可能获胜的棋步。目前这种算法已经在棋类游戏中得到了广泛应用。</p>
+<h2 id="强化学习和监督学习区别"><a href="#强化学习和监督学习区别" class="headerlink" title="强化学习和监督学习区别"></a>强化学习和监督学习区别</h2><p>　　可以看到，增强学习和监督学习的区别较大，在之前的讨论中，我们总是给定一个样本x，然后给或者不给\(label y\)。之后对样本进行拟合、分类、聚类或者降维等操作。然而对于很多序列决策或者控制问题，很难有这么规则的样本。比如，四足机器人的控制问题，刚开始都不知道应该让其动那条腿，在移动过程中，也不知道怎么让机器人自动找到合适的前进方向。另外如要设计一个下象棋的AI，每走一步实际上也是一个决策过程，虽然对于简单的棋有启发式方法，但在局势复杂时，仍然要让机器向后面多考虑几步后才能决定走哪一步比较好，因此需要更好的决策方法。<br>　　因此这里面主要的区别包括：</p>
+<ul>
+<li>增强学习是试错学习(Trail-and-error)，由于没有直接的指导信息，智能体要以不断与环境进行交互，通过试错的方式来获得最佳策略。</li>
+<li>延迟回报，增强学习的指导信息很少，而且往往是在事后（最后一个状态）才给出的，这就导致了一个问题，就是获得正回报或者负回报以后，如何将回报分配给前面的状态。</li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>　　对于这种控制决策问题，有这么一种解决思路。我们设计一个回报函数（reward function），如果learning agent（如上面的四足机器人、象棋AI程序）在决定一步后，获得了较好的结果，那么我们给agent一些回报（比如回报函数结果为正），得到较差的结果，那么回报函数为负。比如，四足机器人，如果他向前走了一步（接近目标），那么回报函数为正，后退为负。如果我们能够对每一步进行评价，得到相应的回报函数，那么就好办了，我们只需要找到一条回报值最大的路径（每步的回报之和最大），就认为是最佳的路径。<br>　　增强学习是机器学习中一个非常活跃且有趣的领域，相比其他学习方法，增强学习更接近生物学习的本质，因此有望获得更高的智能。增强学习在很多领域已经获得成功应用，比如自动直升机，机器人控制，手机网络路由，市场决策，工业控制，高效网页索引等。特别是在棋类游戏中。Tesauro(1995)描述的TD-Gammon程序，使用增强学习成为了世界级的西洋双陆棋选手。这个程序经过150万个自生成的对弈训练后，已经近似达到了人类最佳选手的水平，并在和人类顶级高手的较量中取得40盘仅输1盘的好成绩。<br>　　接下来，先介绍一下马尔科夫决策过程（MDP，Markov decision processes）。</p>
+<h1 id="马尔科夫模型类型"><a href="#马尔科夫模型类型" class="headerlink" title="马尔科夫模型类型"></a>马尔科夫模型类型</h1><p>　　大家应该还记得马尔科夫链(Markov Chain)，了解机器学习的也都知道隐马尔可夫模型(Hidden Markov Model，HMM)。它们具有的一个共同性质就是马尔可夫性(无后效性)，也就是指系统的下个状态只与当前状态信息有关，而与更早之前的状态无关。<br>　　马尔可夫决策过程(Markov Decision Process, MDP)也具有马尔可夫性，与上面不同的是MDP考虑了动作，即系统下个状态不仅和当前的状态有关，也和当前采取的动作有关。还是举下棋的例子，当我们在某个局面（状态s）走了一步(动作a)，这时对手的选择（导致下个状态s’）我们是不能确定的，但是他的选择只和s和a有关，而不用考虑更早之前的状态和动作，即s’是根据s和a随机生成的。<br>　　我们用一个二维表格表示一下，各种马尔可夫子模型的关系就很清楚了：<br><img src="/picture/machine-learning/rl1.png" alt="rl"></p>
+<h1 id="马尔科夫决策过程"><a href="#马尔科夫决策过程" class="headerlink" title="马尔科夫决策过程"></a>马尔科夫决策过程</h1><h2 id="形式化定义"><a href="#形式化定义" class="headerlink" title="形式化定义"></a>形式化定义</h2><p>　　一个马尔科夫决策过程由一个五元组构成（\(S,A,\{P_{sa}\},\gamma,R\)）<br>　　\(S\)表示状态集(states)。（比如，在自动直升机系统中，直升机当前位置坐标组成状态集）<br>　　\(A\)表示一组动作(actions)。(比如，使用控制杆操纵的直升机飞机方向，让其向前，向后蹬)<br>　　\(P_{sa}\)是状态转移概率。S中的一个状态到另一个状态的转变，需要A来参与。\(P_{sa}\)表示的是在当前\(s \in S\)状态下，经过\(a \in A\)作用后，会转移到的其他状态的概率分布情况(当前状态执行a后可能跳转到很多状态)。比如在状态\(s\)下执行动作\(a\)，转移到\(s’\)的概率可以表示为\(P(s’|s,a)\)。<br>　　\(\gamma \in [0,1)\)是阻尼系数(discount factor)<br>　　\(R:S×A→\mathbb{R}\),R是回报函数(reward function)，如果一组\((s,a)\)转移到了下个状态\(s’\),那么回报函数可记为\(R(s’|s,a)\)。回报函数经常写作S的函数(只与S有关)，这样，R可重新写作\(R：S→\mathbb{R}\)。<br>　　MDP的动态过程如下：某个agent的初始状态为\(s_0\)，然后从A中挑选一个动作\(a_0\)，执行后，agent按\(P_{sa}\)概率随机转移到了下一个\(s_1\)状态，\(s_1 \in P_{s_0 a_0}\)。然后再执行一个动作\(a_1\),就转移到了\(s_2\)，接下来再执行\(a_2\)…,我们可以用下面的图表示整个过程：<br><img src="/picture/machine-learning/rl2.png" alt="rl"><br>　　如果回报r是根据状态s和动作a得到的，则MDP还可以表示成下图：<br><img src="/picture/machine-learning/rl3.jpg" alt="rl"><br>　　注意，上述挑选动作是有一定策略的，即从状态→动作的映射是需要根据一定的策略的，将会在下面阐述。而状态转移概率可能是模型的参数，需要从多种现成状态中进行学习得到。<br>　　我们定义经过上面转移路径后，得到的回报函数之和如下：<br>$$R(s_0,a_0)+\gamma R(s_1,a_1)+\gamma^2 R(s_2,a_2) + \ldots$$<br>　　如果R只和S有关，那么上式可以写作：<br>$$R(s_0)+\gamma R(s_1)+\gamma^2 R(s_2) + \ldots$$<br>　　我们的目标是选择一组最佳的Action，使得全部的回报加权和期望最大。<br>$$\max E[R(s_0)+\gamma R(s_1)+\gamma^2 R(s_2) + \ldots]$$<br>　　从上式可以发现，在t时刻的回报值被打了\(\gamma^t\)的折扣，是一个逐步衰减的过程，越靠后的状态对回报和影响越小。最大化期望值也就是要将大的\(R(s_i)\)尽量放到前面，小的尽量放到后面。</p>
+<h2 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h2><p>　　已经处于某个状态s时，我们会以一定的策略\(\pi\)来选择下一个动作a执行，然后转换到另一个状态\(s’\)。我们将这个动作的选择国产称为策略(policy)，每一个policy起始就是一个状态到动作的映射函数\(\pi:S→A\)。给定\(\pi\)也就是给定了\(a=\pi(s)\),也就是说，知道了\(\pi\)就知道了每个状态下一步应该执行的动作。</p>
+<h2 id="值函数"><a href="#值函数" class="headerlink" title="值函数"></a>值函数</h2><p>　　上面我们提到增强学习学到的是一个从环境状态到动作的映射（即行为策略），记为策略\(\pi: S→A\)。而增强学习往往又具有延迟回报的特点: 如果在第n步输掉了棋，那么只有状态\(s_n\)和动作\(a_n\)获得了立即回报\(R(s_n,a_n)=-1\)，前面的所有状态立即回报均为0。所以对于之前的任意状态s和动作a，立即回报函数\(R(s,a)\)无法说明策略的好坏。因而需要定义值函数(value function，又叫效用函数)来表明当前状态下策略\(pi\)的长期影响。值函数又称作折算累积回报(discounted cumulative reward)。<br>　　用\(V^{\pi}(s)\)表示在策略\(\pi\)下，状态s的值函数。\(R_i\)表示未来第i步的立即回报，常见的值函数有以下三种：<br>$$a) \ V^{\pi}(s)=E_{\pi}\left[\sum_{i=0}^h R_i| s_0=s \right]$$<br>$$b) \ V^{\pi}(s)= lim_{h→ \infty}E_{\pi}\left[\frac{1}{h}\sum_{i=0}^h R_i| s_0=s \right]$$<br>$$c) \ V^{\pi}(s)=E_{\pi}\left[\sum_{i=0}^{\infty} \gamma^i R_i | s_0=s \right]$$<br>　　其中，<br>a)是采用策略\(\pi\)的情况下未来有限h步的期望立即回报总和；<br>b)是采用策略\(\pi\)的情况下期望的平均回报；<br>c)是值函数最常见的形式，式中\(γ∈[0,1]\)称为折合因子，表明了未来的回报相对于当前回报的重要程度。特别的，\(γ=0\)时，相当于只考虑立即,不考虑长期回报，\(γ=1\)时，将长期回报和立即回报看得同等重要。接下来我们只讨论第三种形式。<br>　　现在将值函数的第三种形式展开，其中\(R_i\)表示未来第i步回报，\(s’\)表示下一步状态，则有：<br>$$V^{\pi}(s)=E_{\pi}[R_0+\gamma R_1 + \gamma^2 R_2 + \gamma^3 R_3 + \ldots|s_0=s,\pi] \\\\<br>=E_{\pi}[R_0+\gamma E[R_1+\gamma R_2 + \gamma^2 R_3 + \ldots]|s_0=s,\pi] \\\\<br>=E_{\pi}[R_0+\gamma V^{\pi}(s’)]$$<br>　　给定策略\(\pi\)和初始状态\(s_0\)，则动作\(a_0=\pi(s_0)\)，\(a_0\)在\(\pi\)给定下是唯一的。但下个时刻将以概率\(p(s’|s_0,a_0)\)转向下个状态\(s’\)，也就是说A→S可能有多种，根据Bellman等式，得到：<br>$$V^{\pi}(s)=R(s)+\gamma \sum_{s’ \in S} P_{s \pi(s)}(s’)V^{\pi}(s’)$$<br>　　\(s’\)表示下一个状态。前面R(s)称为立即回报(immediate reward)，就是R(当前状态)。第二项也可以写作\(E_{s’ \sim P_{s\pi(s)}(s)}[V^{\pi}(s’)]\),是下一状态值函数的期望值，下一状态s’符合\(P_{s\pi(s)}\)分布。<br>　　当状态个数有限时，可以通过上式求出每一个s的Ｖ。如果列出线性方程组的话，也就是|S|个方差，|S|个未知数，直接求解即可。<br>　　我们求V的目的是想寻找一个当前状态s下，最优的行动策略\(\pi\)，定义最优的\(V^{*}\)如下：<br>$$V^{*}(s)=\max_{\pi} V^{\pi} (s)$$<br>　　就是从可选的策略\(\pi\)中挑选一个最优策略(discounted rewards最大)。<br>　　上式的Bellman等式形式如下：<br>$$V^{*}(s)=R(s)+\max_{a \in A} \gamma \sum_{s’ \in S} P_{sa}(s’)V^{*}(s’)$$<br>　　第一项与\(\pi\)无关，所以不变。第二项是一个\(\pi\)就决定了每个状态s的下一步动作a，执行a后，s’按概率分布的回报概率和的期望。可根据下图进行理解。<br><img src="/picture/machine-learning/rl4.png" alt="rl"><br>　　定义了最优的\(V^{*}\),我们再定义最优的策略\(\pi^{*}:S→A\)如下：<br>$$\pi^{*}(s)=arg \max_{a \in A} \sum_{s’ \in S}P_{sa}(s’)V^{*}(s’)$$<br>　　选择最优的\(\pi^{*}\),也就确定了每个状态s的下一步最优动作a。<br>　　根据以上式子，我们可以知道：<br>$$V^{*}(s)=V^{\pi^{*}}(s) \geq V^{\pi}(s)$$<br>　　上式意思就当前状态的最优值函数\(V^{*}\)，是由采用最优执行策略\(\pi^{*}\)的情况下得出的，采用最优执行方案的回报显然要比采用其他的执行策略\(\pi\)要好。<br>　　这里需要注意的是，如果我们能够求得每个s下最优的a，那么从全局来看，\(S→A\),而生成的这个映射是最优映射，称为\(\pi^{*}\)。\(\pi^{*}\)针对全局的s，确定了每一个s的下一个动作a，不会因为初始状态s选取的不同而不同。</p>
+<h2 id="值迭代和策略迭代法"><a href="#值迭代和策略迭代法" class="headerlink" title="值迭代和策略迭代法"></a>值迭代和策略迭代法</h2><p>　　上节我们给出了迭代公式和优化目标，这节讨论两种求解有限状态MDP具体策略的有效算法。这里，我们只针对MDP是有限状态、有限动作的情况。</p>
+<h3 id="值迭代法"><a href="#值迭代法" class="headerlink" title="值迭代法"></a>值迭代法</h3><p>1）将每个s的V(s)初始化为0<br>2）循环直到收敛{<br>　　对于每一个状态s，对V(s)做更新<br>　　\(V(s):=R(s)+\max_{a \in A} \gamma \sum_{s’}P_{sa}(s’)V(s’)\)<br>}<br>　　内循环的实现由两种策略。<br>　　1. 同步迭代法<br>　　拿初始化后的第一次迭代来说吧，初始状态所有的V(s)都为0。然后对所有的s都计算新的\(V(s)=R(s)+0=R(s)\)。在计算每一个状态时，得到新的V(s)后，先存下来，不立即更新。待所有的s的新值V(s)都计算完毕后，再统一更新。<br>　　2. 异步迭代法<br>　　与同步迭代对应的就是异步迭代了，对每一个状态s，得到新的\(V(s)\)后，不存储，直接更新。这样，第一次迭代后，大部分\(V(s)&gt;R(s)\)。</p>
+<p>　　不管使用这两种的哪一种，最终V(s)会收敛到\(V^{*}(s)\)。知道了\(V^{*}\)后，我们再使用公式（3）来求出相应的最优策略\(\pi^{*}\)，当然\(\pi^{*}\)可以在求\(V^{*}\)的过程中求出。</p>
+<h3 id="策略迭代法"><a href="#策略迭代法" class="headerlink" title="策略迭代法"></a>策略迭代法</h3><p>　　值迭代法使V值收敛到\(V^{*}\)，而策略迭代法关注\(\pi\),使\(\pi\)收敛到\(\pi^{*}\)。<br>1） 将随机指定一个S到A的映射\(\pi\)。<br>2） 循环知道收敛{<br>　　a) 令\(V:=V^{\pi}\)<br>　　b) 对于每一个状态s，对\(\pi(s)\)做更新。<br>　　　　\(\pi(s):=arg \max_{a \in A} \sum_{s’} P_{sa}(s’)V(s’)\)<br>}<br>　　a)步中的V可以通过之前的Bellman等式求出：<br>$$V^{\pi}(s)=R(s)+\gamma \sum_{s’ \in S} P_{s\pi(s)}(s’)V^{\pi}(s’)$$<br>　　这一步会求得所有状态s的\(V^{\pi}(s)\)。<br>　　b)步实际上就是根据a步的结果挑选出当前状态s下，最优的a，然后对\(\pi(s)\)做更新。<br>　　对于值迭代和策略迭代很难说哪种方法好，哪种不好。对于规模比较小的MDP来说，策略一般能够更快地收敛。但是对于规模很大（状态很多）的MDP来说，值迭代比较容易（不用求线性方程组）。</p>
+<h2 id="MDP中的参数估计"><a href="#MDP中的参数估计" class="headerlink" title="MDP中的参数估计"></a>MDP中的参数估计</h2><p>　　在之前讨论的MDP中，我们是已知状态转移概率\(P_{sa}\)和回报函数\(R(s)\)的。但在很多实际问题中，这些参数不能显式得到，我们需要从数据中估计出这些参数（通常S、A和\(\gamma\)是已知的）。<br>　　假设我们已知很多条状态转移路径如下：<br><img src="/picture/machine-learning/rl5.png" alt="rl"><br>　　其中，\(s_i^{(j)}\)是i时刻，第j条转移路径对应的状态，\(a_i^{(j)}\)是\(s_i^{(j)}\)状态时要执行的动作。每个转移路径中状态数是有限的，在实际操作过程中，每个转移链要么进入终结状态，要么达到规定的步数就会终结。<br>　　如果我们获得了很多上面类似的转移链（相当于有了样本），那么我们就可以使用最大似然估计来估计状态转移概率。<br>$$P_{sa}(s’)=\frac{times \ took \ we \ action \ a \ in \ state \ s \ and \ got \ to \ s’}{times \ we \ took \ action \ a \ in \ state \ s}$$<br>　　分子是从s状态执行动作a后到达s’的次数，分母是在状态s时，执行a的次数。两者相除就是在s状态下执行a后，会转移到s’的概率。<br>　　为了避免分母为0的情况，我们需要做平滑。如果分母为0，则令\(P_{sa}(s’)=\frac{1}{|S|}\)，也就是说当样本中没有出现过在s状态下执行a的样例时，我们认为转移概率均分。<br>　　上面这种估计方法是从历史数据中估计，这个公式同样适用于在线更新。比如我们新得到了一些转移路径，那么对上面的公式进行分子分母的修正（加上新得到的count）即可。修正过后，转移概率有所改变，按照改变后的概率，可能出现更多的新的转移路径，这样\(P_{sa}\)会越来越准。<br>　　同样，如果回报函数未知，那么我们认为R(s)为在s状态下已经观测到的回报均值。<br>　　当转移概率和回报函数估计出之后，我们可以使用值迭代或者策略迭代来解决MDP问题。比如，我们将参数估计和值迭代结合起来（在不知道状态转移概率情况下）的流程如下:<br>1、 随机初始化\(\pi\)<br>2、 循环直到收敛 {<br>　　(a) 在样本上统计\(\pi\)中每个状态转移次数，用来更新\(P_{sa}\)和R<br>　　(b) 使用估计到的参数来更新V（使用上节的值迭代方法）<br>　　(c) 根据更新的V来重新得出\(\pi\)<br>}<br>　　在(b)步中我们要做值更新，也是一个循环迭代的过程，在上节中，我们通过将V初始化为0，然后进行迭代来求解V。嵌套到上面的过程后，如果每次初始化V为0，然后迭代更新，就会很慢。一个加快速度的方法是每次将V初始化为上一次大循环中得到的V。也就是说V的初值衔接了上次的结果。<br>　　至此我们了解了马尔可夫决策过程在强化学习中的应用。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://open.163.com/special/opencourse/machinelearning.html" target="_blank" rel="external">斯坦福大学机器学习视频教程</a><br><a href="http://www.cnblogs.com/jinxulin/p/3517377.html" target="_blank" rel="external">增强学习（二）—– 马尔可夫决策过程MDP</a><br><a href="http://blog.csdn.net/u012409883/article/details/17091665" target="_blank" rel="external">【机器学习-斯坦福】学习笔记21——增强学习</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/强化学习/" rel="tag"># 强化学习</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/12/ICA/" rel="next" title="独立成分分析">
+                <i class="fa fa-chevron-left"></i> 独立成分分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引入"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#举例"><span class="nav-number">1.2.</span> <span class="nav-text">举例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强化学习和监督学习区别"><span class="nav-number">1.3.</span> <span class="nav-text">强化学习和监督学习区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">1.4.</span> <span class="nav-text">思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#马尔科夫模型类型"><span class="nav-number">2.</span> <span class="nav-text">马尔科夫模型类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#马尔科夫决策过程"><span class="nav-number">3.</span> <span class="nav-text">马尔科夫决策过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#形式化定义"><span class="nav-number">3.1.</span> <span class="nav-text">形式化定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#策略"><span class="nav-number">3.2.</span> <span class="nav-text">策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#值函数"><span class="nav-number">3.3.</span> <span class="nav-text">值函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#值迭代和策略迭代法"><span class="nav-number">3.4.</span> <span class="nav-text">值迭代和策略迭代法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#值迭代法"><span class="nav-number">3.4.1.</span> <span class="nav-text">值迭代法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#策略迭代法"><span class="nav-number">3.4.2.</span> <span class="nav-text">策略迭代法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MDP中的参数估计"><span class="nav-number">3.5.</span> <span class="nav-text">MDP中的参数估计</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
