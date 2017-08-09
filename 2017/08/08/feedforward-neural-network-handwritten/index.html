@@ -1,0 +1,1044 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,神经网络,梯度下降,反向传播," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考神经网络和深度学习教程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写前馈神经网络(一)">
+<meta property="og:url" content="xtf615.com/2017/08/08/feedforward-neural-network-handwritten/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考神经网络和深度学习教程。">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/network_writting1.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/network_writting2.png">
+<meta property="og:updated_time" content="2017-08-09T04:07:33.097Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写前馈神经网络(一)">
+<meta name="twitter:description" content="本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考神经网络和深度学习教程。">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/network_writting1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/08/08/feedforward-neural-network-handwritten/"/>
+
+
+
+
+
+  <title> 手写前馈神经网络(一) | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/08/08/feedforward-neural-network-handwritten/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                手写前馈神经网络(一)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:07:05+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/神经网络/" itemprop="url" rel="index">
+                    <span itemprop="name">神经网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap1.html" target="_blank" rel="external">神经网络和深度学习教程</a>。<br><a id="more"></a></p>
+<h1 id="数据集的加载"><a href="#数据集的加载" class="headerlink" title="数据集的加载"></a>数据集的加载</h1><p>　　本文使用的数据集来自MNIST。MNIST是一个手写数字的数据库，它提供了六万的训练集和一万的测试集。每个手写数字图片都已经被规范处理过，是一张放在中间部位的28px*28px的灰度图。本文将训练集进一步划分成训练集和验证集，得到50000条训练集，10000条验证集，10000万条测试集。</p>
+<h2 id="细节代码"><a href="#细节代码" class="headerlink" title="细节代码"></a>细节代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mnist_loader.py：</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_data</span><span class="params">()</span>:</span></div><div class="line">    f = gzip.open(<span class="string">'../data/mnist.pkl.gz'</span>, <span class="string">'rb'</span>)</div><div class="line">    training_data, validation_data, test_data = cPickle.load(f)</div><div class="line">    f.close()</div><div class="line">    <span class="keyword">return</span> (training_data, validation_data, test_data)</div></pre></td></tr></table></figure>
+<p>　　上述代码cPickle.load(f)返回一个元组，包含训练集，验证集和测试集。训练集返回的是一个由两个元素构成的元组，第一个元素是包含50000条数据的numpy.ndarray，规格是(50000L, 784L)。即每条数据有784个值，代表了该手写数字的28*28=784个像素点。第二个元素是numpy ndarray数组，规格的是(50000L,)，每个分量代表的是第一个元素中相对应位置的数据的数字分类。<br>　　可以发现该数据虽然很规整，但在神经网络中用起来不够方便，我们需要对数据进一步处理一下。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">mnist_loader.py：</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_data_wrapper</span><span class="params">()</span>:</span></div><div class="line">    tr_d, va_d, te_d = load_data()</div><div class="line">    training_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> tr_d[<span class="number">0</span>]]<span class="comment">#把数据处理成列向量形式</span></div><div class="line">    training_results = [vectorized_result(y) <span class="keyword">for</span> y <span class="keyword">in</span> tr_d[<span class="number">1</span>]]<span class="comment">#把分类标记向量化</span></div><div class="line">    training_data = zip(training_inputs, training_results)<span class="comment">#每条数据都是2-tuples形式</span></div><div class="line">    validation_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> va_d[<span class="number">0</span>]]</div><div class="line">    validation_data = zip(validation_inputs, va_d[<span class="number">1</span>])</div><div class="line">    test_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> te_d[<span class="number">0</span>]]</div><div class="line">    test_data = zip(test_inputs, te_d[<span class="number">1</span>])</div><div class="line">    <span class="keyword">return</span> (training_data, validation_data, test_data)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">vectorized_result</span><span class="params">(j)</span>:</span></div><div class="line">    e = np.zeros((<span class="number">10</span>, <span class="number">1</span>))</div><div class="line">    e[j] = <span class="number">1.0</span></div><div class="line">    <span class="keyword">return</span> e</div></pre></td></tr></table></figure></p>
+<p>　　上述处理后，训练集是一个包含50000条数据，每一条数据都是2-tuples(x,y)形式，x是一个784维度的numpy.ndarray，规格是(784L, 1L)，y是一个10维numpy.ndarray，规格是(10L, 1L)，代表的是相应数字分类的单位向量。验证集和测试集类似，只不过y是具体的数字分类，而不是向量。</p>
+<h2 id="具体使用"><a href="#具体使用" class="headerlink" title="具体使用"></a>具体使用</h2><p>　　具体使用时，只要如下代码即可：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> mnist_loader</div><div class="line">training_data, validation_data, test_data = mnist_loader.load_data_wrapper()</div></pre></td></tr></table></figure></p>
+<h1 id="神经网络算法"><a href="#神经网络算法" class="headerlink" title="神经网络算法"></a>神经网络算法</h1><h2 id="Network对象初始化"><a href="#Network对象初始化" class="headerlink" title="Network对象初始化"></a>Network对象初始化</h2><p>　　我们需要对神经网络结构进行初始化，具体而言就是对权重和偏置进行初始化。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Network</span><span class="params">(object)</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, sizes)</span>:</span></div><div class="line">        self.num_layers = len(sizes)</div><div class="line">        self.sizes = sizes</div><div class="line">        self.biases = [np.random.randn(y, <span class="number">1</span>) <span class="keyword">for</span> y <span class="keyword">in</span> sizes[<span class="number">1</span>:]]</div><div class="line">        self.weights = [np.random.randn(y, x)</div><div class="line">                        <span class="keyword">for</span> x, y <span class="keyword">in</span> zip(sizes[:<span class="number">-1</span>], sizes[<span class="number">1</span>:])]</div><div class="line">net = Network([<span class="number">784</span>, <span class="number">30</span>, <span class="number">10</span>])</div></pre></td></tr></table></figure></p>
+<p>　　sizes参数代表的是神经网络的层数以及每层的神经元个数。例如[784,30,10]代表输入层有784个神经元，隐藏层有30个神经元，输出层有10个神经元。后面的例子都以该神经网络形状来阐述。<br>　　biases是神经元的偏置，输入层神经元不存在偏置，故从隐藏层开始，使用np.random.randn生成\(N \sim (0,1)\)的高斯分布。np.random.randn的参数代表维度数，例如(y,1)代表y行,1列的数组。因此biases是一个list，按照层的顺序进行存放，每个元素代表一层神经元的偏置的列向量(np.ndarray类型)。<br>　　而weights代表的是权重list。第一个元素代表从输入层到隐藏层的权重矩阵，矩阵的行是隐藏层(后一层)的神经元个数，列是输入层(前一层)的神经元个数。以此类推，按顺序存放。</p>
+<h2 id="前向传播算法"><a href="#前向传播算法" class="headerlink" title="前向传播算法"></a>前向传播算法</h2><p>　　对于特定的输入，返回对应的输出的方法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">feedforward</span><span class="params">(self, a)</span>:</span></div><div class="line">        <span class="keyword">for</span> b, w <span class="keyword">in</span> zip(self.biases, self.weights):</div><div class="line">            a = sigmoid(np.dot(w, a)+b)</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span><span class="params">(z)</span>:</span></div><div class="line">        <span class="keyword">return</span> <span class="number">1.0</span>/(<span class="number">1.0</span>+np.exp(-z))</div><div class="line">net.feedforward([[<span class="number">5</span>],[<span class="number">6</span>]])<span class="comment">#假设两个输入神经元数据</span></div></pre></td></tr></table></figure></p>
+<p>　　对于[784, 30, 10]结构的神经元，在第一次循环时，因为输入层到隐藏层的权重矩阵的规格是30*784，则w规格为(30L,784L)；输入神经元a的规格是(784L,1L)。因此w.a矩阵相乘结果即(30L,784L)*(784L,1L)，则为(30L,1L)，行数即隐藏层神经元的个数。<br>　　后面循环的过程中，直接将前一层的输出作为下一层的输入即可。</p>
+<h2 id="随机梯度下降算法"><a href="#随机梯度下降算法" class="headerlink" title="随机梯度下降算法"></a>随机梯度下降算法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">SGD</span><span class="params">(self, training_data, epochs, mini_batch_size, eta,</span></span></div><div class="line">        test_data=None):</div><div class="line">    <span class="keyword">if</span> test_data: n_test = len(test_data)</div><div class="line">    n = len(training_data)</div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> xrange(epochs):</div><div class="line">        random.shuffle(training_data)<span class="comment">#打乱数据</span></div><div class="line">        mini_batches = [</div><div class="line">            training_data[k:k+mini_batch_size]</div><div class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> xrange(<span class="number">0</span>, n, mini_batch_size)]<span class="comment">#等大小划分数据</span></div><div class="line">        <span class="keyword">for</span> mini_batch <span class="keyword">in</span> mini_batches:</div><div class="line">            self.update_mini_batch(mini_batch, eta)<span class="comment">#随机梯度下降</span></div><div class="line">        <span class="keyword">if</span> test_data:</div><div class="line">            <span class="keyword">print</span> <span class="string">"Epoch &#123;0&#125;: &#123;1&#125; / &#123;2&#125;"</span>.format(</div><div class="line">                j, self.evaluate(test_data), n_test)</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">print</span> <span class="string">"Epoch &#123;0&#125; complete"</span>.format(j)</div></pre></td></tr></table></figure>
+<p>　　training_data每条数据都是一个(x,y)元组的列表，表示训练输入和其对应的期望输出。变量epochs代表迭代数量，mini_batch_size代表采样时的小批量数据的大小。eta是学习速率\(\eta\)。如果给出了可选参数test_data，那么程序会在每个训练器后评估神经网络，并打印出部分进展，这对于追踪进度很有用。<br>　　代码如下工作。在每个迭代期，首先随机地将训练数据打乱，然后将它分成多个适当大小的小批量数据。然后对于每一个mini_batch应用一次梯度下降。<br>　　注意上述迭代是在上一次迭代结果的基础上继续迭代的。每次迭代唯一不同的是划分的数据mini_batch不相同。因此结果应该是不断优化的。当然应该会存在一个阈值。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_mini_batch</span><span class="params">(self, mini_batch, eta)</span>:</span></div><div class="line">    nabla_b = [np.zeros(b.shape) <span class="keyword">for</span> b <span class="keyword">in</span> self.biases]</div><div class="line">    nabla_w = [np.zeros(w.shape) <span class="keyword">for</span> w <span class="keyword">in</span> self.weights]</div><div class="line">    <span class="keyword">for</span> x, y <span class="keyword">in</span> mini_batch:</div><div class="line">        delta_nabla_b, delta_nabla_w = self.backprop(x, y)</div><div class="line">        nabla_b = [nb+dnb <span class="keyword">for</span> nb, dnb <span class="keyword">in</span> zip(nabla_b, delta_nabla_b)]</div><div class="line">        nabla_w = [nw+dnw <span class="keyword">for</span> nw, dnw <span class="keyword">in</span> zip(nabla_w, delta_nabla_w)]</div><div class="line">    self.weights = [w-(eta/len(mini_batch))*nw</div><div class="line">                    <span class="keyword">for</span> w, nw <span class="keyword">in</span> zip(self.weights, nabla_w)]<span class="comment">#更新权重矩阵</span></div><div class="line">    self.biases = [b-(eta/len(mini_batch))*nb</div><div class="line">                   <span class="keyword">for</span> b, nb <span class="keyword">in</span> zip(self.biases, nabla_b)]<span class="comment">#更新偏置矩阵</span></div></pre></td></tr></table></figure></p>
+<p>　　上述代码是用来更新权重和偏置。首先根据权重和偏置矩阵的规格对\(\nabla b\)和\(\nabla w\)梯度进行初始化。然后对每个min_batch使用后向传播算法计算梯度。根据:<br>$$\frac{\sum_{j=1}^m \nabla C_{X_j}}{m} \approx \frac{\sum_x \nabla C_x}{n}=\nabla C$$<br>　　这里的第二个求和符号是在整个训练集数据上进行的。交换两边得到：<br>$$\nabla C \approx \frac{1}{m}\sum_{j=1}^m \nabla C_{X_j}$$<br>　　即小批量数据上\(\nabla C_{X_j}\)的平均值大致相等于整个\(\nabla C_{X}\)的平均值。<br>　　因此：<br>$$w_k := w_k - \frac{\eta}{m} \frac{\partial C_{X_j}}{\partial w_k}$$<br>$$b_l := b_l - \frac{\eta}{m} \frac{\partial C_{X_j}}{\partial b_l}$$<br>　　对应代码是上述最后两句。<br>　　实际上，偏置的更新不需要独立出来，只需要在每层增加一个神经元\(x_0=1\),这样就可以将偏置当作权重来对待了，使得代码更加简洁。<br>　　另外，测试集上性能评估函数如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate</span><span class="params">(self, test_data)</span>:</span></div><div class="line">    test_results = [(np.argmax(self.feedforward(x)), y)</div><div class="line">                    <span class="keyword">for</span> (x, y) <span class="keyword">in</span> test_data]<span class="comment">#输出层有10个输出，数值最大的那个神经元的下标即为数字分类结果</span></div><div class="line">    <span class="keyword">return</span> sum(int(x == y) <span class="keyword">for</span> (x, y) <span class="keyword">in</span> test_results)<span class="comment">#一共多少个相等</span></div></pre></td></tr></table></figure></p>
+<p>　　输出层有10个输出，根据sigmoid函数的图像，数值越大，代表可能性越高。因此数值最大的那个神经元的下标即为数字分类结果。</p>
+<h2 id="后向传播算法"><a href="#后向传播算法" class="headerlink" title="后向传播算法"></a>后向传播算法</h2><p>　　最后我们来重点研究下后向传播算法如何快速求得参数的梯度。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backprop</span><span class="params">(self, x, y)</span>:</span></div><div class="line">        nabla_b = [np.zeros(b.shape) <span class="keyword">for</span> b <span class="keyword">in</span> self.biases]</div><div class="line">        nabla_w = [np.zeros(w.shape) <span class="keyword">for</span> w <span class="keyword">in</span> self.weights]</div><div class="line">        </div><div class="line">        <span class="comment"># feedforward</span></div><div class="line">        activation = x</div><div class="line">        activations = [x] <span class="comment"># list to store all the activations, layer by layer</span></div><div class="line">        zs = [] <span class="comment"># list to store all the z vectors, layer by layer</span></div><div class="line">        <span class="keyword">for</span> b, w <span class="keyword">in</span> zip(self.biases, self.weights):</div><div class="line">            z = np.dot(w, activation)+b</div><div class="line">            zs.append(z)<span class="comment">#未激活</span></div><div class="line">            activation = sigmoid(z)<span class="comment">#激活单元</span></div><div class="line">            activations.append(activation)</div><div class="line"></div><div class="line">        <span class="comment"># backward pass 先计算输出层</span></div><div class="line">        delta = self.cost_derivative(activations[<span class="number">-1</span>], y) * \</div><div class="line">            sigmoid_prime(zs[<span class="number">-1</span>])</div><div class="line">        nabla_b[<span class="number">-1</span>] = delta</div><div class="line">        nabla_w[<span class="number">-1</span>] = np.dot(delta, activations[<span class="number">-2</span>].transpose())</div><div class="line">        <span class="comment"># Note that the variable l in the loop below is used a little</span></div><div class="line">        <span class="comment"># differently to the notation in Chapter 2 of the book.  Here,</span></div><div class="line">        <span class="comment"># l = 1 means the last layer of neurons, l = 2 is the</span></div><div class="line">        <span class="comment"># second-last layer, and so on.  It's a renumbering of the</span></div><div class="line">        <span class="comment"># scheme in the book, used here to take advantage of the fact</span></div><div class="line">        <span class="comment"># that Python can use negative indices in lists.</span></div><div class="line">        <span class="keyword">for</span> l <span class="keyword">in</span> xrange(<span class="number">2</span>, self.num_layers):</div><div class="line">            z = zs[-l]</div><div class="line">            sp = sigmoid_prime(z)</div><div class="line">            delta = np.dot(self.weights[-l+<span class="number">1</span>].transpose(), delta) * sp</div><div class="line">            nabla_b[-l] = delta</div><div class="line">            nabla_w[-l] = np.dot(delta, activations[-l<span class="number">-1</span>].transpose())</div><div class="line">        <span class="keyword">return</span> (nabla_b, nabla_w)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cost_derivative</span><span class="params">(self, output_activations, y)</span>:</span></div><div class="line">    <span class="keyword">return</span> (output_activations-y)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid_prime</span><span class="params">(z)</span>:</span></div><div class="line">    <span class="keyword">return</span> sigmoid(z)*(<span class="number">1</span>-sigmoid(z))</div></pre></td></tr></table></figure></p>
+<p>　　这里的参数x,y代表一条数据，因此该方法一次只对一条数据进行后向传播来计算梯度。首先进行初始化，根据权重矩阵和偏置矩阵的规格进行初始化。activation代表当前激活单元，activations保存所有的激活单元，按层存放，每层使用一个数组来存储。zs保存未激活前的单元，同理按层存放，每层使用一个数组来存储。因此这里的运算都是矩阵运算。<br>　　接着从输出层开始，反向进行误差的计算。cost_derivative方法根据代价函数来求得对输出激活单元的导数。这里使用的是二次代价函数:<br>$$C(w,b)=\frac{1}{2n} \sum_{x} ||y(x)-a||^2$$<br>　　这里的n代表样本量，a代表输入为x时输出的向量(激活单元)，y(x)是数据的真实标记向量。<br>　　如果样本量为1，则：<br>$$\frac{\partial C}{\partial a}=-(y-a)=a-y$$<br>　　sigmoid_prime是对sigmoid函数求导。<br>　　我们想求输出层偏置的梯度\(\frac{\partial C}{\partial b}\)。首先分析下输出层偏置影响了哪些东西。令输出层偏置为\(b\)，输出层最终输出为\(a\)(激活了)，输出层激活前为\(z\)(前一层输出和权重线性组合后，未经过sigmoid函数处理)。<br>　　因为\(z=wa’+b\),其中\(a’\)是前一层的输出，因此\(b\)首先影响\(z\)。紧接着因为\(a=sigmoid(z)\),因此\(z\)影响\(a\)。而根据代价函数,\(a\)最终再影响代价函数。因此，根据链式求导法则：<br>$$\frac{\partial C}{\partial b} = \frac{\partial C}{\partial a} * \frac{\partial a}{\partial z} * \frac{\partial z}{\partial b} \\\ <br>=(a-y)* [sigmoid(z)(1-sigmoid(z)] * 1 \\\ $$<br>　　上述式子可以逆着写，即从最后一个式子开始往前写。该结果和上述代码相符。<br>　　注意到，向量的乘法是相同位置上的数相乘。向量的点乘np.dot才是我们熟悉的矩阵运算。因此delta = self.cost_derivative(activations[-1], y)*sigmoid_prime(zs[-1])是第一种情况，得到的delta规格也是10*1。<br>　　紧接着我们想求是输出层权重的梯度\(\frac{\partial C}{\partial w}\)。同理分析，\(w\)首先影响\(z\),\(z=wa’+b\)。\(z\)再影响\(a\),\(a=sigmoid(z)\)。\(a\)最终影响代价函数，因此根据链式求导法则：<br>$$\frac{\partial C}{\partial w} = \frac{\partial C}{\partial a} * \frac{\partial a}{\partial z} * \frac{\partial z}{\partial w} \\\ <br>=(a-y)* [sigmoid(z)(1-sigmoid(z)] * a’ \\\ $$<br>　　其中\(a’\)是前一层的输出。可以发现只要定义前一层\(a_0=1\)，则\(w,b\)的求导可以统一起来，不需要分开求。<br>　　注意delta的规格10*1，也就是输出层10个神经元每个都有一个分量。activations[-2]的规格是30*1，也就是前一层的神经元每个输出都有一个分量。activations[-2]转置后规格为1*30,delta*activations[-2].transpose()的结果矩阵的规格就是10*30。也就是说对于输出层每一个神经元的误差，都需要分摊到连接该神经元的所有权重上。<br>　　接着看误差继续往前传播。<br>　　我们分析隐藏层的偏置\(b’\)的梯度。\(b’\)首先影响该层的输出\(z’\),\(z’=w’a’’+b’\)；\(z’\)影响\(a’=sigmoid(z’)\)；\(a’\)作为最后一层的输入影响z，\(z=wa’+b\)；\(z\)再影响\(a=sigmoid(z)\)，\(a\)最终影响代价函数\(C\)，根据链式法则：<br>$$\frac{\partial C}{\partial b’} = (\frac{\partial C}{\partial a} * \frac{\partial a}{\partial z})<br>* (\frac{\partial z}{\partial a’}) * (\frac{\partial a’}{\partial z’}) * (\frac{\partial z’}{\partial b’}) \\\\<br>=delta * w * sigmoid\_prime(z’) * 1$$<br>　　可以看出delta是之前后一层求得的，\(w\)是后一层的权重，\(z’\)是该层的输出(未激活)。<br>　　和代码中的公式相符。可以看出权重矩阵w规格是10*30, delta是10*1，sigmoid_prime(z’)是30*1, 则np.dot(self.weights[-l+1].transpose(), delta) * sp规格是30*1，也就是隐藏层30个神经元每个都有一个新的delta分量。<br>　　\(w’\)梯度的分析类似。</p>
+<h1 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h1><p>　　具体调用代码如下图所示：<br><img src="/picture/machine-learning/network_writting1.png" alt="network"><br>　　这里使用的是3层神经网络，输入层有784个神经元，隐藏层30个神经元，输出层10个神经元，进行30次迭代，每个mini_batch有10个数据，学习率设置为3。<br>　　可以看出随着迭代次数的增加，性能基本上也都有稳步提升。<br><img src="/picture/machine-learning/network_writting2.png" alt="network"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://neuralnetworksanddeeplearning.com/chap1.html" target="_blank" rel="external">神经网络和深度学习入门</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/神经网络/" rel="tag"># 神经网络</a>
+          
+            <a href="/tags/梯度下降/" rel="tag"># 梯度下降</a>
+          
+            <a href="/tags/反向传播/" rel="tag"># 反向传播</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/15/RL/" rel="next" title="强化学习：马尔科夫决策过程">
+                <i class="fa fa-chevron-left"></i> 强化学习：马尔科夫决策过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">62</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据集的加载"><span class="nav-number">1.</span> <span class="nav-text">数据集的加载</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#细节代码"><span class="nav-number">1.1.</span> <span class="nav-text">细节代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体使用"><span class="nav-number">1.2.</span> <span class="nav-text">具体使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#神经网络算法"><span class="nav-number">2.</span> <span class="nav-text">神经网络算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Network对象初始化"><span class="nav-number">2.1.</span> <span class="nav-text">Network对象初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前向传播算法"><span class="nav-number">2.2.</span> <span class="nav-text">前向传播算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随机梯度下降算法"><span class="nav-number">2.3.</span> <span class="nav-text">随机梯度下降算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后向传播算法"><span class="nav-number">2.4.</span> <span class="nav-text">后向传播算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行结果"><span class="nav-number">3.</span> <span class="nav-text">运行结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

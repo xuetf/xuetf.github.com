@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-07-15T09:18:38.497Z</updated>
+  <updated>2017-08-09T04:07:33.097Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -16,11 +16,57 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>强化学习</title>
+    <title>手写前馈神经网络(一)</title>
+    <link href="xtf615.com/2017/08/08/feedforward-neural-network-handwritten/"/>
+    <id>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</id>
+    <published>2017-08-08T06:07:05.000Z</published>
+    <updated>2017-08-09T04:07:33.097Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap1.html" target="_blank" rel="external">神经网络和深度学习教程</a>。<br><a id="more"></a></p>
+<h1 id="数据集的加载"><a href="#数据集的加载" class="headerlink" title="数据集的加载"></a>数据集的加载</h1><p>　　本文使用的数据集来自MNIST。MNIST是一个手写数字的数据库，它提供了六万的训练集和一万的测试集。每个手写数字图片都已经被规范处理过，是一张放在中间部位的28px*28px的灰度图。本文将训练集进一步划分成训练集和验证集，得到50000条训练集，10000条验证集，10000万条测试集。</p>
+<h2 id="细节代码"><a href="#细节代码" class="headerlink" title="细节代码"></a>细节代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mnist_loader.py：</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_data</span><span class="params">()</span>:</span></div><div class="line">    f = gzip.open(<span class="string">'../data/mnist.pkl.gz'</span>, <span class="string">'rb'</span>)</div><div class="line">    training_data, validation_data, test_data = cPickle.load(f)</div><div class="line">    f.close()</div><div class="line">    <span class="keyword">return</span> (training_data, validation_data, test_data)</div></pre></td></tr></table></figure>
+<p>　　上述代码cPickle.load(f)返回一个元组，包含训练集，验证集和测试集。训练集返回的是一个由两个元素构成的元组，第一个元素是包含50000条数据的numpy.ndarray，规格是(50000L, 784L)。即每条数据有784个值，代表了该手写数字的28*28=784个像素点。第二个元素是numpy ndarray数组，规格的是(50000L,)，每个分量代表的是第一个元素中相对应位置的数据的数字分类。<br>　　可以发现该数据虽然很规整，但在神经网络中用起来不够方便，我们需要对数据进一步处理一下。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">mnist_loader.py：</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_data_wrapper</span><span class="params">()</span>:</span></div><div class="line">    tr_d, va_d, te_d = load_data()</div><div class="line">    training_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> tr_d[<span class="number">0</span>]]<span class="comment">#把数据处理成列向量形式</span></div><div class="line">    training_results = [vectorized_result(y) <span class="keyword">for</span> y <span class="keyword">in</span> tr_d[<span class="number">1</span>]]<span class="comment">#把分类标记向量化</span></div><div class="line">    training_data = zip(training_inputs, training_results)<span class="comment">#每条数据都是2-tuples形式</span></div><div class="line">    validation_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> va_d[<span class="number">0</span>]]</div><div class="line">    validation_data = zip(validation_inputs, va_d[<span class="number">1</span>])</div><div class="line">    test_inputs = [np.reshape(x, (<span class="number">784</span>, <span class="number">1</span>)) <span class="keyword">for</span> x <span class="keyword">in</span> te_d[<span class="number">0</span>]]</div><div class="line">    test_data = zip(test_inputs, te_d[<span class="number">1</span>])</div><div class="line">    <span class="keyword">return</span> (training_data, validation_data, test_data)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">vectorized_result</span><span class="params">(j)</span>:</span></div><div class="line">    e = np.zeros((<span class="number">10</span>, <span class="number">1</span>))</div><div class="line">    e[j] = <span class="number">1.0</span></div><div class="line">    <span class="keyword">return</span> e</div></pre></td></tr></table></figure></p>
+<p>　　上述处理后，训练集是一个包含50000条数据，每一条数据都是2-tuples(x,y)形式，x是一个784维度的numpy.ndarray，规格是(784L, 1L)，y是一个10维numpy.ndarray，规格是(10L, 1L)，代表的是相应数字分类的单位向量。验证集和测试集类似，只不过y是具体的数字分类，而不是向量。</p>
+<h2 id="具体使用"><a href="#具体使用" class="headerlink" title="具体使用"></a>具体使用</h2><p>　　具体使用时，只要如下代码即可：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> mnist_loader</div><div class="line">training_data, validation_data, test_data = mnist_loader.load_data_wrapper()</div></pre></td></tr></table></figure></p>
+<h1 id="神经网络算法"><a href="#神经网络算法" class="headerlink" title="神经网络算法"></a>神经网络算法</h1><h2 id="Network对象初始化"><a href="#Network对象初始化" class="headerlink" title="Network对象初始化"></a>Network对象初始化</h2><p>　　我们需要对神经网络结构进行初始化，具体而言就是对权重和偏置进行初始化。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Network</span><span class="params">(object)</span>:</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, sizes)</span>:</span></div><div class="line">        self.num_layers = len(sizes)</div><div class="line">        self.sizes = sizes</div><div class="line">        self.biases = [np.random.randn(y, <span class="number">1</span>) <span class="keyword">for</span> y <span class="keyword">in</span> sizes[<span class="number">1</span>:]]</div><div class="line">        self.weights = [np.random.randn(y, x)</div><div class="line">                        <span class="keyword">for</span> x, y <span class="keyword">in</span> zip(sizes[:<span class="number">-1</span>], sizes[<span class="number">1</span>:])]</div><div class="line">net = Network([<span class="number">784</span>, <span class="number">30</span>, <span class="number">10</span>])</div></pre></td></tr></table></figure></p>
+<p>　　sizes参数代表的是神经网络的层数以及每层的神经元个数。例如[784,30,10]代表输入层有784个神经元，隐藏层有30个神经元，输出层有10个神经元。后面的例子都以该神经网络形状来阐述。<br>　　biases是神经元的偏置，输入层神经元不存在偏置，故从隐藏层开始，使用np.random.randn生成\(N \sim (0,1)\)的高斯分布。np.random.randn的参数代表维度数，例如(y,1)代表y行,1列的数组。因此biases是一个list，按照层的顺序进行存放，每个元素代表一层神经元的偏置的列向量(np.ndarray类型)。<br>　　而weights代表的是权重list。第一个元素代表从输入层到隐藏层的权重矩阵，矩阵的行是隐藏层(后一层)的神经元个数，列是输入层(前一层)的神经元个数。以此类推，按顺序存放。</p>
+<h2 id="前向传播算法"><a href="#前向传播算法" class="headerlink" title="前向传播算法"></a>前向传播算法</h2><p>　　对于特定的输入，返回对应的输出的方法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">feedforward</span><span class="params">(self, a)</span>:</span></div><div class="line">        <span class="keyword">for</span> b, w <span class="keyword">in</span> zip(self.biases, self.weights):</div><div class="line">            a = sigmoid(np.dot(w, a)+b)</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span><span class="params">(z)</span>:</span></div><div class="line">        <span class="keyword">return</span> <span class="number">1.0</span>/(<span class="number">1.0</span>+np.exp(-z))</div><div class="line">net.feedforward([[<span class="number">5</span>],[<span class="number">6</span>]])<span class="comment">#假设两个输入神经元数据</span></div></pre></td></tr></table></figure></p>
+<p>　　对于[784, 30, 10]结构的神经元，在第一次循环时，因为输入层到隐藏层的权重矩阵的规格是30*784，则w规格为(30L,784L)；输入神经元a的规格是(784L,1L)。因此w.a矩阵相乘结果即(30L,784L)*(784L,1L)，则为(30L,1L)，行数即隐藏层神经元的个数。<br>　　后面循环的过程中，直接将前一层的输出作为下一层的输入即可。</p>
+<h2 id="随机梯度下降算法"><a href="#随机梯度下降算法" class="headerlink" title="随机梯度下降算法"></a>随机梯度下降算法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">SGD</span><span class="params">(self, training_data, epochs, mini_batch_size, eta,</span></span></div><div class="line">        test_data=None):</div><div class="line">    <span class="keyword">if</span> test_data: n_test = len(test_data)</div><div class="line">    n = len(training_data)</div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> xrange(epochs):</div><div class="line">        random.shuffle(training_data)<span class="comment">#打乱数据</span></div><div class="line">        mini_batches = [</div><div class="line">            training_data[k:k+mini_batch_size]</div><div class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> xrange(<span class="number">0</span>, n, mini_batch_size)]<span class="comment">#等大小划分数据</span></div><div class="line">        <span class="keyword">for</span> mini_batch <span class="keyword">in</span> mini_batches:</div><div class="line">            self.update_mini_batch(mini_batch, eta)<span class="comment">#随机梯度下降</span></div><div class="line">        <span class="keyword">if</span> test_data:</div><div class="line">            <span class="keyword">print</span> <span class="string">"Epoch &#123;0&#125;: &#123;1&#125; / &#123;2&#125;"</span>.format(</div><div class="line">                j, self.evaluate(test_data), n_test)</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">print</span> <span class="string">"Epoch &#123;0&#125; complete"</span>.format(j)</div></pre></td></tr></table></figure>
+<p>　　training_data每条数据都是一个(x,y)元组的列表，表示训练输入和其对应的期望输出。变量epochs代表迭代数量，mini_batch_size代表采样时的小批量数据的大小。eta是学习速率\(\eta\)。如果给出了可选参数test_data，那么程序会在每个训练器后评估神经网络，并打印出部分进展，这对于追踪进度很有用。<br>　　代码如下工作。在每个迭代期，首先随机地将训练数据打乱，然后将它分成多个适当大小的小批量数据。然后对于每一个mini_batch应用一次梯度下降。<br>　　注意上述迭代是在上一次迭代结果的基础上继续迭代的。每次迭代唯一不同的是划分的数据mini_batch不相同。因此结果应该是不断优化的。当然应该会存在一个阈值。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update_mini_batch</span><span class="params">(self, mini_batch, eta)</span>:</span></div><div class="line">    nabla_b = [np.zeros(b.shape) <span class="keyword">for</span> b <span class="keyword">in</span> self.biases]</div><div class="line">    nabla_w = [np.zeros(w.shape) <span class="keyword">for</span> w <span class="keyword">in</span> self.weights]</div><div class="line">    <span class="keyword">for</span> x, y <span class="keyword">in</span> mini_batch:</div><div class="line">        delta_nabla_b, delta_nabla_w = self.backprop(x, y)</div><div class="line">        nabla_b = [nb+dnb <span class="keyword">for</span> nb, dnb <span class="keyword">in</span> zip(nabla_b, delta_nabla_b)]</div><div class="line">        nabla_w = [nw+dnw <span class="keyword">for</span> nw, dnw <span class="keyword">in</span> zip(nabla_w, delta_nabla_w)]</div><div class="line">    self.weights = [w-(eta/len(mini_batch))*nw</div><div class="line">                    <span class="keyword">for</span> w, nw <span class="keyword">in</span> zip(self.weights, nabla_w)]<span class="comment">#更新权重矩阵</span></div><div class="line">    self.biases = [b-(eta/len(mini_batch))*nb</div><div class="line">                   <span class="keyword">for</span> b, nb <span class="keyword">in</span> zip(self.biases, nabla_b)]<span class="comment">#更新偏置矩阵</span></div></pre></td></tr></table></figure></p>
+<p>　　上述代码是用来更新权重和偏置。首先根据权重和偏置矩阵的规格对\(\nabla b\)和\(\nabla w\)梯度进行初始化。然后对每个min_batch使用后向传播算法计算梯度。根据:<br>$$\frac{\sum_{j=1}^m \nabla C_{X_j}}{m} \approx \frac{\sum_x \nabla C_x}{n}=\nabla C$$<br>　　这里的第二个求和符号是在整个训练集数据上进行的。交换两边得到：<br>$$\nabla C \approx \frac{1}{m}\sum_{j=1}^m \nabla C_{X_j}$$<br>　　即小批量数据上\(\nabla C_{X_j}\)的平均值大致相等于整个\(\nabla C_{X}\)的平均值。<br>　　因此：<br>$$w_k := w_k - \frac{\eta}{m} \frac{\partial C_{X_j}}{\partial w_k}$$<br>$$b_l := b_l - \frac{\eta}{m} \frac{\partial C_{X_j}}{\partial b_l}$$<br>　　对应代码是上述最后两句。<br>　　实际上，偏置的更新不需要独立出来，只需要在每层增加一个神经元\(x_0=1\),这样就可以将偏置当作权重来对待了，使得代码更加简洁。<br>　　另外，测试集上性能评估函数如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate</span><span class="params">(self, test_data)</span>:</span></div><div class="line">    test_results = [(np.argmax(self.feedforward(x)), y)</div><div class="line">                    <span class="keyword">for</span> (x, y) <span class="keyword">in</span> test_data]<span class="comment">#输出层有10个输出，数值最大的那个神经元的下标即为数字分类结果</span></div><div class="line">    <span class="keyword">return</span> sum(int(x == y) <span class="keyword">for</span> (x, y) <span class="keyword">in</span> test_results)<span class="comment">#一共多少个相等</span></div></pre></td></tr></table></figure></p>
+<p>　　输出层有10个输出，根据sigmoid函数的图像，数值越大，代表可能性越高。因此数值最大的那个神经元的下标即为数字分类结果。</p>
+<h2 id="后向传播算法"><a href="#后向传播算法" class="headerlink" title="后向传播算法"></a>后向传播算法</h2><p>　　最后我们来重点研究下后向传播算法如何快速求得参数的梯度。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backprop</span><span class="params">(self, x, y)</span>:</span></div><div class="line">        nabla_b = [np.zeros(b.shape) <span class="keyword">for</span> b <span class="keyword">in</span> self.biases]</div><div class="line">        nabla_w = [np.zeros(w.shape) <span class="keyword">for</span> w <span class="keyword">in</span> self.weights]</div><div class="line">        </div><div class="line">        <span class="comment"># feedforward</span></div><div class="line">        activation = x</div><div class="line">        activations = [x] <span class="comment"># list to store all the activations, layer by layer</span></div><div class="line">        zs = [] <span class="comment"># list to store all the z vectors, layer by layer</span></div><div class="line">        <span class="keyword">for</span> b, w <span class="keyword">in</span> zip(self.biases, self.weights):</div><div class="line">            z = np.dot(w, activation)+b</div><div class="line">            zs.append(z)<span class="comment">#未激活</span></div><div class="line">            activation = sigmoid(z)<span class="comment">#激活单元</span></div><div class="line">            activations.append(activation)</div><div class="line"></div><div class="line">        <span class="comment"># backward pass 先计算输出层</span></div><div class="line">        delta = self.cost_derivative(activations[<span class="number">-1</span>], y) * \</div><div class="line">            sigmoid_prime(zs[<span class="number">-1</span>])</div><div class="line">        nabla_b[<span class="number">-1</span>] = delta</div><div class="line">        nabla_w[<span class="number">-1</span>] = np.dot(delta, activations[<span class="number">-2</span>].transpose())</div><div class="line">        <span class="comment"># Note that the variable l in the loop below is used a little</span></div><div class="line">        <span class="comment"># differently to the notation in Chapter 2 of the book.  Here,</span></div><div class="line">        <span class="comment"># l = 1 means the last layer of neurons, l = 2 is the</span></div><div class="line">        <span class="comment"># second-last layer, and so on.  It's a renumbering of the</span></div><div class="line">        <span class="comment"># scheme in the book, used here to take advantage of the fact</span></div><div class="line">        <span class="comment"># that Python can use negative indices in lists.</span></div><div class="line">        <span class="keyword">for</span> l <span class="keyword">in</span> xrange(<span class="number">2</span>, self.num_layers):</div><div class="line">            z = zs[-l]</div><div class="line">            sp = sigmoid_prime(z)</div><div class="line">            delta = np.dot(self.weights[-l+<span class="number">1</span>].transpose(), delta) * sp</div><div class="line">            nabla_b[-l] = delta</div><div class="line">            nabla_w[-l] = np.dot(delta, activations[-l<span class="number">-1</span>].transpose())</div><div class="line">        <span class="keyword">return</span> (nabla_b, nabla_w)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cost_derivative</span><span class="params">(self, output_activations, y)</span>:</span></div><div class="line">    <span class="keyword">return</span> (output_activations-y)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid_prime</span><span class="params">(z)</span>:</span></div><div class="line">    <span class="keyword">return</span> sigmoid(z)*(<span class="number">1</span>-sigmoid(z))</div></pre></td></tr></table></figure></p>
+<p>　　这里的参数x,y代表一条数据，因此该方法一次只对一条数据进行后向传播来计算梯度。首先进行初始化，根据权重矩阵和偏置矩阵的规格进行初始化。activation代表当前激活单元，activations保存所有的激活单元，按层存放，每层使用一个数组来存储。zs保存未激活前的单元，同理按层存放，每层使用一个数组来存储。因此这里的运算都是矩阵运算。<br>　　接着从输出层开始，反向进行误差的计算。cost_derivative方法根据代价函数来求得对输出激活单元的导数。这里使用的是二次代价函数:<br>$$C(w,b)=\frac{1}{2n} \sum_{x} ||y(x)-a||^2$$<br>　　这里的n代表样本量，a代表输入为x时输出的向量(激活单元)，y(x)是数据的真实标记向量。<br>　　如果样本量为1，则：<br>$$\frac{\partial C}{\partial a}=-(y-a)=a-y$$<br>　　sigmoid_prime是对sigmoid函数求导。<br>　　我们想求输出层偏置的梯度\(\frac{\partial C}{\partial b}\)。首先分析下输出层偏置影响了哪些东西。令输出层偏置为\(b\)，输出层最终输出为\(a\)(激活了)，输出层激活前为\(z\)(前一层输出和权重线性组合后，未经过sigmoid函数处理)。<br>　　因为\(z=wa’+b\),其中\(a’\)是前一层的输出，因此\(b\)首先影响\(z\)。紧接着因为\(a=sigmoid(z)\),因此\(z\)影响\(a\)。而根据代价函数,\(a\)最终再影响代价函数。因此，根据链式求导法则：<br>$$\frac{\partial C}{\partial b} = \frac{\partial C}{\partial a} * \frac{\partial a}{\partial z} * \frac{\partial z}{\partial b} \\\ <br>=(a-y)* [sigmoid(z)(1-sigmoid(z)] * 1 \\\ $$<br>　　上述式子可以逆着写，即从最后一个式子开始往前写。该结果和上述代码相符。<br>　　注意到，向量的乘法是相同位置上的数相乘。向量的点乘np.dot才是我们熟悉的矩阵运算。因此delta = self.cost_derivative(activations[-1], y)*sigmoid_prime(zs[-1])是第一种情况，得到的delta规格也是10*1。<br>　　紧接着我们想求是输出层权重的梯度\(\frac{\partial C}{\partial w}\)。同理分析，\(w\)首先影响\(z\),\(z=wa’+b\)。\(z\)再影响\(a\),\(a=sigmoid(z)\)。\(a\)最终影响代价函数，因此根据链式求导法则：<br>$$\frac{\partial C}{\partial w} = \frac{\partial C}{\partial a} * \frac{\partial a}{\partial z} * \frac{\partial z}{\partial w} \\\ <br>=(a-y)* [sigmoid(z)(1-sigmoid(z)] * a’ \\\ $$<br>　　其中\(a’\)是前一层的输出。可以发现只要定义前一层\(a_0=1\)，则\(w,b\)的求导可以统一起来，不需要分开求。<br>　　注意delta的规格10*1，也就是输出层10个神经元每个都有一个分量。activations[-2]的规格是30*1，也就是前一层的神经元每个输出都有一个分量。activations[-2]转置后规格为1*30,delta*activations[-2].transpose()的结果矩阵的规格就是10*30。也就是说对于输出层每一个神经元的误差，都需要分摊到连接该神经元的所有权重上。<br>　　接着看误差继续往前传播。<br>　　我们分析隐藏层的偏置\(b’\)的梯度。\(b’\)首先影响该层的输出\(z’\),\(z’=w’a’’+b’\)；\(z’\)影响\(a’=sigmoid(z’)\)；\(a’\)作为最后一层的输入影响z，\(z=wa’+b\)；\(z\)再影响\(a=sigmoid(z)\)，\(a\)最终影响代价函数\(C\)，根据链式法则：<br>$$\frac{\partial C}{\partial b’} = (\frac{\partial C}{\partial a} * \frac{\partial a}{\partial z})<br>* (\frac{\partial z}{\partial a’}) * (\frac{\partial a’}{\partial z’}) * (\frac{\partial z’}{\partial b’}) \\\\<br>=delta * w * sigmoid\_prime(z’) * 1$$<br>　　可以看出delta是之前后一层求得的，\(w\)是后一层的权重，\(z’\)是该层的输出(未激活)。<br>　　和代码中的公式相符。可以看出权重矩阵w规格是10*30, delta是10*1，sigmoid_prime(z’)是30*1, 则np.dot(self.weights[-l+1].transpose(), delta) * sp规格是30*1，也就是隐藏层30个神经元每个都有一个新的delta分量。<br>　　\(w’\)梯度的分析类似。</p>
+<h1 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h1><p>　　具体调用代码如下图所示：<br><img src="/picture/machine-learning/network_writting1.png" alt="network"><br>　　这里使用的是3层神经网络，输入层有784个神经元，隐藏层30个神经元，输出层10个神经元，进行30次迭代，每个mini_batch有10个数据，学习率设置为3。<br>　　可以看出随着迭代次数的增加，性能基本上也都有稳步提升。<br><img src="/picture/machine-learning/network_writting2.png" alt="network"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://neuralnetworksanddeeplearning.com/chap1.html" target="_blank" rel="external">神经网络和深度学习入门</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文将介绍使用Python手写“前馈神经网络”代码的具体步骤和细节。前馈神经网络采用随机梯度下降算法进行学习，代价函数的梯度计算方法使用的是反向传播算法。具体代码可参考&lt;a href=&quot;http://neuralnetworksanddeeplearning.com/chap1.html&quot;&gt;神经网络和深度学习教程&lt;/a&gt;。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
+    
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
+    
+      <category term="梯度下降" scheme="xtf615.com/tags/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D/"/>
+    
+      <category term="反向传播" scheme="xtf615.com/tags/%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>强化学习：马尔科夫决策过程</title>
     <link href="xtf615.com/2017/07/15/RL/"/>
     <id>xtf615.com/2017/07/15/RL/</id>
     <published>2017-07-15T01:18:10.000Z</published>
-    <updated>2017-07-15T09:18:38.497Z</updated>
+    <updated>2017-07-16T07:42:16.133Z</updated>
     
     <content type="html"><![CDATA[<p>　　强化学习（Reinforcement Learning, RL）又叫做增强学习，是近年来机器学习和智能控制领域的主要方法之一。本文将重点介绍强化学习的概念以及马尔科夫决策过程。<br><a id="more"></a></p>
 <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>　　英文定义：Reinforcement learning is learning what to do —-how to map situations to actions —- so as to maximize a numerical reward signal.<br>　　也就是说强化学习关注的是智能体如何在环境中采取一系列行为，从而获得最大的累积回报。通过强化学习，一个智能体应该知道在<strong>什么状态下应该采取什么行为</strong>。RL是从环境状态到动作的映射的学习，我们把这个映射称为策略。</p>
@@ -887,9 +933,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
     
   </entry>
   
@@ -991,9 +1037,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
     
   </entry>
   
@@ -1159,9 +1205,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
-    
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
     
   </entry>
   
@@ -1170,7 +1216,7 @@
     <link href="xtf615.com/2017/02/17/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-%E7%B3%BB%E5%88%972/"/>
     <id>xtf615.com/2017/02/17/神经网络-系列2/</id>
     <published>2017-02-17T08:28:37.000Z</published>
-    <updated>2017-02-18T07:50:10.027Z</updated>
+    <updated>2017-08-08T06:10:57.867Z</updated>
     
     <content type="html"><![CDATA[<p>神经网络的入门知识参见<a href="/2017/02/13/神经网络/">神经网络(系列1)</a><br>本文主要对神经网络进行深入，探讨神经网络模型的学习。</p>
 <h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>首先引入一些便于稍后讨论的新标记方法：<br>假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。<br>将神经网络的分类定义为两种情况：二类分类和多类分类:<br>二类分类：\(S_L=1\), y=0 or 1表示哪一类；<br>K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&gt;2）<br><img src="/picture/machine-learning/network_learn1.jpg" alt="network_learn"><br>我们回顾逻辑回归问题中我们的代价函数为：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$<br>在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：<br>$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$<br><img src="/picture/machine-learning/network_learn2.jpg" alt="network_learn"><br>这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。<br>注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。<br><a id="more"></a></p>
@@ -1208,7 +1254,7 @@
     
     </summary>
     
-      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
     
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
@@ -1224,7 +1270,7 @@
     <link href="xtf615.com/2017/02/13/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     <id>xtf615.com/2017/02/13/神经网络/</id>
     <published>2017-02-13T10:23:23.000Z</published>
-    <updated>2017-02-17T08:25:39.073Z</updated>
+    <updated>2017-08-08T06:10:44.632Z</updated>
     
     <content type="html"><![CDATA[<h1 id="非线性假设"><a href="#非线性假设" class="headerlink" title="非线性假设"></a>非线性假设</h1><p>我们之前学的，无论是线性回归还是逻辑回归都有这样一个缺点，即：当特征太多时，计算的负荷会非常大。<br>下面是一个例子：<br><img src="/picture/machine-learning/network1.jpg" alt="network"><br>当我们使用\(x_1,x_2\)的多次项式进行预测时，我们可以应用得很好。<br>之前我们已经看到过，使用非线性的多项式项，能够帮助我们建立更好的分类模型。假设我们有非常多的特征，例如大于100个变量，我们希望用这100个特征来构建一个非线性的多项式模型，结果将是数量非常惊人的特征组合，即便我们只采用两两特征的组合\(x_1x_2+x_1x_3+x_1x_4+…+x_2x_3+x_2x_4+…+x_{99}x_{100}\),我们也会有接近5000个组合而成的特征。这对于一般的逻辑回归来说需要计算的特征太多了。<br>假设我们希望训练一个模型来识别视觉对象（例如识别一张图片上是否是一辆汽车）。<br>我们怎样才能这么做呢？一种方法是我们利用很多汽车的图片和很多非汽车的图片，然后利用这些图片上一个个像素的值（饱和度或亮度）来作为特征。<br>假如我们只选用灰度图片，每个像素则只有一个值（而非RGB值），我们可以选取图片上的两个不同位置上的两个像素，然后训练一个逻辑回归算法利用这两个像素的值来判断图片上是否是汽车：<br><img src="/picture/machine-learning/network2.jpg" alt="network"><br>假使我们采用的都是  50x50像素的小图片，并且我们将所有的像素视为特征，则会有2500个特征，如果我们要进一步将两两特征组合构成一个多项式模型，则会有约\(\frac{2500^2}{2}\)个（接近3百万个）特征。普通的逻辑回归模型，不能有效地处理这么多的特征，这时候我们就需要神经网络。</p>
 <h1 id="神经元和大脑"><a href="#神经元和大脑" class="headerlink" title="神经元和大脑"></a>神经元和大脑</h1><p>神经网络是一种很古老的算法，它最初产生的目的是制造能模拟大脑的机器。<br>接下来我将介绍神经网络。它能很好地解决不同的机器学习问题。首先介绍一些神经网络的背景知识，由此我们能知道可以用它们来做什么。不管是将其应用到现代的机器学习问题上，还是应用到那些你可能会感兴趣的问题中。也许，这一伟大的人工智能梦想在未来能制造出真正的智能机器。另外，我们还将讲解神经网络是怎么涉及这些问题的，神经网络产生的原因是人们想尝试设计出模仿大脑的算法，从某种意义上说如果我们想要建立学习系统，那为什么不去模仿我们所认识的最神奇的学习机器——人类的大脑呢？<br><a id="more"></a></p>
@@ -1260,7 +1306,7 @@
     
     </summary>
     
-      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+      <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
     
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
@@ -1342,103 +1388,6 @@
       <category term="广义线性模型" scheme="xtf615.com/tags/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
     
       <category term="逻辑回归" scheme="xtf615.com/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>基于jieba分词和nltk的情感分析</title>
-    <link href="xtf615.com/2017/02/10/%E5%9F%BA%E4%BA%8Ejieba%E5%88%86%E8%AF%8D%E5%92%8Cnltk%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
-    <id>xtf615.com/2017/02/10/基于jieba分词和nltk的情感分析/</id>
-    <published>2017-02-10T10:45:56.000Z</published>
-    <updated>2017-02-11T07:33:21.302Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="自然语言处理NLP"><a href="#自然语言处理NLP" class="headerlink" title="自然语言处理NLP"></a>自然语言处理NLP</h1><p>情感分析作为自然语言处理的一个部分，让我们首先看一下自然语言处理。</p>
-<h2 id="相关技术及运用"><a href="#相关技术及运用" class="headerlink" title="相关技术及运用"></a>相关技术及运用</h2><p>自动问答（Question Answering，QA）：它是一套可以理解复杂问题，并以充分的准确度、可信度和速度给出答案的计算系统，以IBM‘s Waston为代表；<br>信息抽取（Information Extraction，IE）：其目的是将非结构化或半结构化的自然语言描述文本转化结构化的数据，如自动根据邮件内容生成Calendar；<br>情感分析（Sentiment Analysis，SA）：又称倾向性分析和意见挖掘，它是对带有情感色彩的主观性文本进行分析、处理、归纳和推理的过程，如从大量网页文本中分析用户对“数码相机”的“变焦、价格、大小、重量、闪光、易用性”等属性的情感倾向；<br>机器翻译（Machine Translation，MT）：将文本从一种语言转成另一种语言，如中英机器翻译。</p>
-<h2 id="发展现状"><a href="#发展现状" class="headerlink" title="发展现状"></a>发展现状</h2><p>基本解决：词性标注、命名实体识别、Spam识别<br>取得长足进展：情感分析、共指消解、词义消歧、句法分析、机器翻译、信息抽取<br>挑战：自动问答、复述、文摘、会话机器人<br><img src="/picture/machine-learning/nlp_process.png" alt="nlp_process"><br><a id="more"></a>  </p>
-<h2 id="NLP主要难点——歧义问题"><a href="#NLP主要难点——歧义问题" class="headerlink" title="NLP主要难点——歧义问题"></a>NLP主要难点——歧义问题</h2><ul>
-<li>词法分析歧义：<br>1）分词， 如“严守一把手机关了”，可能的分词结果“严守一/ 把/ 手机/ 关/ 了” 和“严守/ 一把手/ 机关/ 了”。2）词性标注， 如“计划”在不同上下文中有不同的词性：“我/ 计划/v 考/ 研/”和“我/ 完成/ 了/ 计划/n”</li>
-<li>语法分析歧义：<br>“那只狼咬死了猎人的狗”。 ”咬死了猎人的狗失踪了”。</li>
-<li>语义分析歧义：<br>计算机会像你的母亲那样很好的理解你（的语言）： 1）计算机理解你喜欢你的母亲。2）计算机会像很好的理解你的母亲那样理解你</li>
-<li>NLP应用中的歧义：<br>音字转换：拼音串“ji qi fan yi ji qi ying yong ji qi le ren men ji qi nong hou de xing qu”中的“ji qi”如何转换成正确的词条<h2 id="为什么自然语言理解如此困难？"><a href="#为什么自然语言理解如此困难？" class="headerlink" title="为什么自然语言理解如此困难？"></a>为什么自然语言理解如此困难？</h2></li>
-<li>用户生成内容中存在大量口语化、成语、方言等非标准的语言描述</li>
-<li>分词问题</li>
-<li>新词不断产生</li>
-<li>基本常识与上下文知识</li>
-<li>各式各样的实体词</li>
-</ul>
-<p>为了解决以上难题，我们需要掌握较多的语言学知识，构建知识库资源，并找到一种融合各种知识、资源的方法，目前使用较多是概率模型 （probabilistic model）或称为统计模型（statistical model），或者称为“经验主义模型”，其建模过程基于大规模真实语料库，从中各级语言单位上的统计信息，并且，依据较低级语言单位上的统计信息，运行 相关的统计、推理等技术计算较高级语言单位上的统计信息。与其相对的“理想主义模型”，即基于Chomsky形式语言的确定性语言模型，它建立在人脑中先 天存在语法规则这一假设基础上，认为语言是人脑语言能力推导出来的，建立语言模型就是通过建立人工编辑的语言规则集来模拟这种先天的语言能力。</p>
-<h1 id="情感分析概念"><a href="#情感分析概念" class="headerlink" title="情感分析概念"></a>情感分析概念</h1><p>情感分析（Sentiment analysis），又称倾向性分析，意见抽取（Opinion extraction），意见挖掘（Opinion mining），情感挖掘（Sentiment mining），主观分析（Subjectivity analysis），它是对带有情感色彩的主观性文本进行分析、处理、归纳和推理的过程，如从评论文本中分析用户对“数码相机”的“变焦、价格、大小、重 量、闪光、易用性”等属性的情感倾向。</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><ul>
-<li><p><strong>从电影评论中识别用户对电影的褒贬评价</strong><br><img src="/picture/machine-learning/movie_comment.png" alt="movie_comment"></p>
-</li>
-<li><p>Google Product Search识别用户对产品各种属性的评价，并从评论中选择代表性评论展示给用户<br><img src="/picture/machine-learning/product_comment.png" alt="product_comment"></p>
-</li>
-<li><p>微信新闻识别用户对新闻的各种评价，并从评论中选择代表性评论展示给用户</p>
-</li>
-<li><p>Twitter sentiment versus Gallup Poll of Consumer Confidence：挖掘Twitter中的用户情感发现，其与传统的调查、投票等方法结果有高度的一致性。<br>下图中2008年到2009年初，网民情绪低谷是金融危机导致，从2009年5月份开始慢慢恢复。<br><img src="/picture/machine-learning/mental.png" alt="mental"></p>
-</li>
-<li><p>Twitter sentiment: 通过Twitter用户情感预测股票走势。<br>2012年5月，世界首家基于社交媒体的对冲基金 Derwent Capital Markets 在屡次跳票后终于上线。它会即时关注Twitter 中的公众情绪指导投资。正如基金创始人保罗•郝汀（Paul Hawtin）表示：“长期以来，投资者已经广泛地认可金融市场由恐惧和贪婪驱使，但我们从未拥有一种技术或数据来量化人们的情感。”一直为金融市场非理性举动所困惑的投资者，终于有了一扇可以了解心灵世界的窗户——那便是 Twitter 每天浩如烟海的推文，在一份八月份的报道中显示，利用 Twitter 的对冲基金 Derwent Capital Markets 在首月的交易中已经盈利，它以1.85%的收益率，让平均数只有0.76%的其他对冲基金相形见绌。类似的工作还有预测电影票房、选举结果等，均是将公众 情绪与社会事件对比，发现一致性，并用于预测，如将“冷静CLAM”情绪指数后移3天后和道琼斯工业平均指数DIJA惊人一致。<br><img src="/picture/machine-learning/stock_predict.png" alt="stock"></p>
-</li>
-<li><p>Target Sentiment on Twitter（Twitter Sentiment App）：对Twitter中包含给定query的tweets进行情感分类。对于公司了解用户对公司、产品的喜好，用于指导改善产品和服务，公司还可以 据此发现竞争对手的优劣势，用户也可以根据网友甚至亲友评价决定是否购买特定产品。详细见论文：Alec Go, Richa Bhayani, Lei Huang. 2009. Twitter Sentiment Classification using Distant Supervision.<br><img src="/picture/machine-learning/search_sentiment.png" alt="search"></p>
-</li>
-</ul>
-<h2 id="情感分析内容"><a href="#情感分析内容" class="headerlink" title="情感分析内容"></a>情感分析内容</h2><h3 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h3><p>情感分析主要目的就是识别用户对事物或人的看法、态度。<br>参与主体主要包括：</p>
-<ul>
-<li>Holder (source) of attitude：观点持有者</li>
-<li>Target (aspect) of attitude：评价对象</li>
-<li>Type of attitude：评价观点</li>
-<li>From a set of types：观点类型：Like, love, hate, value, desire, etc.<br>Or (more commonly) simple weighted polarity: positive, negative, neutral,together with strength</li>
-<li>Text containing the attitude：评价文本，一般是句子或整篇文档。</li>
-<li>更细更深入的还包括评价属性，情感词/极性词，评价搭配等。</li>
-</ul>
-<p>通常，我们面临的情感分析任务包括如下几类：</p>
-<ul>
-<li>是正面还是反面情绪？<br>Simplest task: Is the attitude of this text positive or negative?</li>
-<li>排序态度：<br>More complex: Rank the attitude of this text from 1 to 5</li>
-<li>检测目的、观点等：<br>Advanced: Detect the target, source, or complex attitude types</li>
-</ul>
-<h2 id="词典匹配VS机器学习"><a href="#词典匹配VS机器学习" class="headerlink" title="词典匹配VS机器学习"></a>词典匹配VS机器学习</h2><p>不是有词典匹配的方法了吗？怎么还搞多个机器学习方法。因为词典方法和机器学习方法各有千秋。<br>机器学习的方法精确度更高，因为词典匹配会由于语义表达的丰富性而出现很大误差，而机器学习方法不会。而且它可使用的场景更多样。无论是主客观分类还是正负面情感分类，机器学习都可以完成任务。而无需像词典匹配那样要深入到词语、句子、语法这些层面。<br>而词典方法适用的语料范围更广，无论是手机、电脑这些商品，还是书评、影评这些语料，都可以适用。但机器学习则极度依赖语料，把手机语料训练出来的的分类器拿去给书评分类，那是注定要失败的。<br>使用机器学习进行情感分析，可以换一个相同意思的说法，就是用有监督的（需要人工标注类别）机器学习方法来对文本进行分类。<br>这点与词典匹配有着本质的区别。<strong>词典匹配是直接计算文本中的情感词，得出它们的情感倾向分值</strong>。而<strong>机器学习方法的思路是先选出一部分表达积极情感的文本和一部分表达消极情感的文本，用机器学习方法进行训练，获得一个情感分类器。再通过这个情感分类器对所有文本进行积极和消极的二分分类</strong>。最终的分类可以为文本给出0或1这样的类别，也可以给出一个概率值，比如”这个文本的积极概率是90%，消极概率是10%“。</p>
-<h2 id="NLTK"><a href="#NLTK" class="headerlink" title="NLTK"></a>NLTK</h2><p>Python 有良好的程序包可以进行情感分类，那就是Python 自然语言处理包，Natural Language Toolkit ，简称NLTK 。NLTK 当然不只是处理情感分析，NLTK 有着整套自然语言处理的工具，从分词到实体识别，从情感分类到句法分析，完整而丰富，功能强大。实乃居家旅行，越货杀人之必备良药。<br>另外，<strong>NLTK 新增的scikit-learn 的接口</strong>，使得它的分类功能更为强大好用了，可以用很多高端冷艳的分类算法了。<br>有了scikit-learn 的接口，NLTK 做分类变得比之前更简单快捷，但是相关的结合NLTK 和 sciki-learn 的文章实在少。</p>
-<h1 id="构建情感分析工具流程"><a href="#构建情感分析工具流程" class="headerlink" title="构建情感分析工具流程"></a>构建情感分析工具流程</h1><h2 id="人工标注"><a href="#人工标注" class="headerlink" title="人工标注"></a>人工标注</h2><p>有监督意味着需要人工标注，需要人为的给文本一个类标签。比如我有5000条商品评论，如果我要把这些评论分成积极和消极两类。那我就可以先从里面选2000条评论，然后对这2000条数据进行人工标注，把这2000条评论标为“积极”或“消极”。这“积极”和“消极”就是类标签。 假设有1000条评论被标为“积极”，有1000条评论被标为“消极”。（两者数量相同对训练分类器是有用的，如果实际中数量不相同，应该减少和增加数据以使得它们数量相同）</p>
-<h2 id="特征选择"><a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h2><p>特征就是分类对象所展现的部分特点，是实现分类的依据。我们经常会做出分类的行为，那我们依据些什么进行分类呢？ 举个例子，如果我看到一个年轻人，穿着新的正装，提着崭新的公文包，快步行走，那我就会觉得他是一个刚入职的职场新人。在这里面，“崭新”，“正装”，“公文包”，“快步行走”都是这个人所展现出的特点，也是我用来判断这个人属于哪一类的依据。这些特点和依据就是特征。可能有些特征对我判断更有用，有些对我判断没什么用，有些可能会让我判断错误，但这些都是我分类的依据。<br>我们没办法发现一个人的所有特点，所以我们没办法客观的选择所有特点，我们只能主观的选择一部分特点来作为我分类的依据。这也是特征选择的特点，需要人为的进行一定选择。<br><strong>而在情感分类中，一般从“词”这个层次来选择特征。</strong><br>比如这句话“手机非常好用！”，我给了它一个类标签“Positive”。里面有四个词（把感叹号也算上），“手机”，“非常”，“好用”，“！”。我可以认为这4个词都对分类产生了影响，都是分类的依据。也就是无论什么地方出现了这四个词的其中之一，文本都可以被分类为“积极”。这个是把所有词都作为分类特征。<br>同样的，对这句话，我也可以选择它的双词搭配（Bigrams）作为特征。比如“手机 非常”，“非常 好用”，“好用 ！”这三个搭配作为分类的特征。以此类推，三词搭配（Trigrams），四词搭配都是可以被作为特征的。</p>
-<h2 id="特征降维"><a href="#特征降维" class="headerlink" title="特征降维"></a>特征降维</h2><p>特征降维说白了就是减少特征的数量。这有两个意义，一个是特征数量减少了之后可以加快算法计算的速度（数量少了当然计算就快了），另一个是如果用一定的方法选择信息量丰富的特征，可以减少噪音，有效提高分类的准确率。<br>所谓信息量丰富，可以看回上面这个例子“手机非常好用！”，很明显，其实不需要把“手机”，“非常”，“好用”，“！”这4个都当做特征，因为“好用”这么一个词，或者“非常 好用”这么一个双词搭配就已经决定了这个句子是“积极”的。这就是说，“好用”这个词的信息量非常丰富。<br><strong>那要用什么方法来减少特征数量呢？</strong><br>答案是通过一定的统计方法找到信息量丰富的特征。<br>统计方法包括：词频（Term Frequency）、文档频率（Document Frequency）、互信息（Pointwise Mutual Information）、信息熵（Information Entropy）、卡方统计（Chi-Square）等等。<br>在情感分类中，用词频选择特征，也就是选在语料库中出现频率高的词。比如我可以选择语料库中词频最高的2000个词作为特征。用文档频率选特征，是选在语料库的不同文档中出现频率最高的词。其他类似，都是要通过某个统计方法选择信息量丰富的特征。特征可以是词，可以是词组合。</p>
-<h2 id="文本特征化"><a href="#文本特征化" class="headerlink" title="文本特征化"></a>文本特征化</h2><p>在使用分类算法进行分类之前，第一步是要把所有原始的语料文本转化为特征表示的形式。<br>还是以上面那句话做例子，“手机非常好用！”<br>如果在NLTK 中，如果选择所有词作为特征，其形式是这样的：[ {“手机”: True, “非常”: True, “好用”: True, “！”: True} , positive]<br>如果选择双词作为特征，其形式是这样的：[ {“手机 非常”: True, “非常 好用”: True, “好用 ！”: True} , positive ]<br>如果选择信息量丰富的词作为特征，其形式是这样的：[ {“好用”: True} , positive ]<br>无论使用什么特征选择方法，其形式都是一样的。都是[ {“特征1”: True, “特征2”: True, “特征N”: True, }, 类标签 ]</p>
-<h2 id="划分数据集"><a href="#划分数据集" class="headerlink" title="划分数据集"></a>划分数据集</h2><p>把用特征表示之后的文本分成开发集和测试集，把开发集分成训练集和验证集。机器学习分类必须有数据给分类算法训练，这样才能得到一个（基于训练数据的）分类器。有了分类器之后，就需要检测这个分类器的准确度。</p>
-<h2 id="分类算法学习"><a href="#分类算法学习" class="headerlink" title="分类算法学习"></a>分类算法学习</h2><p>这个时候终于可以使用各种高端冷艳的机器学习算法啦！<br>我们的目标是：找到最佳的机器学习算法。<br>可以使用朴素贝叶斯（NaiveBayes），决策树（Decision Tree）等NLTK 自带的机器学习方法。也可以更进一步，使用NLTK 的scikit-learn 接口，这样就可以调用scikit-learn 里面的所有。</p>
-<h2 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h2><p>在终于得到最佳分类算法和特征维度（数量）之后，就可以动用测试集。<br>直接用最优的分类算法对测试集进行分类，得出分类结果。对比分类器的分类结果和人工标注的正确结果，给出分类器的最终准确度。</p>
-<h1 id="开发实践"><a href="#开发实践" class="headerlink" title="开发实践"></a>开发实践</h1><p>本次实践只是简单的进行文本评论正反面的预测。选取的材料是京东商城酒类商品的评论。</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>准备人工标注好的好评和差评文本. good.txt  bad.txt</p>
-<ul>
-<li>好评<br><img src="/picture/machine-learning/good.jpg" alt="good"></li>
-<li>差评<br><img src="/picture/machine-learning/bad.jpg" alt="bad"></li>
-<li>停用词（上网查找的）<br><img src="/picture/machine-learning/stop.jpg" alt="stop"><h2 id="特征提取和选择"><a href="#特征提取和选择" class="headerlink" title="特征提取和选择"></a>特征提取和选择</h2></li>
-<li>使用jieba分词对文本进行分词<br><img src="/picture/machine-learning/jieba_cut.jpg" alt="jieba"></li>
-<li>构建特征<br><img src="/picture/machine-learning/feature_selection_nlp.jpg" alt="feature_selection_nlp"></li>
-<li>选择特征<br><img src="/picture/machine-learning/feature_selection_nlp2.jpg" alt="feature_selection_nlp"><br><img src="/picture/machine-learning/feature_selection_nlp3.jpg" alt="feature_selection_nlp"><h2 id="划分数据集-1"><a href="#划分数据集-1" class="headerlink" title="划分数据集"></a>划分数据集</h2><img src="/picture/machine-learning/split_data.jpg" alt="split_data"><h2 id="构建分类器"><a href="#构建分类器" class="headerlink" title="构建分类器"></a>构建分类器</h2><img src="/picture/machine-learning/classifier_sentiment.jpg" alt="classifier_sentiment"><br><img src="/picture/machine-learning/classifier_sentiment2.jpg" alt="classifier_sentiment"><h2 id="预测-1"><a href="#预测-1" class="headerlink" title="预测"></a>预测</h2><img src="/picture/machine-learning/predict_sentiment.jpg" alt="predict_sentiment"><br>下图是朴素贝叶斯得到的结果：可以看到正确率达到了90%<br><img src="/picture/machine-learning/predict_sentiment2.jpg" alt="predict_sentiment"><br>下图是其他算法得到的结果：可以看到逻辑回归和线性SVM正确率都在96%以上，效果不错。<br><img src="/picture/machine-learning/predict_sentiment3.jpg" alt="predict_sentiment"></li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.open-open.com/lib/view/open1421114964515.html" target="_blank" rel="external">大数据文摘：斯坦福大学怎样讲“情感分析”</a><br><a href="http://www.nltk.org/" target="_blank" rel="external">NLTK官网</a><br><a href="http://streamhacker.com/" target="_blank" rel="external">StreamHacker</a><br><a href="http://andybromberg.com/sentiment-analysis-python/" target="_blank" rel="external">Andybromberg</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;自然语言处理NLP&quot;&gt;&lt;a href=&quot;#自然语言处理NLP&quot; class=&quot;headerlink&quot; title=&quot;自然语言处理NLP&quot;&gt;&lt;/a&gt;自然语言处理NLP&lt;/h1&gt;&lt;p&gt;情感分析作为自然语言处理的一个部分，让我们首先看一下自然语言处理。&lt;/p&gt;
-&lt;h2 id=&quot;相关技术及运用&quot;&gt;&lt;a href=&quot;#相关技术及运用&quot; class=&quot;headerlink&quot; title=&quot;相关技术及运用&quot;&gt;&lt;/a&gt;相关技术及运用&lt;/h2&gt;&lt;p&gt;自动问答（Question Answering，QA）：它是一套可以理解复杂问题，并以充分的准确度、可信度和速度给出答案的计算系统，以IBM‘s Waston为代表；&lt;br&gt;信息抽取（Information Extraction，IE）：其目的是将非结构化或半结构化的自然语言描述文本转化结构化的数据，如自动根据邮件内容生成Calendar；&lt;br&gt;情感分析（Sentiment Analysis，SA）：又称倾向性分析和意见挖掘，它是对带有情感色彩的主观性文本进行分析、处理、归纳和推理的过程，如从大量网页文本中分析用户对“数码相机”的“变焦、价格、大小、重量、闪光、易用性”等属性的情感倾向；&lt;br&gt;机器翻译（Machine Translation，MT）：将文本从一种语言转成另一种语言，如中英机器翻译。&lt;/p&gt;
-&lt;h2 id=&quot;发展现状&quot;&gt;&lt;a href=&quot;#发展现状&quot; class=&quot;headerlink&quot; title=&quot;发展现状&quot;&gt;&lt;/a&gt;发展现状&lt;/h2&gt;&lt;p&gt;基本解决：词性标注、命名实体识别、Spam识别&lt;br&gt;取得长足进展：情感分析、共指消解、词义消歧、句法分析、机器翻译、信息抽取&lt;br&gt;挑战：自动问答、复述、文摘、会话机器人&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/nlp_process.png&quot; alt=&quot;nlp_process&quot;&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-    
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-      <category term="情感分析" scheme="xtf615.com/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/"/>
-    
-      <category term="自然语言处理" scheme="xtf615.com/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
-    
-      <category term="分词" scheme="xtf615.com/tags/%E5%88%86%E8%AF%8D/"/>
-    
-      <category term="NLTK" scheme="xtf615.com/tags/NLTK/"/>
     
   </entry>
   
