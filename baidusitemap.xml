@@ -5,7 +5,7 @@
     
   <url>
     <loc>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</loc>
-    <lastmod>2017-08-09T07:41:07.832Z</lastmod>
+    <lastmod>2017-08-09T11:50:56.209Z</lastmod>
     <data>
         <display>
         <title>手写前馈神经网络(一)</title>
@@ -239,13 +239,13 @@
         
         <tag>大数据</tag>
          
+        <tag>分布式</tag>
+         
         <tag>redis</tag>
          
         <tag>ActiveMQ</tag>
          
         <tag>车联网</tag>
-         
-        <tag>分布式</tag>
          
          
            
@@ -437,9 +437,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>逻辑回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
@@ -463,9 +463,9 @@
          
         <tag>梯度下降</tag>
          
-        <tag>线性回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>线性回归</tag>
          
          
            
@@ -665,11 +665,11 @@
         <title>redis分布式环境搭建教程</title>
         <pubTime>2016-12-29T07:56:43.000Z</pubTime>
         
-        <tag>redis</tag>
-         
         <tag>分布式</tag>
          
         <tag>环境</tag>
+         
+        <tag>redis</tag>
          
         <tag>缓存</tag>
          
@@ -693,11 +693,11 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
+        <tag>spark</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
-         
-        <tag>spark</tag>
          
         <tag>内存</tag>
          
