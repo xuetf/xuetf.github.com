@@ -4,11 +4,33 @@
 
     
   <url>
-    <loc>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</loc>
-    <lastmod>2017-08-09T11:50:56.209Z</lastmod>
+    <loc>xtf615.com/2017/08/17/cnn-written/</loc>
+    <lastmod>2017-08-18T12:54:06.480Z</lastmod>
     <data>
         <display>
-        <title>手写前馈神经网络(一)</title>
+        <title>卷积神经网络实践</title>
+        <pubTime>2017-08-17T01:35:34.000Z</pubTime>
+        
+        <tag>神经网络</tag>
+         
+        <tag>深度学习</tag>
+         
+         
+           
+             
+              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</loc>
+    <lastmod>2017-08-17T01:34:57.261Z</lastmod>
+    <data>
+        <display>
+        <title>前馈神经网络实践</title>
         <pubTime>2017-08-08T06:07:05.000Z</pubTime>
         
         <tag>机器学习</tag>
@@ -437,9 +459,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>逻辑回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>逻辑回归</tag>
          
          
            
@@ -463,9 +485,9 @@
          
         <tag>梯度下降</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>线性回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
