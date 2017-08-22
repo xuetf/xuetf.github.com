@@ -87,22 +87,22 @@
 
 
 
-<meta name="description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。">
+<meta name="description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="卷积神经网络实践">
 <meta property="og:url" content="xtf615.com/2017/08/17/cnn-written/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
-<meta property="og:description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。">
+<meta property="og:description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn1.png">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn2.png">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn3.png">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn4.png">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn_error_digits.png">
 <meta property="og:image" content="xtf615.com/picture/machine-learning/cnn_error_digits_double_conv.png">
-<meta property="og:updated_time" content="2017-08-22T13:44:49.514Z">
+<meta property="og:updated_time" content="2017-08-22T13:47:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="卷积神经网络实践">
-<meta name="twitter:description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。">
+<meta name="twitter:description" content="本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考神经网络和深度学习教程。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。">
 <meta name="twitter:image" content="xtf615.com/picture/machine-learning/cnn1.png">
 
 
@@ -402,7 +402,7 @@
       
 
       
-        <p>　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap6.html" target="_blank" rel="external">神经网络和深度学习教程</a>。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。<br><a id="more"></a></p>
+        <p>　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap6.html" target="_blank" rel="external">神经网络和深度学习教程</a>。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。<br><a id="more"></a></p>
 <h1 id="Theano安装"><a href="#Theano安装" class="headerlink" title="Theano安装"></a>Theano安装</h1><h2 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h2><p>　　Theano依赖于numpy等库，故首先安装集成包Anaconda，这个软件内嵌了python，并且还包含了很多用于计算的库。本文使用的是4.3.24版本，内置python为2.7.13版本。下载地址为：<a href="https://www.continuum.io/downloads" target="_blank" rel="external">https://www.continuum.io/downloads</a></p>
 <h2 id="MinGW"><a href="#MinGW" class="headerlink" title="MinGW"></a>MinGW</h2><p>　　Theano底层依赖于C编译器。一种方式是，在控制台输入conda install mingw libpython即可。注意libpython也必须要安装，否则后面导入theano后会报“no module named gof”的错误。另一种也可以手动去MinGW安装包安装，但libpython仍然需要安装。</p>
 <h2 id="Theano"><a href="#Theano" class="headerlink" title="Theano"></a>Theano</h2><p>　　最后安装Theano，使用pip install theano即可。</p>

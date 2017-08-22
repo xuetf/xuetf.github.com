@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-08-22T13:44:49.514Z</updated>
+  <updated>2017-08-22T13:47:00.000Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="xtf615.com/2017/08/17/cnn-written/"/>
     <id>xtf615.com/2017/08/17/cnn-written/</id>
     <published>2017-08-17T01:35:34.000Z</published>
-    <updated>2017-08-22T13:44:49.514Z</updated>
+    <updated>2017-08-22T13:47:00.000Z</updated>
     
-    <content type="html"><![CDATA[<p>　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap6.html" target="_blank" rel="external">神经网络和深度学习教程</a>。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。<br><a id="more"></a></p>
+    <content type="html"><![CDATA[<p>　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考<a href="http://neuralnetworksanddeeplearning.com/chap6.html" target="_blank" rel="external">神经网络和深度学习教程</a>。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。<br><a id="more"></a></p>
 <h1 id="Theano安装"><a href="#Theano安装" class="headerlink" title="Theano安装"></a>Theano安装</h1><h2 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h2><p>　　Theano依赖于numpy等库，故首先安装集成包Anaconda，这个软件内嵌了python，并且还包含了很多用于计算的库。本文使用的是4.3.24版本，内置python为2.7.13版本。下载地址为：<a href="https://www.continuum.io/downloads" target="_blank" rel="external">https://www.continuum.io/downloads</a></p>
 <h2 id="MinGW"><a href="#MinGW" class="headerlink" title="MinGW"></a>MinGW</h2><p>　　Theano底层依赖于C编译器。一种方式是，在控制台输入conda install mingw libpython即可。注意libpython也必须要安装，否则后面导入theano后会报“no module named gof”的错误。另一种也可以手动去MinGW安装包安装，但libpython仍然需要安装。</p>
 <h2 id="Theano"><a href="#Theano" class="headerlink" title="Theano"></a>Theano</h2><p>　　最后安装Theano，使用pip install theano即可。</p>
@@ -71,7 +71,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考&lt;a href=&quot;http://neuralnetworksanddeeplearning.com/chap6.html&quot;&gt;神经网络和深度学习教程&lt;/a&gt;。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.22%。&lt;br&gt;
+      &lt;p&gt;　　本文将介绍使用Python书写“卷积神经网络”代码的具体步骤和细节，本文会采用Python开源库Theano，Theano封装了卷积等操作，使用起来比较方便。具体代码可参考&lt;a href=&quot;http://neuralnetworksanddeeplearning.com/chap6.html&quot;&gt;神经网络和深度学习教程&lt;/a&gt;。在本文中，卷积神经网络对MNIST手写数字的预测性能，测试集准确率可以达到99.30%。&lt;br&gt;
     
     </summary>
     
@@ -356,13 +356,13 @@
     
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
-      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
       <category term="redis" scheme="xtf615.com/tags/redis/"/>
     
       <category term="ActiveMQ" scheme="xtf615.com/tags/ActiveMQ/"/>
     
       <category term="车联网" scheme="xtf615.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/"/>
+    
+      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
   </entry>
   
@@ -786,9 +786,9 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
       <category term="支持向量机" scheme="xtf615.com/tags/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
     
@@ -1002,9 +1002,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
   </entry>
   
@@ -1106,9 +1106,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
   </entry>
   
@@ -1274,9 +1274,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
+    
+      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
     
   </entry>
   
@@ -1326,9 +1326,9 @@
       <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
       <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
@@ -1378,9 +1378,9 @@
       <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
     
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
       <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
     
       <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
