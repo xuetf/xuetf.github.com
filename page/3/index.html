@@ -291,6 +291,610 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/03/07/ARIMA时间序列模型-二/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/07/ARIMA时间序列模型-二/" itemprop="url">
+                  ARIMA时间序列模型(二)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-07T13:49:28+08:00">
+                2017-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/统计学/" itemprop="url" rel="index">
+                    <span itemprop="name">统计学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。</p>
+<h1 id="一般线性过程"><a href="#一般线性过程" class="headerlink" title="一般线性过程"></a>一般线性过程</h1><h2 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h2><ul>
+<li>时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值是白噪声系列的线性函数。</li>
+<li>时间序列\({Z_t}\)是有因果的(causal),当且仅当\(Z_t\)的值只受到目前为止的信息影响，换句话说\(Z_t\)是独立于未来信息\(a_s\)的，s&gt;t</li>
+<li>时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).</li>
+</ul>
+<p>因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。</p>
+<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)<br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/07/ARIMA时间序列模型-二/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/03/07/ARIMA时间序列模型/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/07/ARIMA时间序列模型/" itemprop="url">
+                  ARIMA时间序列模型(一)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-07T09:33:02+08:00">
+                2017-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/统计学/" itemprop="url" rel="index">
+                    <span itemprop="name">统计学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="时间序列是什么？"><a href="#时间序列是什么？" class="headerlink" title="时间序列是什么？"></a>时间序列是什么？</h2><p>定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。</p>
+<p>所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$</p>
+<p>进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。</p>
+<p>回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$</p>
+<p>因变量X的信息是已知的，我们希望对响应变量Y做出推断。</p>
+<p>在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$</p>
+<p>在时间序列中，已知的信息包括：</p>
+<ul>
+<li>时间下标t</li>
+<li>过去的信息</li>
+</ul>
+<p>两个典型的时间序列模型如下：</p>
+<p>$$Z_t=a+bt+\varepsilon_t$$</p>
+<p>and</p>
+<p>$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$</p>
+<p>它们分别对应于确定性模型和随机模型，本文将讨论后者。<br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/07/ARIMA时间序列模型/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/17/神经网络-系列2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/17/神经网络-系列2/" itemprop="url">
+                  神经网络(系列2)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-17T16:28:37+08:00">
+                2017-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/神经网络/" itemprop="url" rel="index">
+                    <span itemprop="name">神经网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>神经网络的入门知识参见<a href="/2017/02/13/神经网络/">神经网络(系列1)</a><br>本文主要对神经网络进行深入，探讨神经网络模型的学习。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>首先引入一些便于稍后讨论的新标记方法：<br>假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。<br>将神经网络的分类定义为两种情况：二类分类和多类分类:<br>二类分类：\(S_L=1\), y=0 or 1表示哪一类；<br>K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&gt;2）<br><img src="/picture/machine-learning/network_learn1.jpg" alt="network_learn"><br>我们回顾逻辑回归问题中我们的代价函数为：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$<br>在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：<br>$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$<br><img src="/picture/machine-learning/network_learn2.jpg" alt="network_learn"><br>这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。<br>注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。<br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/02/17/神经网络-系列2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/13/神经网络/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/13/神经网络/" itemprop="url">
+                  神经网络(系列1)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-13T18:23:23+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/神经网络/" itemprop="url" rel="index">
+                    <span itemprop="name">神经网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="非线性假设"><a href="#非线性假设" class="headerlink" title="非线性假设"></a>非线性假设</h1><p>我们之前学的，无论是线性回归还是逻辑回归都有这样一个缺点，即：当特征太多时，计算的负荷会非常大。<br>下面是一个例子：<br><img src="/picture/machine-learning/network1.jpg" alt="network"><br>当我们使用\(x_1,x_2\)的多次项式进行预测时，我们可以应用得很好。<br>之前我们已经看到过，使用非线性的多项式项，能够帮助我们建立更好的分类模型。假设我们有非常多的特征，例如大于100个变量，我们希望用这100个特征来构建一个非线性的多项式模型，结果将是数量非常惊人的特征组合，即便我们只采用两两特征的组合\(x_1x_2+x_1x_3+x_1x_4+…+x_2x_3+x_2x_4+…+x_{99}x_{100}\),我们也会有接近5000个组合而成的特征。这对于一般的逻辑回归来说需要计算的特征太多了。<br>假设我们希望训练一个模型来识别视觉对象（例如识别一张图片上是否是一辆汽车）。<br>我们怎样才能这么做呢？一种方法是我们利用很多汽车的图片和很多非汽车的图片，然后利用这些图片上一个个像素的值（饱和度或亮度）来作为特征。<br>假如我们只选用灰度图片，每个像素则只有一个值（而非RGB值），我们可以选取图片上的两个不同位置上的两个像素，然后训练一个逻辑回归算法利用这两个像素的值来判断图片上是否是汽车：<br><img src="/picture/machine-learning/network2.jpg" alt="network"><br>假使我们采用的都是  50x50像素的小图片，并且我们将所有的像素视为特征，则会有2500个特征，如果我们要进一步将两两特征组合构成一个多项式模型，则会有约\(\frac{2500^2}{2}\)个（接近3百万个）特征。普通的逻辑回归模型，不能有效地处理这么多的特征，这时候我们就需要神经网络。</p>
+<h1 id="神经元和大脑"><a href="#神经元和大脑" class="headerlink" title="神经元和大脑"></a>神经元和大脑</h1><p>神经网络是一种很古老的算法，它最初产生的目的是制造能模拟大脑的机器。<br>接下来我将介绍神经网络。它能很好地解决不同的机器学习问题。首先介绍一些神经网络的背景知识，由此我们能知道可以用它们来做什么。不管是将其应用到现代的机器学习问题上，还是应用到那些你可能会感兴趣的问题中。也许，这一伟大的人工智能梦想在未来能制造出真正的智能机器。另外，我们还将讲解神经网络是怎么涉及这些问题的，神经网络产生的原因是人们想尝试设计出模仿大脑的算法，从某种意义上说如果我们想要建立学习系统，那为什么不去模仿我们所认识的最神奇的学习机器——人类的大脑呢？<br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/02/13/神经网络/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/11/逻辑回归/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1192,306 +1796,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/hadoop分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/hadoop分布式环境搭建教程/" itemprop="url">
-                  hadoop分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T18:53:29+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop</p>
-<h1 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h1><p>hadoop部署方案包括：单机模式、伪分布模式、完全分布模式</p>
-<p><strong>本文将使用完全分布模式进行集群搭建</strong></p>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/hadoop分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2016/12/29/redis分布式环境搭建教程/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="xuetf">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="蘑菇先生学习记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/29/redis分布式环境搭建教程/" itemprop="url">
-                  redis分布式环境搭建教程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T15:56:43+08:00">
-                2016-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="redis部署说明"><a href="#redis部署说明" class="headerlink" title="redis部署说明"></a>redis部署说明</h1><ul>
-<li><strong>版本</strong><br>使用redis最新版3.2.3进行安装</li>
-<li><strong>主从关系</strong><br>使用1个主节点，3个从节点。主节点提供读写操作，从节点只提供读操作。主节点Master安装在dbp模块，提供大量的写操作服务；  3个从节点。</li>
-<li><strong>哨兵机制</strong><br>配置3个哨兵，主节点dbp安装1个哨兵，另外3台从服务器选其中两台各安装一个。作为HA高可用方案，防止主节点单点失败，通过重新选举主节点实现故障快速转移。
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/12/29/redis分布式环境搭建教程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1533,7 +1842,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">28</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1542,7 +1851,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1551,7 +1860,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">70</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

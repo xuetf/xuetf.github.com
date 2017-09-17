@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="xtf615.com/"/>
-  <updated>2017-08-22T13:47:00.000Z</updated>
+  <updated>2017-09-17T12:25:10.728Z</updated>
   <id>xtf615.com/</id>
   
   <author>
@@ -14,6 +14,240 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Leetcode (Week 1)</title>
+    <link href="xtf615.com/2017/09/17/Week-1-For-Leetcode/"/>
+    <id>xtf615.com/2017/09/17/Week-1-For-Leetcode/</id>
+    <published>2017-09-17T07:28:05.000Z</published>
+    <updated>2017-09-17T12:25:10.728Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。<br><a id="more"></a></p>
+<h1 id="InPlace-Merge"><a href="#InPlace-Merge" class="headerlink" title="InPlace Merge"></a>InPlace Merge</h1><p>　　第一道题是归并排序。归并排序基本思路是使用分治法进行求解。这里的关键操作在于Merge两个有序的数组。通常的做法是，付出O(n)空间复杂度的代价，新建一个数组，然后使用两个指针分别遍历原数组的左右两边，依次选择较小的值放到新数组，最后复制新数组的值到原数组。(也可以一开始复制原数组左右两边到两个小数组，然后遍历依次放到原数组中)<br>　　这里面我们付出了O(n)的空间复杂度和O(n)的时间复杂度的代价。能否使得空间复杂度降低为O(1)？</p>
+<h2 id="内存反转"><a href="#内存反转" class="headerlink" title="内存反转　　"></a>内存反转　　</h2><p>　　这里使用的是循环移位的策略，也称作内存反转。如下所示：<br>　　<strong>Q</strong>:给定序列,\(a_1,a_2,…,a_m, b_1,b_2,…,b_n\),把它变成\(b_1,b_2,…,b_n, a_1,a_2,…,a_m\)?<br>　　<strong>A</strong>:先对\(a_1,a_2,…,a_m\)进行反转；再对\(b_1,b_2,…,b_n\)进行反转，最后再对整体进行反转，就可以得到\(b_1,b_2,…,b_n, a_1,a_2,…,a_m\)。代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exchange</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> s, <span class="keyword">int</span> m, <span class="keyword">int</span> e)</span></span>&#123;</div><div class="line">    reverse(A,s, m);</div><div class="line">    reverse(A,m+<span class="number">1</span>,e);</div><div class="line">    reverse(A, s, e);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> t = A[x];</div><div class="line">    A[x] = A[y];</div><div class="line">    A[y] = t;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">reverse</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> s, <span class="keyword">int</span> e)</span></span>&#123;</div><div class="line">    <span class="keyword">while</span>(s &lt; e)&#123;</div><div class="line">        swap(A, s++, e--);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="原地归并"><a href="#原地归并" class="headerlink" title="原地归并"></a>原地归并</h2><p>　　假设数据如下图所示：<br><img src="/picture/machine-learning/leetcode1.jpg" alt="leetcode"><br>　　开始时\(i,j\)分别指向这个数组的两个有序子序列的第一个值，然后指针向后移动,<strong>直到</strong>找到比20大的值，即移动到30，此时我们知道\(i\)指针之前的值一定是两个子序列最小的块。<br>　　接着，先用一个临时指针记录\(j\)的位置。然后把第二个序列的指针\(j\)向后移动，<strong>直到</strong>找到比30大的值，即移动到55，即如下图所示：<br><img src="/picture/machine-learning/leetcode2.png" alt="leetcode"><br>　　这样，<strong>我们把[i,index)和[index,j)的内存块进行交换</strong>，再移动i指针，移动步长step=j-index，两个子数组的分界点mid也要相应的向后移动step=j-index。如下图：<br><img src="/picture/machine-learning/leetcode3.jpg" alt="leetcode"><br>　　这样可以看出\(i\)之前的都已经排好序，而以\(i\)开始的子序列和以\(j\)开始的子序列又是开始的问题模型，同样的操作进行下去最终排序完成。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">inplaceMerge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> start, <span class="keyword">int</span> mid, <span class="keyword">int</span> end)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> i = start;</div><div class="line">    <span class="keyword">int</span> j = mid+<span class="number">1</span>;</div><div class="line">    <span class="keyword">while</span>(i &lt;= mid &amp;&amp; j &lt;= end)&#123;<span class="comment">//两个条件都需要测试</span></div><div class="line">        <span class="keyword">int</span> step = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(i &lt;= mid &amp;&amp; A[i] &lt;= A[j])&#123;++i;&#125;<span class="comment">//找到第一个比A[j]大的数</span></div><div class="line">        </div><div class="line">        <span class="keyword">while</span>(j &lt;= end &amp;&amp; A[j] &lt; A[i])&#123;++j;++step;&#125;<span class="comment">//找到比A[i]大的所有A[j]</span></div><div class="line">        </div><div class="line">        exchange(A, i, mid, j<span class="number">-1</span>);<span class="comment">//反转</span></div><div class="line">        i += step; <span class="comment">//移动指针</span></div><div class="line">        mid += step;<span class="comment">//分割点也要后移</span></div><div class="line">        </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A)</span> </span>&#123;</div><div class="line">    mergeSort(A, <span class="number">0</span>,  A.size()<span class="number">-1</span>);</div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">mergeSort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span>(start &lt; end)&#123;</div><div class="line">        <span class="keyword">int</span> mid = (start + end)/<span class="number">2</span>;</div><div class="line">        mergeSort(A, start, mid);</div><div class="line">        mergeSort(A, mid+<span class="number">1</span>, end);</div><div class="line">        inplaceMerge(A, start, mid, end);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Two-Sum-1"><a href="#Two-Sum-1" class="headerlink" title="Two Sum (#1)"></a>Two Sum (#1)</h1><p>　　问题：给定一个无序数组，在O(n)时间内寻找两个数的和为target，返回这两个数的下标。题目已经保证了结果是唯一的。<br>　　分析：如果是O(n^2)复杂度，那么只要两个循环遍历就能找到。另外，O(n)时间复杂度意味着不能排序，返回下标也意味着最好不要打乱原数组的顺序。我们联想到哈希表获取元素的时间复杂度为O(1)，如果将数据处理成target-某个数=另一个数，那么使用哈希表查找就能查找到另一个数(key:原始数据,value:下标)。但是由于题目没有保证元素都不相同，因此不能先循环，处理每个数存入哈希表(相同的数会覆盖)。这里使用的是边遍历边存储到哈希表，如果在哈希表中找到另一个数，则直接返回结果，否则将该数存入哈希表中。代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Solution &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">/**</span></div><div class="line">    *每个数处理成target-该数 7 2 -2 -6</div><div class="line">    *对map进行查找，如果存在等于target-该数的数值，则找到。否则存储map该&#123;原始数据:位置&#125; 题目中说不存在相同的数</div><div class="line">    *</div><div class="line">    */</div><div class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; twoSum(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target) &#123;</div><div class="line">        <span class="built_in">unordered_map</span>&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt; <span class="built_in">map</span>;</div><div class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); ++i)&#123;</div><div class="line">            <span class="keyword">int</span> findNum = target - nums[i];</div><div class="line">            <span class="keyword">if</span>(<span class="built_in">map</span>.find(findNum) != <span class="built_in">map</span>.end())&#123;<span class="comment">//find查找的是key是否存在</span></div><div class="line">                result.push_back(i);</div><div class="line">                result.push_back(<span class="built_in">map</span>[findNum]);</div><div class="line">            &#125;</div><div class="line">            <span class="built_in">map</span>[nums[i]] = i;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>　　变型：如果加上一个条件原数组是有序的，那么可以使用另外一种方法找到所有和为target的数据对。<br>　　分析：可以使用两个指针\(i,j\),分别指向有序数组的低端和高端，如果两个指针所在位置的数据之和为target，则加入结果集。如果和小于target，说明\(i\)指向的数太小了，必须稍微大一点才可以；或者说\(j\)指向的数不够大，任凭j怎么往左移都没用，因为\(j\)指向的数最大。因此向右移动\(i\)指针。如果和大于target，说明\(j\)指向的太大了，因此往左移动\(j\)指针。<br>　　为了去掉重复的结果，需要在和等于target的条件里，移动两个指针，直到遇到不一样的数。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">int</span>[]&gt; twoSum(Integer[] nums, <span class="keyword">int</span> target) &#123;</div><div class="line">    List&lt;<span class="keyword">int</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>[]&gt;();</div><div class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = nums.length - <span class="number">1</span>;</div><div class="line">    <span class="keyword">while</span>(i &lt; j)&#123;</div><div class="line">        <span class="keyword">if</span>(nums[i] + nums[j] == target)&#123;</div><div class="line">            result.add(<span class="keyword">new</span> <span class="keyword">int</span>[]&#123;nums[i], nums[j]&#125;);</div><div class="line">            <span class="keyword">while</span>(i &lt; j &amp;&amp; nums[i+<span class="number">1</span>] == nums[i])&#123;++i;&#125;<span class="comment">//filter duplicate</span></div><div class="line">            <span class="keyword">while</span>(i &lt; j &amp;&amp; nums[j-<span class="number">1</span>] == nums[j])&#123;--j;&#125;<span class="comment">//filter duplicate</span></div><div class="line">            ++i;</div><div class="line">            --j;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(nums[i] + nums[j] &lt; target)&#123;</div><div class="line">            ++i;</div><div class="line">        &#125;<span class="keyword">else</span> &#123;</div><div class="line">            --j;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Three-Sum-15"><a href="#Three-Sum-15" class="headerlink" title="Three Sum (#15)"></a>Three Sum (#15)</h1><p>　　问题：给定一个数组，在O(n^2)复杂度内找出任何3个和为0的数，返回数据对即可。<br>　　分析：该题可以进行排序求解，返回数据而不是下标。可以利用Two Sum中变型策略。首先固定一个数，然后使用Two Sum求解。即，使用for循环遍历数组，固定当前数，然后找到所有和当前数搭配的和0的其余两个数，即twoTarget = -nums[i]。具体代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">int</span>[]&gt; threeSum(Integer[] nums) &#123;</div><div class="line">    Arrays.sort(nums);</div><div class="line">    List&lt;<span class="keyword">int</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>[]&gt;();</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length-<span class="number">1</span>; ++i)&#123;</div><div class="line">        <span class="keyword">if</span>(i != <span class="number">0</span> &amp;&amp; nums[i] == nums[i-<span class="number">1</span>]) <span class="comment">//相同元素不需要再查找了</span></div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        <span class="keyword">int</span> s = i+<span class="number">1</span>, e = nums.length - <span class="number">1</span>;</div><div class="line">        <span class="keyword">int</span> target = -nums[i];</div><div class="line">        <span class="keyword">while</span>(s &lt; e)&#123;</div><div class="line">            <span class="keyword">int</span> twoSum = nums[s] + nums[e];</div><div class="line">            <span class="keyword">if</span>(twoSum == target) &#123;</div><div class="line">                result.add(<span class="keyword">new</span> <span class="keyword">int</span>[]&#123;nums[i],nums[s],nums[e]&#125;);</div><div class="line">                <span class="keyword">while</span> (s &lt; e &amp;&amp; nums[s+<span class="number">1</span>] == nums[s]) ++s;<span class="comment">//filter duplicate</span></div><div class="line">                <span class="keyword">while</span> (s &lt; e &amp;&amp; nums[e-<span class="number">1</span>] == nums[e]) --e;<span class="comment">//filter duplicate</span></div><div class="line">                --s;<span class="comment">//move</span></div><div class="line">                --e;<span class="comment">//move</span></div><div class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(twoSum &lt; target)&#123;</div><div class="line">                ++s;</div><div class="line">            &#125;<span class="keyword">else</span>&#123;</div><div class="line">                --e;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　注意上述去重操作。
+　　</p>
+<h1 id="Swap-Elements-By-Xor"><a href="#Swap-Elements-By-Xor" class="headerlink" title="Swap Elements By Xor"></a>Swap Elements By Xor</h1><p>　　可以使用异或操作交换数据。原理是使用异或的性质：</p>
+<ul>
+<li>任意两个相同的数异或都为0</li>
+<li>任意数(1或者0)和0异或都为本身。1 xor 0 = 1, 0 xor 0 = 1;因此式子中有0的地方可以直接去掉0。</li>
+<li>异或满足结合律和交换律。<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> &amp;x, <span class="keyword">int</span> &amp;y)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span>(x == y) <span class="keyword">return</span>;</div><div class="line">    x ^= y; <span class="comment">// x = x ^ y</span></div><div class="line">    y ^= x; <span class="comment">// y = x ^ y ^ y = x ^ (y ^ y) = x ^ (0) = x </span></div><div class="line">    x ^= y; <span class="comment">// x = x ^ y ^ x =  y</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　运行原理如上述代码注释部分。<br>　　这里有一个陷进，如果两个相同的数传入，实际上交换完没变。但是因为相同的数异或为0，使得x和y都等于0了。因此最好要一开始检查一下是否相同。</p>
+<h1 id="Number-of-1-Bits-191"><a href="#Number-of-1-Bits-191" class="headerlink" title="Number of 1 Bits(#191)"></a>Number of 1 Bits(#191)</h1><p>　　统计位当中1的个数。正常想法就是看看最后1位是不是1，是就累加。然后不断往右移位，直到数变成0为止。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="keyword">uint32_t</span> n)</span></span>&#123;</div><div class="line">        <span class="keyword">int</span> c = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(n)&#123;</div><div class="line">            <span class="keyword">int</span> t = n &amp; <span class="number">1</span>;</div><div class="line">            <span class="keyword">if</span>(t)&#123;c++;&#125;</div><div class="line">            n &gt;&gt;= <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> c;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　另一种方法，利用\(n \&amp;= (n-1) \),<strong>该式子会将n最右边的1变成0</strong>。如果本身为0,与之后肯定为0不变；如果最右边是1，减一后为0，再&amp;之后就变成0了。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="keyword">uint32_t</span> n)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span>(n)&#123;<span class="comment">//非零</span></div><div class="line">        ++count;</div><div class="line">        n &amp;= (n<span class="number">-1</span>); <span class="comment">//关键，每次都会把最靠右边的1变成0。</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> count;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Count-Bits-338"><a href="#Count-Bits-338" class="headerlink" title="Count Bits(#338)"></a>Count Bits(#338)</h1><p>　　问题：统计range(n)范围内所有数当中位为1的个数。要求时间复杂度为O(n)。<br>　　分析：正常会对每个数求1的个数，复杂度为O(n * sizeof(integer))。这里由于要求出前面数的1的个数，因此可以利用前面的数，动态规划思想。将大的数化成前面小的数。一种方法是，单独抽出最后一位，则原始的数可以往右移1位变成前面的数。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; countBits(<span class="keyword">int</span> num) &#123;</div><div class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result(num+<span class="number">1</span>, <span class="number">0</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= num; ++i)&#123;</div><div class="line">            result[i] = result[i&gt;&gt;<span class="number">1</span>] + (i &amp; <span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　另一种，化大数为前面的数，是利用前面提到的将某个数位当中最右边1化为0.则：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">result[i] = result[i &amp; (i<span class="number">-1</span>)] + <span class="number">1</span>;</div></pre></td></tr></table></figure></p>
+<h1 id="Reverse-Bits-190"><a href="#Reverse-Bits-190" class="headerlink" title="Reverse Bits (#190)"></a>Reverse Bits (#190)</h1><p>　　问题：反转数的二进制位。<br>　　分析：可以新建一个数\(m=0\),m先左移一位腾出一个位置，然后从原始数的最后一位开始，不断用m求或运算。直到原始数位全部遍历完毕。复杂度为O(sizeof(int)).<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">uint32_t</span> reverseBits(<span class="keyword">uint32_t</span> n) &#123;</div><div class="line">    <span class="keyword">uint32_t</span> m = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; ++i)&#123;</div><div class="line">        m &lt;&lt;= <span class="number">1</span>; <span class="comment">//先挪出一个位置</span></div><div class="line">        m |= (n &amp; <span class="number">1</span>);</div><div class="line">        n &gt;&gt;= <span class="number">1</span>;  </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> m;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　另外，还有个O(log sizeof(int))复杂度的算法如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">uint32_t</span> reverseBits(<span class="keyword">uint32_t</span> n) &#123;</div><div class="line">    n = (n &gt;&gt; <span class="number">16</span>) | (n &lt;&lt; <span class="number">16</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xff00ff00</span>) &gt;&gt; <span class="number">8</span>) | ((n &amp; <span class="number">0x00ff00ff</span>) &lt;&lt; <span class="number">8</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xf0f0f0f0</span>) &gt;&gt; <span class="number">4</span>) | ((n &amp; <span class="number">0x0f0f0f0f</span>) &lt;&lt; <span class="number">4</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xcccccccc</span>) &gt;&gt; <span class="number">2</span>) | ((n &amp; <span class="number">0x33333333</span>) &lt;&lt; <span class="number">2</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xaaaaaaaa</span>) &gt;&gt; <span class="number">1</span>) | ((n &amp; <span class="number">0x55555555</span>) &lt;&lt; <span class="number">1</span>);</div><div class="line">    <span class="keyword">return</span> n;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Reverse-Integer-7"><a href="#Reverse-Integer-7" class="headerlink" title="Reverse Integer(#7)"></a>Reverse Integer(#7)</h1><p>　　问题：反转整数<br>　　分析：新建一个数result初始化为0，每次取出最后一位，使用result<em>10+最后一位。即可得到逆序。例如：123： ( (0\</em>10+3)* 10)+2)*10 + 1 = 321. 注意溢出的处理，策略是：将求得的结果tmp=result*10+最后一位,根据：(tmp-最后一位）/10，逆序求出result，看看跟原来的result是否相等，不相等说明溢出了。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">reverse</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span>(x)&#123;</div><div class="line">        <span class="keyword">int</span> last = x % <span class="number">10</span>;</div><div class="line">        <span class="keyword">int</span> tmp = result * <span class="number">10</span> + last;</div><div class="line">        <span class="keyword">if</span>((tmp-last)/<span class="number">10</span> != result) <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">//溢出</span></div><div class="line">        result = tmp;</div><div class="line">        x /= <span class="number">10</span>; </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">    <span class="comment">//for 8 bit binary number abcdefgh, the process is as follow:</span></div><div class="line">    <span class="comment">//abcdefgh -&gt; efghabcd -&gt; ghefcdab -&gt; hgfedcba</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Judge-Route-Circle-657"><a href="#Judge-Route-Circle-657" class="headerlink" title="Judge Route Circle(# 657)"></a>Judge Route Circle(# 657)</h1><p>　　问题：机器人上下左右移动，给出一个移动序列，判断是否回到出发点。<br>　　答：两个数分别统计上下和左右情况，上下抵消，左右抵消。最后都为0则回到原点。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">judgeCircle</span><span class="params">(<span class="built_in">string</span> moves)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> x = <span class="number">0</span>, y = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; moves.size(); ++i)&#123;</div><div class="line">        <span class="keyword">if</span>(moves[i] == <span class="string">'U'</span>)&#123;</div><div class="line">            x += <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'D'</span>)&#123;</div><div class="line">            x -= <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'R'</span>)&#123;</div><div class="line">            y += <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'L'</span>)&#123;</div><div class="line">            y -= <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> x == <span class="number">0</span> &amp;&amp; y == <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Merge-Two-Sorted-Array-88"><a href="#Merge-Two-Sorted-Array-88" class="headerlink" title="Merge Two Sorted Array(#88)"></a>Merge Two Sorted Array(#88)</h1><p>　　问题：给定两个有序的数组nums1,nums2,要求将nums2 Merge到nums1，使得nums1保持有序。只能利用nums1空间，题目已经保证nums1能保证容纳的下nums2的元素。<br>　　分析：常规想法是从第一个数开始merge到nums1中，这样就需要移数操作。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums1, <span class="keyword">int</span> m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums2, <span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> count_i = <span class="number">0</span>, count_j = <span class="number">0</span>, size = m + n;</div><div class="line">        <span class="keyword">int</span> end = m; </div><div class="line">        <span class="keyword">int</span> p = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(p &lt; size)&#123; <span class="comment">//每个元素都遍历,p指向当前nums1需要同nums2比较的位置</span></div><div class="line">            <span class="keyword">if</span>(count_j &gt;= n) <span class="keyword">break</span>; <span class="comment">//nums2已经merge完毕则结束</span></div><div class="line">            <span class="keyword">if</span>(count_i &lt; m &amp;&amp; nums1[p] &lt;= nums2[count_j])&#123;<span class="comment">//nums1还没merge完毕，</span></div><div class="line">                count_i++;</div><div class="line">                p++;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span>&#123;</div><div class="line">               <span class="keyword">if</span>(count_i &lt; m)&#123;<span class="comment">//nums[1]还没全部遍历完毕才移动</span></div><div class="line">                   move(nums1, p, end<span class="number">-1</span>);<span class="comment">//移动p之后的元素</span></div><div class="line">               &#125;</div><div class="line">               nums1[p] = nums2[count_j]; <span class="comment">//放到p这个位置</span></div><div class="line">               count_j++;</div><div class="line">               p++; </div><div class="line">               end++;<span class="comment">//尾部编号+1</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = end; i &gt;= start; --i)&#123;</div><div class="line">            nums[i+<span class="number">1</span>] = nums[i];</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　上述复杂度为O(n^2)。另一种想法是从尾部开始merge。两个指针分别指向两个数组的最后一个元素，将二者中大的数挪到nums1最后一个位置p=m+n-1,一直到p=0或者nums2已经全部放到nums1中了，则停止循环。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A, <span class="keyword">int</span> m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; B, <span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> i = m - <span class="number">1</span>, j = n - <span class="number">1</span>;</div><div class="line">    <span class="keyword">int</span> p = m + n - <span class="number">1</span>;<span class="comment">//最后一个位置</span></div><div class="line">    <span class="keyword">while</span>(p &gt;= <span class="number">0</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(j &lt; <span class="number">0</span>) <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">if</span>(i &gt;= <span class="number">0</span> &amp;&amp; A[i] &gt;= B[j])&#123;</div><div class="line">            A[p] = A[i--];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span>&#123;</div><div class="line">            A[p] = B[j--];</div><div class="line">        &#125;</div><div class="line">        --p;      </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　还可以利用上面提到到的Inplace Merge方法，将nums2的元素直接全部放到nums1尾部，然后调用InplaceMerge方法。</p>
+<h1 id="Merge-Two-Sorted-List-21"><a href="#Merge-Two-Sorted-List-21" class="headerlink" title="Merge Two Sorted List(#21)"></a>Merge Two Sorted List(#21)</h1><p>　　问：将两个有序链表merge到一起。<br>　　答：一种思路是将list2 Merge到list1，不断重新构造list1即可。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function">ListNode* <span class="title">mergeTwoLists</span><span class="params">(ListNode* l1, ListNode* l2)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span>(l1 == <span class="literal">NULL</span>) <span class="keyword">return</span> l2;</div><div class="line">    <span class="keyword">if</span>(l2 == <span class="literal">NULL</span>) <span class="keyword">return</span> l1;</div><div class="line">    </div><div class="line">    <span class="keyword">if</span>(l1-&gt;val &gt; l2-&gt;val)&#123;<span class="comment">//交换，保证l1的第一个数比l2的第一个数小</span></div><div class="line">        ListNode *t = l1;</div><div class="line">        l1 = l2;</div><div class="line">        l2 = t;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ListNode *p = l1, *pre = l1, *q = l2;</div><div class="line">      </div><div class="line">    <span class="keyword">while</span>(p != <span class="literal">NULL</span> || q != <span class="literal">NULL</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(p == <span class="literal">NULL</span>)&#123;<span class="comment">//l1已经到头了</span></div><div class="line">            pre-&gt;next = q;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(q == <span class="literal">NULL</span>) <span class="keyword">break</span>;<span class="comment">//l2已经全部merge完毕了</span></div><div class="line">        </div><div class="line">        <span class="keyword">if</span>(p-&gt;val &lt;= q-&gt;val)&#123;</div><div class="line">            pre = p;</div><div class="line">            p = p-&gt;next;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            ListNode *tmp = q-&gt;next; </div><div class="line">            q-&gt;next = p;</div><div class="line">            pre-&gt;next = q;</div><div class="line">            pre = pre-&gt;next;<span class="comment">//移动</span></div><div class="line">            q = tmp;<span class="comment">//移动</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> l1;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　还有种方法是，新建一条新的链表，这个空间复杂度实际上是O(1),除了浪费一个头节点以外，其余的节点都是list1和list2上已经存在的节点。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function">ListNode* <span class="title">mergeTwoLists</span><span class="params">(ListNode* l1, ListNode* l2)</span> </span>&#123;</div><div class="line">    ListNode dump = ListNode(INT_MAX);</div><div class="line">    ListNode *tail = &amp;dump;</div><div class="line">    <span class="keyword">while</span>(l1 != <span class="literal">NULL</span> &amp;&amp; l2 != <span class="literal">NULL</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(l1-&gt;val &lt;= l2-&gt;val) &#123;</div><div class="line">            tail-&gt;next = l1;</div><div class="line">            tail = tail-&gt;next;</div><div class="line">            l1 = l1-&gt;next;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            tail-&gt;next = l2;</div><div class="line">            tail = tail-&gt;next;</div><div class="line">            l2 = l2-&gt;next;</div><div class="line">        &#125;   </div><div class="line">    &#125;</div><div class="line">    tail-&gt;next = (l1 == <span class="literal">NULL</span>)? l2:l1;</div><div class="line">    <span class="keyword">return</span> dump.next;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Merge-Two-Binary-Trees-617"><a href="#Merge-Two-Binary-Trees-617" class="headerlink" title="Merge Two Binary Trees(#617)"></a>Merge Two Binary Trees(#617)</h1><p>　　问题：将两个二叉树Merge起来，如果位置相同则数据相加，否则添加该节点到新树上。如下图：<br><img src="/picture/machine-learning/leetcode4.png" alt="leetcode"><br>　　分析：显然这题需要使用递归操作。我们目标是将Tree2 Merge到Tree1上。首先，任意一棵树为NULL，则返回令一颗树即可，都不为空，则val相加，然后递归调用merge两棵树的左子树，merge两棵树的右子树。merge左子树时，如果Tree1的左子树为空，则需要将Tree2的左子树接到Tree1的左子树上。merge右子树时，如果Tree1的右子树为空，则需要将Tree2的右子树接到Tree1的右子树上。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> TreeNode &#123;</div><div class="line">      <span class="keyword">int</span> val;</div><div class="line">      TreeNode *left;</div><div class="line">      TreeNode *right;</div><div class="line">      TreeNode(<span class="keyword">int</span> x) : val(x), left(<span class="literal">NULL</span>), right(<span class="literal">NULL</span>) &#123;&#125;</div><div class="line">&#125;;</div><div class="line"><span class="function">TreeNode* <span class="title">mergeTrees</span><span class="params">(TreeNode* t1, TreeNode* t2)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span>(t1 == <span class="literal">NULL</span> &amp;&amp; t2 == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="keyword">if</span>(t1 == <span class="literal">NULL</span> &amp;&amp; t2 != <span class="literal">NULL</span>) <span class="keyword">return</span> t2;</div><div class="line">    <span class="keyword">if</span>(t1 != <span class="literal">NULL</span> &amp;&amp; t2 == <span class="literal">NULL</span>) <span class="keyword">return</span> t1;</div><div class="line">    </div><div class="line">    t1-&gt;val += t2-&gt;val;</div><div class="line">    </div><div class="line">    mergeTrees(t1-&gt;left, t2-&gt;left);<span class="comment">//左子树merge</span></div><div class="line">    <span class="keyword">if</span>(t1-&gt;left == <span class="literal">NULL</span>)&#123;</div><div class="line">        t1-&gt;left = t2-&gt;left;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    mergeTrees(t1-&gt;right, t2-&gt;right);<span class="comment">//右子树merge</span></div><div class="line">    <span class="keyword">if</span>(t1-&gt;right == <span class="literal">NULL</span>)&#123;</div><div class="line">        t1-&gt;right = t2-&gt;right;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> t1;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Hamming-Distance-461"><a href="#Hamming-Distance-461" class="headerlink" title="Hamming Distance(#461)"></a>Hamming Distance(#461)</h1><p>　　问题：求两个序列的汉明码距离。<br>　　分析：汉明码距离就是二进制相应位置上不同数的总数。比如 0001和0100，第2位和第4位不同，则距离为2。求解很简单，两个数求异或。然后求异或结果的1的个数即可。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* 先异或操作，然后统计1的个数。*/</span></div><div class="line">   <span class="function"><span class="keyword">int</span> <span class="title">hammingDistance</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> z = x ^ y; <span class="comment">// xor</span></div><div class="line">       <span class="keyword">return</span> count_not_zero_bits(z);</div><div class="line">   &#125;   </div><div class="line">   <span class="comment">/* 统计非零位的个数，也就是统计任意一个数的二进制表示中1的个数*/</span></div><div class="line">   <span class="function"><span class="keyword">int</span> <span class="title">count_not_zero_bits</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</div><div class="line">       <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">       <span class="keyword">while</span>(x)&#123;<span class="comment">//x非零</span></div><div class="line">           ++count;</div><div class="line">           x &amp;= (x<span class="number">-1</span>); <span class="comment">//关键，每次都会把最靠右边的1变成0。如果最右边为0,与之后肯定为0不变；如果最右边是1，减一为0，与之后就变成0了。 </span></div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> count;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Leetcode" scheme="xtf615.com/categories/Leetcode/"/>
+    
+    
+      <category term="基础算法" scheme="xtf615.com/tags/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="Leetcode" scheme="xtf615.com/tags/Leetcode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>算法设计与分析(Lecture 1)</title>
+    <link href="xtf615.com/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/"/>
+    <id>xtf615.com/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/</id>
+    <published>2017-09-16T01:08:05.000Z</published>
+    <updated>2017-09-17T07:07:58.840Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文是针对卜东波老师算法设计与分析第一课做的课堂笔记。第一课主要介绍算法的概念以及一些代表性的问题。<br><a id="more"></a></p>
+<h1 id="算法起源"><a href="#算法起源" class="headerlink" title="算法起源"></a>算法起源</h1><p>　　算法(Algorithm)一词的起源来自Muhammad ibn Musa al-Khwarizmi(C. 780-650),如下图：<br><img src="/picture/machine-learning/algorithm1.png" alt="algorithm"><br><img src="/picture/machine-learning/algorithm1.png" alt="algorithm"><br>　　算法的艺术可以类比成米开朗琪罗雕刻的艺术：<br><img src="/picture/machine-learning/algorithm3.png" alt="algorithm"><br><img src="/picture/machine-learning/algorithm4.png" alt="algorithm"><br>　　上述是指，理解算法必须看清算法问题本身的结构。</p>
+<h1 id="解算法问题的基本方法"><a href="#解算法问题的基本方法" class="headerlink" title="解算法问题的基本方法"></a>解算法问题的基本方法</h1><h2 id="算法问题的产生过程"><a href="#算法问题的产生过程" class="headerlink" title="算法问题的产生过程"></a>算法问题的产生过程</h2><p>　　【Practical Problems】—-Topic Choosing—-&gt; 【A Practical Problem】—-Formulation—–&gt;【Math/Algorithm Problem】—-Key Observation—-&gt;【Solution】<br>　　任何算法产生的步骤大致如上。不同学科的研究人员关注的点也不一样，例如研究数学的可能认为Formulation最重要；研究计算机的可能认为Key Observation最重要；但实际上Topic Choosing才是最重要的，因为Topic Choosing反映了这个实际算法问题的本质。作为计算机专业的，我们重点来研究Key Observation，通过观察来发现算法的本质，可通过观察算法的结构(Structure)以及解的形式(Solution Forms)来发现。</p>
+<h2 id="算法求解方法"><a href="#算法求解方法" class="headerlink" title="算法求解方法"></a>算法求解方法</h2><p><img src="/picture/machine-learning/algorithm0.jpg" alt="algorithm"><br>　　<strong>首先进行算法结构的观察</strong>。如上图所示，对于一个实际的问题，首先进行形式化。我们所研究的问题大致可以分成可进行组合优化求解的问题或者通过统计(statistic)学习方法求解的问题。组合优化(Combinatorial Optimization),是指寻找离散事件的最优编排、分组、次序或筛选，是运筹学的一个分支。参考<a href="https://wenku.baidu.com/view/4779896faf1ffc4ffe47ac43.html" target="_blank" rel="external">组合最优化</a>。而统计学习则是机器学习领域主要的方法。<br>　　算法设计与分析课主要研究一类可进行组合优化的问题。组合优化问题当中，有一类可进行自我分解(SELF-REDUCTION)从而降低问题规模的问题，这类问题通常可以通过数学归纳法(<strong>INDUCTION</strong>)来证明求解的可行性，包括DC(Divide And Conquer)分治算法、DP(Dynamic Programming)动态规划问题，最优子结构是DP的前提。另一类问题是不能够通过分解来降低问题规模，此时可以使用反复迭代来逐步提升(<strong>IMPROVEMENT</strong>)性能，通常从一个初始解开始，然后一步一步提升性能，这类问题包括LP/SDP/NF/LS/MC/SA等。<br>　　<strong>其次进行解形式的观察。</strong>对于解形式的观察，我们可以通过SMART <strong>ENUMERATION</strong>即有策略性的枚举来发现规律或求解问题的方法。例如最优化问题(optimal)可以化成近似(approximation)问题，通过枚举近似解来观察；对于确定性问题(deterministic)可以通过枚举化成随机化(randomization)问题;特殊(special cases)情况通过枚举实际(Practical)情况来观察。这类观察解形式来发现求解问题的方法的典型代表包括Greedy贪心算法等。<br>　　总之，要时刻关注问题的求解策略，选择最合适的方法，INDUCTION、IMPROVEMENT、ENUMERATION，所有算法问题的求解不外乎这3种方法。</p>
+<h1 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h1><p>　　结合上面三种方法来进行案例分析。</p>
+<h2 id="求解最大公约数"><a href="#求解最大公约数" class="headerlink" title="求解最大公约数"></a>求解最大公约数</h2><p>　　第一个案例是求解最大公约数。这个问题就是通过分解问题为子问题进行求解。<br><img src="/picture/machine-learning/algorithm5.png" alt="algorithm"><br><img src="/picture/machine-learning/algorithm6.png" alt="algorithm"></p>
+<h2 id="TSP问题"><a href="#TSP问题" class="headerlink" title="TSP问题"></a>TSP问题</h2><p><img src="/picture/machine-learning/algorithm7.png" alt="algorithm"><br>　　上图是旅行商问题的形式化定义。</p>
+<h3 id="Method1-Divide-And-Conquer"><a href="#Method1-Divide-And-Conquer" class="headerlink" title="Method1:Divide And Conquer"></a>Method1:Divide And Conquer</h3><p>　　首先考虑一个相关的问题。考虑最后一步回到起始点的所有可能。如下图，总共有3种情况。<br><img src="/picture/machine-learning/algorithm8.png" alt="algorithm"><br>　　再考虑一个更小的问题。<br><img src="/picture/machine-learning/algorithm9.png" alt="algorithm"><br>　　如何求解D({2,3,4},4)呢？<br>　　D({2,3,4},4)意味着要先经过2和3再到达4，因此这里面总共有2种情况。1）起始点1先经过2，再经过3，最后到达4。2）起始点1先经过3，再到达2，最后到达4。因此：<br>$$D(\{2,3,4\},4)=min{ D(\{2,3\},3)+d_{34}, D(\{2,3\},2)+d_{24}}$$<br>　　因此算法如下：<br><img src="/picture/machine-learning/algorithm10.png" alt="algorithm"></p>
+<h3 id="Method2-Improvement-Strategy"><a href="#Method2-Improvement-Strategy" class="headerlink" title="Method2:Improvement Strategy"></a>Method2:Improvement Strategy</h3><p>　　首先是解空间的一些基本概念。<br><img src="/picture/machine-learning/algorithm11.png" alt="algorithm"><br>　　其中节点代表的是一个完整的解，边代表的是节点之间存在关联。提升策略意味着会从一个初始解开始，通过略微修改解，来逐步提升性能。<br><img src="/picture/machine-learning/algorithm12.png" alt="algorithm"><br>　　提升策略的基本套路如上图所示。<br>　　这里的关键是如何定义s的领域(neighbourhood)s’。我们的目标是尽量少修改s来变成s’。一种定义方法是如下：<br><img src="/picture/machine-learning/algorithm13.png" alt="algorithm"><br>　　下面是一个例子：<br><img src="/picture/machine-learning/algorithm14.png" alt="algorithm"></p>
+<h3 id="Method3-BackTracking-an-intelligent-enumeration-strategy"><a href="#Method3-BackTracking-an-intelligent-enumeration-strategy" class="headerlink" title="Method3:BackTracking:an intelligent enumeration strategy"></a>Method3:BackTracking:an intelligent enumeration strategy</h3><p>　　我们注意到，任意一个解都可以被表示成一个由边构成的序列。<br><img src="/picture/machine-learning/algorithm15.png" alt="algorithm"><br>　　回溯树的结构如下：<br><img src="/picture/machine-learning/algorithm16.png" alt="algorithm"><br>　　注意这里面使用到了预测方法，基于如下两个准则：1）如果去掉连接(i,j)点的边会导致节点i(or j)连接的边少于两条，那么这条边必须包含。(有进必有出)。2）如果增加lianjie(i,j)点的边会导致节点i(or j)连接的边多于两条(只能进一次,出一次)，那么这条边一定不能包含。<br><img src="/picture/machine-learning/algorithm18.png" alt="algorithm"><br>　　算法如下：<br><img src="/picture/machine-learning/algorithm17.png" alt="algorithm"><br>　　回溯法的问题是会遍历所有可能的解，这样会导致解空间太大。一种解决方法是使用剪枝策略，对每一个节点，我们计算该节点代价的最小值。如果某个节点代价大于目前最优解，那么该节点及其下面的所有点就不需要进行遍历。<br><img src="/picture/machine-learning/algorithm19.png" alt="algorithm"><br>　　对每个节点的下界计算方法如下：<br><img src="/picture/machine-learning/algorithm21.jpg" alt="algorithm"><br>　　修改完的代码如下：<br><img src="/picture/machine-learning/algorithm22.png" alt="algorithm"><br>　　１个实例如下：<br><img src="/picture/machine-learning/algorithm23.png" alt="algorithm"><br>　　对于P2节点，由于e1边没有选，对于a节点而言，下界变成了(2+4)/2;对于b节点而言，因为e1边不能选，下界变成了(3+4)/2。相对于P0节点而言，代价总共增加了1。又比如对于P4节点，由于e2不能选，对于c节点而言，下界变成了(4+5)/2，相对PO总共增加了0.5。</p>
+<p>　　</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文是针对卜东波老师算法设计与分析第一课做的课堂笔记。第一课主要介绍算法的概念以及一些代表性的问题。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="算法设计与分析" scheme="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+    
+    
+      <category term="算法设计与分析" scheme="xtf615.com/tags/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+    
+      <category term="课堂笔记" scheme="xtf615.com/tags/%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用Apriori进行关联分析</title>
+    <link href="xtf615.com/2017/09/12/%E4%BD%BF%E7%94%A8Apriori%E8%BF%9B%E8%A1%8C%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90/"/>
+    <id>xtf615.com/2017/09/12/使用Apriori进行关联分析/</id>
+    <published>2017-09-12T12:13:47.000Z</published>
+    <updated>2017-09-17T07:07:38.884Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　未完待续。。。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　未完待续。。。&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="关联分析" scheme="xtf615.com/categories/%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90/"/>
+    
+    
+      <category term="Apriori" scheme="xtf615.com/tags/Apriori/"/>
+    
+      <category term="关联分析" scheme="xtf615.com/tags/%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python核心编程读书笔记</title>
+    <link href="xtf615.com/2017/09/07/Python%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    <id>xtf615.com/2017/09/07/Python核心编程读书笔记/</id>
+    <published>2017-09-07T12:05:12.000Z</published>
+    <updated>2017-09-17T12:26:59.705Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　本文是Python核心编程的读书笔记。<br><a id="more"></a></p>
+<h1 id="Chapter-1-Welcome-to-Python"><a href="#Chapter-1-Welcome-to-Python" class="headerlink" title="Chapter 1 Welcome to Python"></a>Chapter 1 Welcome to Python</h1><h2 id="什么是Python"><a href="#什么是Python" class="headerlink" title="什么是Python"></a>什么是Python</h2><p>　　<strong>Python is an elegant and robust programming language that delivers both the power and general applicability of traditional compiled languages with the ease of use of simpler scripting and interpreted languages.</strong></p>
+<h2 id="起源"><a href="#起源" class="headerlink" title="起源"></a>起源</h2><p>　　贵泽.范.罗萨姆(Guido van Rossum)于1989年底创造了Python.1991年，Python发布了第一个公开发行版。</p>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>高级语言(High Level)</li>
+<li>面向对象(Object Oriented)</li>
+<li>可升级(Scalable)：提供基本开发模块，可在此之上开发你的软件，当需要扩展和增长时，Python可插入性和模块化机构使得项目易于管理。</li>
+<li>可扩展(Extensible)：可用其他语言编写Python扩展。如CPython和Jython。</li>
+<li>可移植性(Portable)</li>
+<li>易学(Easy to Learn)</li>
+<li>易读(Easy to Read)</li>
+<li>易维护(Easy to Maintain)</li>
+<li>健壮性(Robust): 错误处理机制</li>
+<li>高效快速的原型开发工具(Effective as a Rapid Prototyping Tool)：拥有面向其它系统接口，标准库和第三方模块完备。</li>
+<li>内存管理器(A Memory Manager)</li>
+<li>解释性和(字节)编译性:解释型语言，但是Python实际上是字节编译的(生成带有.pyc或.pyo的扩展名文件)，可以生成一种近似机器语言的中间形式。兼顾了编译型语言的性能和解释型语言的优点。</li>
+</ul>
+<h2 id="Python和其他语言比较"><a href="#Python和其他语言比较" class="headerlink" title="Python和其他语言比较"></a>Python和其他语言比较</h2><h3 id="Python-VS-Perl"><a href="#Python-VS-Perl" class="headerlink" title="Python VS Perl"></a>Python VS Perl</h3><p>　　同：都是脚本语言.<br>　　异：Perl最大的优势在于它的字符串模式匹配能力，提供了强大的正则表达式匹配引擎，使得Perl实际上成为了一种用于过滤、识别和抽取字符串文本的语言。一直是开发web服务器端通用网关接口CGI网络程序最流行的语言，也是目前Linux中大多数脚本使用的语言。然而Perl语言晦涩、对符号语法过度使用，解读很困难。Pyhon适合开发大程序，吸收了Perl语言特点，也拥有强大的正则化引擎，同时易学易用。</p>
+<h3 id="Python-VS-Java"><a href="#Python-VS-Java" class="headerlink" title="Python VS Java"></a>Python VS Java</h3><p>　　同：面向对象。Jython开发联结了二者。Jython是用Java开发的Python解释器，即可以将Python代码解释成Java虚拟机懂的字节码，这意味着可以在只有Java虚拟机的环境中运行Python程序。在Jython脚本环境中，还可以处理Java对象，可以访问Java的标准库。<br>　　异：Java繁琐，Python简洁。</p>
+<h3 id="Python-VS-Ruby"><a href="#Python-VS-Ruby" class="headerlink" title="Python VS Ruby"></a>Python VS Ruby</h3><p>　　同：脚本语言。<br>　　异：Python是多编程范式混合，Ruby完全面向对象。Python有一个字节码解释器，Ruby没有。Python更加易读，Ruby可看作是面向对象的Perl。相对于Ruby on Rails,Python有自己的Web应用框架，比如Django和Turbogears.</p>
+<p>　　可参考，<a href="https://wiki.python.org/moin/LanguageComparisons" target="_blank" rel="external">Python与其他语言比较</a></p>
+<h2 id="其它实现"><a href="#其它实现" class="headerlink" title="其它实现"></a>其它实现</h2><p>　　标准版的Python是用C来编译的，又叫CPython。除此之外，还有一些其它的Python实现。</p>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><p>　　前面也有提到过。使用Java语言写成的Python解释器Jython。Jython优势：</p>
+<ul>
+<li>只要有Java虚拟机，就能运行Jython。</li>
+<li>拥有访问Java包宇类库的能力。</li>
+<li>为Java开发环境提供了脚本引擎。</li>
+<li>能够很容易的测试Java类库。</li>
+<li>提供访问Java原生异常处理的能力。</li>
+<li>继承了JavaBeans特性和内省能力。</li>
+<li>鼓励Python到Java的开发。</li>
+<li>GUI开发人员可以访问Java的AWT/SWing库</li>
+<li>利用了Java原生垃圾收集器。<h3 id="NET"><a href="#NET" class="headerlink" title=".NET"></a>.NET</h3>　　IronPython的Python实现，可以在一个.NET应用程序中整合IronPython解释器来访问.NET对象。<h3 id="Stackless"><a href="#Stackless" class="headerlink" title="Stackless"></a>Stackless</h3>　　CPython的一个局限就是每个Python函数调用都会产生一个C函数调用。这意味着同时产生的函数调用时有限制的，因此Python难以实现用户级的线程库和复杂递归应用，一旦超越这个限制，程序就会崩溃。可以通过使用一个stackless的Python实现来突破这个限制，使得一个C栈帧可以拥有任意数量的Python栈帧，这样就能够拥有无穷的函数调用，并能支持巨大数量的线程。　</li>
+</ul>
+<h1 id="Chapter-2-Getting-Started"><a href="#Chapter-2-Getting-Started" class="headerlink" title="Chapter 2 Getting Started"></a>Chapter 2 Getting Started</h1><h2 id="print输出"><a href="#print输出" class="headerlink" title="print输出"></a>print输出</h2><p>　　通常当你想看变量内容时，会在代码中使用print语句输出。不过在交互式解释器中，可以使用print语句显示变量的字符串表示，或者仅使用变量名查看该变量的原始值。<br><img src="/picture/machine-learning/python-note1.png" alt="python note"><br>　　注意，在仅用变量名时，输出的字符串被用单引号括起来了。这是为了让非字符串对象也能以字符串的方式显示在屏幕上-即它显示的是该对象的字符串表示，而不仅仅是字符串本身。究其本质，print语句调用str()函数显示对象，而交互式解释器调用repr()函数显示对象。<br>　　下划线(_)在解释器中有特别的含义，表示最后一个表达式的值。<br>　　Python的print语句，与字符串格式运算符(%)结合使用，可实现字符串替换功能。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt;<span class="keyword">print</span> <span class="string">"%s is number %d!"</span> % (<span class="string">"Python"</span>, <span class="number">1</span>)</div><div class="line">Python <span class="keyword">is</span> number <span class="number">1</span>!</div></pre></td></tr></table></figure></p>
+<p>　　%s替换字符串，%d替换整数，%f替换浮点数。<br>　　Print语句支持将输出重定向到文件。使用符号&gt;&gt;重定向输出。如下是将输出重定向到标准错误输出：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">print</span> &gt;&gt; sys.stderr, <span class="string">'Fatal error: invalid input!'</span></div></pre></td></tr></table></figure></p>
+<p>　　下面将输出重定向到日志文件的例子：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">logfile = open(<span class="string">'/tmp/mulog.txt'</span>,<span class="string">'a'</span>)</div><div class="line"><span class="keyword">print</span> &gt;&gt; logfile, <span class="string">'Fatal error:invalid input!'</span></div><div class="line">logfile.close()</div></pre></td></tr></table></figure></p>
+<h2 id="raw-input输入"><a href="#raw-input输入" class="headerlink" title="raw_input输入"></a>raw_input输入</h2><p>　　raw_input()读取标准输入，并将读到的数据赋值给指定的变量，但是该变量是字符串，可以使用int()等函数进行类型转换。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt;user = raw)input(<span class="string">'Enter login name:'</span>)</div><div class="line">Enter login name: root</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>Print <span class="string">'Your login is:'</span>,user</div><div class="line">Your login <span class="keyword">is</span>: root</div></pre></td></tr></table></figure></p>
+<h2 id="help帮助"><a href="#help帮助" class="headerlink" title="help帮助"></a>help帮助</h2><p>　　在学习Python过程中，如果需要得到一个生疏函数的帮助，只需要对它调用help(函数名)就可以得到帮助信息。</p>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>　　使用# 注释单行。<br>　　有一种叫做文档字符串的特别注释。可以在模块、类或者函数的起始添加一个字符串，起到在线文档的功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">()</span>:</span></div><div class="line">  <span class="string">"This is a doc string"</span></div><div class="line">  <span class="keyword">return</span> <span class="keyword">True</span></div></pre></td></tr></table></figure>
+<p> 　　<br>　　与普通注释不同，文档字符串可以在运行时访问，也可以用来自动生成文档。</p>
+<h2 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h2><p>　　Python五种基本数字类型：</p>
+<ul>
+<li>int(有符号整数)</li>
+<li>long(长整数)：超过C语言中的long，类似Java的BigInteger</li>
+<li>bool(布尔值)</li>
+<li>float(浮点值)</li>
+<li>complex(复数)</li>
+</ul>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>　　支持成对单引号或双引号；也支持三引号(三个连续的单引号或双引号)，可以用来包含特殊字符。<br>　　使用索引运算符([])和切片运算符([:])可以得到子字符串。第一个字符索引为0，最后一个字符索引为-1。<br>　　*号可以用于字符串重复。例如：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">"python"</span> * <span class="number">2</span></div><div class="line"><span class="string">'pythonpython'</span></div></pre></td></tr></table></figure></p>
+<h2 id="列表和元组"><a href="#列表和元组" class="headerlink" title="列表和元组"></a>列表和元组</h2><p>　　可以将列表和元组当作普通的数组，可以保存任意数量任意类型的Python对象，唯一不同的是列表和元组可以同时存储不同类型的对象。<br>　　列表和元组几处重要的区别：列表元素用中括号([])包裹，元素的个数及元素的值可以改变。元组元素用小括号(())包裹，不可以更改(尽管内容可以更改)。元组可以看成是只读的列表，通过切片运算([:])可以得到子集。</p>
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>　　字典用于映射数据，键值对构成。几乎所有类型的Python对象都可以用作键，不过一般以字符串或数字字符串最为常用，值可以用任意Python对象，字典元素用大括号({})包裹。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt;aDict=&#123;<span class="string">'host'</span>:<span class="string">'earth'</span>&#125; <span class="comment"># create dict</span></div><div class="line">&gt;&gt;&gt;aDict[<span class="string">'port'</span>]=<span class="number">80</span> <span class="comment"># add to dict </span></div><div class="line">&gt;&gt;&gt;aDict</div><div class="line">&#123;<span class="string">'host'</span>:<span class="string">'earth'</span>,<span class="string">'port'</span>:<span class="number">80</span>&#125;</div><div class="line">&gt;&gt;&gt;aDict.keys()</div><div class="line">[<span class="string">'host'</span>,<span class="string">'[port'</span>]</div><div class="line">&gt;&gt;&gt;<span class="keyword">for</span> key <span class="keyword">in</span> aDict:</div><div class="line">       <span class="keyword">print</span> key,aDict[key]</div><div class="line">host earth</div><div class="line">port <span class="number">80</span></div></pre></td></tr></table></figure></p>
+<h2 id="for循环和range-、enumerate"><a href="#for循环和range-、enumerate" class="headerlink" title="for循环和range()、enumerate()"></a>for循环和range()、enumerate()</h2><p>　　for循环类似foreach功能，不能循环索引。要循环索引可以使用range(len(list))。<br>如果既要循环索引，又要循环元素，恶意使用enumerate()。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt;foo = [<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>]</div><div class="line">&gt;&gt;&gt;<span class="keyword">for</span> i,ch <span class="keyword">in</span> enumerate(foo):</div><div class="line">    <span class="keyword">print</span> ch, <span class="string">'(%d)'</span>  % i</div><div class="line">a (<span class="number">0</span>)</div><div class="line">b (<span class="number">1</span>)</div><div class="line">c (<span class="number">2</span>)</div></pre></td></tr></table></figure></p>
+<h2 id="文件和内建函数open"><a href="#文件和内建函数open" class="headerlink" title="文件和内建函数open()"></a>文件和内建函数open()</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">handle = open(file_name, access_mode=<span class="string">'r'</span>) <span class="comment">#access mode:'r','w','a','b'</span></div><div class="line"><span class="keyword">for</span> eachLine <span class="keyword">in</span> handle:</div><div class="line">    <span class="keyword">print</span> eachLine</div><div class="line">handle.close()</div></pre></td></tr></table></figure>
+<h2 id="错误和异常"><a href="#错误和异常" class="headerlink" title="错误和异常"></a>错误和异常</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>:</div><div class="line">	handle = open(file_name, access_mode=<span class="string">'r'</span>) <span class="comment">#access mode:'r','w','a','b'</span></div><div class="line">	<span class="keyword">for</span> eachLine <span class="keyword">in</span> handle:</div><div class="line">	    <span class="keyword">print</span> eachLine, handle.close() <span class="comment"># error</span></div><div class="line"><span class="keyword">except</span> IOError, e:</div><div class="line">	<span class="keyword">print</span> <span class="string">'file open error:'</span>,e</div></pre></td></tr></table></figure>
+<p>　　也可以通过raise语句故意引发一个异常。</p>
+<h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClassName</span><span class="params">(base_class[es])</span>:</span></div><div class="line">    <span class="string">"optional documentation string"</span></div><div class="line">    static_member_declarations</div><div class="line">    method_declarations</div></pre></td></tr></table></figure>
+<p>　　使用class关键字定义类，可以提供一个可选的父类，如果没有合适的父类，那就使用object作为父类。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooClass</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="string">"""my very first class: FooClass"""</span></div><div class="line">    version = <span class="number">0.1</span> <span class="comment"># class (data) attribute</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, nm=<span class="string">'John Doe'</span>)</span>:</span></div><div class="line">        <span class="string">"""constructor"""</span></div><div class="line">        self.name = nm <span class="comment"># class instance (data) attribute</span></div><div class="line">        <span class="keyword">print</span> <span class="string">'Created a class instance for'</span>, nm</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">showname</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""display instance attribute and class name"""</span></div><div class="line">        <span class="keyword">print</span> <span class="string">'Your name is'</span>, self.name</div><div class="line">        <span class="keyword">print</span> <span class="string">'My name is'</span>, self.__class__.__name__</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">showver</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="string">"""display class(static) attribute"""</span></div><div class="line">        <span class="keyword">print</span> self.version <span class="comment"># references FooClass.version</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">addMe2Me</span><span class="params">(self, x)</span>:</span> <span class="comment"># does not use 'self'</span></div><div class="line">        <span class="string">"""apply + operation to argument"""</span></div><div class="line">        <span class="keyword">return</span> x + x</div><div class="line"><span class="comment"># 创建类实例</span></div><div class="line">&gt;&gt;&gt;foo1 = FooClass()</div><div class="line">Created a <span class="class"><span class="keyword">class</span> <span class="title">instance</span> <span class="title">for</span> <span class="title">John</span> <span class="title">Doe</span></span></div></pre></td></tr></table></figure></p>
+<p>　　__init__可以当成构造函数，不过不像其他语言的构造函数，它并不会创建实例，它仅仅是你的对象创建后执行的第一个方法，做一些必要的初始化工作。__init__有个默认参数self。<br>　　self.__class__.name显示类名。</p>
+<h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p>　　一个Python源文件就是一个模块，模块不带.py后缀。可以使用import语句导入都其他模块中使用。</p>
+<h2 id="实用的函数"><a href="#实用的函数" class="headerlink" title="实用的函数"></a>实用的函数</h2><ul>
+<li>dir([obj]):显示对象的属性，如果没有提供参数，则显示全局变量的名字。</li>
+<li>help([obj]):以一种整齐美观的形式显示对象的文档字符串，如果没有提供任何参<br>数，则会进入交互式帮助。</li>
+<li>int(obj): 对象转整数</li>
+<li>len(obj): 对象长度</li>
+<li>open(fn,mode):打开文件</li>
+<li>range([start,]stop[,step]):返回一个整数列表，起始值为start，结束值为stop-1,步阶是step。start默认为0，step默认为1.</li>
+<li>raw_input(str):等待用户输入一个字符串，str用于提示信息。</li>
+<li>str(obj): 对象转字符串</li>
+<li>type(obj): 返回对象的类型，返回值是一个type对象。</li>
+</ul>
+<h1 id="Chapter-3-Python基础"><a href="#Chapter-3-Python基础" class="headerlink" title="Chapter 3 Python基础"></a>Chapter 3 Python基础</h1><h2 id="语句和语法"><a href="#语句和语法" class="headerlink" title="语句和语法"></a>语句和语法</h2><p>　　#是注释，\是换行，;可用于同一行书写多个表达式</p>
+<h2 id="赋值"><a href="#赋值" class="headerlink" title="赋值"></a>赋值</h2><p>　　多元赋值:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt;x, y, z= <span class="number">1</span>, <span class="number">2</span>, <span class="string">'a'</span><span class="comment">#实际上是元组赋值，即(x, y, z)=(1, 2, 'a')</span></div></pre></td></tr></table></figure></p>
+<h2 id="下划线标识符"><a href="#下划线标识符" class="headerlink" title="下划线标识符"></a>下划线标识符</h2><ul>
+<li>_xxx:可以看作是私有的，不能通过”from module import *”导入。</li>
+<li>__xxx__:系统定义名字</li>
+<li>__xxx：类中的私有变量名</li>
+</ul>
+<h2 id="基本风格指南"><a href="#基本风格指南" class="headerlink" title="基本风格指南"></a>基本风格指南</h2><p>　　python提供了一个机制，可以通过__doc__特别变量，动态获得文档字串。在模块，类声明，或函数声明中<strong>第一个没有赋值的字符串</strong>可以通过属性obj.__doc__来进行访问，其中obj是一个模块，类或函数的名字。<br>　　使用4个空格缩进。</p>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>　　引用计数。记录所有使用中的对象各有多个引用。引用计数为0时，它被垃圾回收。</p>
+<h3 id="引用计数增加"><a href="#引用计数增加" class="headerlink" title="引用计数增加"></a>引用计数增加</h3><p>　　当对象被创建并将其引用赋值给变量时，该对象的引用计数设置为1.<br>　　当同一个对象的引用又被赋值给其他变量时，或作为参数传递给函数，方法或类实例时，或者被赋值为一个窗口对象(list,tuple等)的成员时，该对象新的引用被创建，则该对象的引用计数加1。</p>
+<h3 id="引用计数减少"><a href="#引用计数减少" class="headerlink" title="引用计数减少"></a>引用计数减少</h3><p>　　当对象的引用被销毁时，引用计数会减小。最明显的例子就是当引用离开其作用范围时，这种情况最经常出现在函数运行结束时，所有局部变量都自动销毁，对象的引用计数也随之减少。<br>　　当变量被赋值给另外一个对象时，原对象的引用计数也会自动减少1。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">foo = <span class="string">'xyz'</span></div><div class="line">bar = foo</div><div class="line">foo = <span class="number">123</span></div></pre></td></tr></table></figure></p>
+<p>　　如上，当字符串对象“xyz”被创建并赋值给foo时，它的引用计数为，当增加一个别名bar时，引用计数变为2.不过当foo被重新赋值给整数对象123时，‘xyz’对象的引用计数自动减少1，又重新变成了1，此时只有bar是指向“xyz”。<br>　　其他造成对象引用计算减少的方式包括del语句删除一个变量。或者当一个对象被移出一个窗口对象时，或者该窗口对象本身的引用计数变成了0时。　　<br>　　总结一下一个对象的引用计数在以下情况会减少：</p>
+<ul>
+<li>一个本地引用离开了作用范围。比如foobar()函数结束时。</li>
+<li>对象的别名被显示销毁。del y</li>
+<li>对象的一个别名被赋值给其它的对象。 x=123</li>
+<li>对象被从一个窗口对象中移除：myList.remove(x)</li>
+<li>窗口对象本身被销毁：del myList<br>　　del看一个例子：<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x=<span class="number">3.14</span> <span class="comment">#创建3.14对象并赋值给x</span></div><div class="line">y=x</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　执行del y会产生两个结果：1）从现在的名字空间中删除y。2）x的引用计数减少1。<br>　　引申一步，紧接着执行del x会删除该数值对象的最后一个引用，也就是该对象的引用计数会减少为0，这会导致该对象从此无法访问或无法抵达。从此刻起，该对象就成为垃圾回收机制的回收对象。注意<strong>任何追踪或调试程序会给一个对象增加一个额外的引用</strong>，这会推迟该对象被回收的时间。</p>
+<h3 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h3><p>　　垃圾回收器会回收引用计数为0的对象，也负责检查那些虽然引用计数大于0但也应该被销毁的对象，特定情形会导致循环引用。<br>　　一个循环引用发生在当你有至少两个对象相互引用时，也就是所有的引用都消失了，这些引用仍然存在，这说明只靠计数是不够的。Python垃圾回收器实际上是一个引用计数器和一个循环垃圾回收器。Python会留心被分配的总量很大（即未通过引用计数销毁的那些）的对象，这种情况下，解释器会暂停下来，试图清理所有未引用的循环。</p>
+<h1 id="Chapter-4-Python对象"><a href="#Chapter-4-Python对象" class="headerlink" title="Chapter 4 Python对象"></a>Chapter 4 Python对象</h1><p>　　未完待续……</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　本文是Python核心编程的读书笔记。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="学习笔记" scheme="xtf615.com/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Python" scheme="xtf615.com/tags/Python/"/>
+    
+  </entry>
   
   <entry>
     <title>卷积神经网络实践</title>
@@ -356,13 +590,13 @@
     
       <category term="大数据" scheme="xtf615.com/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
+      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
       <category term="redis" scheme="xtf615.com/tags/redis/"/>
     
       <category term="ActiveMQ" scheme="xtf615.com/tags/ActiveMQ/"/>
     
       <category term="车联网" scheme="xtf615.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/"/>
-    
-      <category term="分布式" scheme="xtf615.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
   </entry>
   
@@ -786,9 +1020,9 @@
       <category term="机器学习" scheme="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
     
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
+    
+      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
     
       <category term="支持向量机" scheme="xtf615.com/tags/%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/"/>
     
@@ -1002,387 +1236,9 @@
     
       <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
       <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>ARIMA时间序列模型(二)</title>
-    <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B-%E4%BA%8C/"/>
-    <id>xtf615.com/2017/03/07/ARIMA时间序列模型-二/</id>
-    <published>2017-03-07T05:49:28.000Z</published>
-    <updated>2017-03-11T05:05:41.860Z</updated>
-    
-    <content type="html"><![CDATA[<p>　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。</p>
-<h1 id="一般线性过程"><a href="#一般线性过程" class="headerlink" title="一般线性过程"></a>一般线性过程</h1><h2 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h2><ul>
-<li>时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值是白噪声系列的线性函数。</li>
-<li>时间序列\({Z_t}\)是有因果的(causal),当且仅当\(Z_t\)的值只受到目前为止的信息影响，换句话说\(Z_t\)是独立于未来信息\(a_s\)的，s&gt;t</li>
-<li>时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).</li>
-</ul>
-<p>因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。</p>
-<p>一般线性过程具有如下形式：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\<br>其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>不失一般性，我们可以设\(\psi_0=1\)<br><a id="more"></a>  </p>
-<h2 id="均值，自协方差，自相关系数"><a href="#均值，自协方差，自相关系数" class="headerlink" title="均值，自协方差，自相关系数"></a>均值，自协方差，自相关系数</h2><p>一般线性过程：<br>$$E(Z_t)=\mu$$<br>$$\gamma_0=var(Z_t)=\sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&lt;\infty$$<br>$$\gamma_k=cov(Z_t,Z_{t-k})=\sigma_a^2\sum_{j=0}^{\infty}\psi_j\psi_{j+k},k \geq 0$$<br>$$\rho_k=\frac{cov(Z_t,Z_{t-k})}{var(Z_t)}=\frac{\sum_{j=0}^{\infty}\psi_j\psi_{j+k}}{\sum_{j=0}^{\infty}\psi_j^2},k &gt; 0$$</p>
-<h1 id="移动平均MA过程"><a href="#移动平均MA过程" class="headerlink" title="移动平均MA过程"></a>移动平均MA过程</h1><p>定义：q阶移动平均过程，简记为：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q} \\\\<br>其中，q \in \mathbb{N}, 并且 {a_t} \sim WN(0,\sigma_a^2)$$</p>
-<ul>
-<li>如果\(\theta_0=0\)，则0阶移动平均过程实际上就是白噪声序列，此时\(Z_t=a_t\)</li>
-<li>移动平均过程是一种特殊的一般线性过程。因为它是线性，因果和平稳的</li>
-</ul>
-<h2 id="一阶移动平均过程MA（1）"><a href="#一阶移动平均过程MA（1）" class="headerlink" title="一阶移动平均过程MA（1）"></a>一阶移动平均过程MA（1）</h2><p>$$Z_t=\theta_0+a_t-\theta a_{t-1}$$</p>
-<ul>
-<li>显然，\(E(Z_t)=\theta_0\)</li>
-<li>\(\gamma_0=var(Z_t)=\sigma_a^2(1+\theta^2)\)</li>
-<li>\(\gamma_1=cov(Z_t,Z_{t-1})=cov(a_t-\theta a_{t-1},a_{t-1}-\theta a_{t-2}) = cov(-\theta a_{t-1},-\theta a_{t-2})=-\theta \sigma_a^2\)</li>
-<li>\(\rho_1 = \frac{-\theta}{1+\theta^2}\)</li>
-<li>\(\rho_2=cov(Z_t,Z_{t-2})=cov(a_t-\theta a_{t-1},a_{t-2}-\theta a_{t-3})=0\)</li>
-<li>同理，因为\(Z_t和Z_{t-2}\)之间不存在共同的下标,故\(\rho_2=0\)</li>
-<li>故当\(k \geq 2\)时，\(\gamma_k=cov(Z_t,Z_{t-k})=0, 并且 \rho_k=0\)，即这一过程在超过滞后1,就不存在相关性。这一事实在我们后续为实际数据选择合适的模型时会起到很重要作用。</li>
-</ul>
-<h2 id="二阶移动平均过程MA（2）"><a href="#二阶移动平均过程MA（2）" class="headerlink" title="二阶移动平均过程MA（2）"></a>二阶移动平均过程MA（2）</h2><p>$$Z_t=\theta_0+a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2}$$</p>
-<ul>
-<li>显然，\(E(Z_t)=\theta_0\)</li>
-<li>方差\(\gamma_0=var(Z_t)=(1+\theta_1^2+\theta_2^2)\sigma_a^2\)</li>
-<li>滞后k=1的自协方差:<br>$$\gamma_1=cov(Z_t,Z_{t-1})=cov(a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2},a_{t-1}-\theta_1 a_{t-2}-\theta_2 a_{t-3})=cov(-\theta_1 a_{t-1},a_{t-1}) + cov(-\theta_2 a_{t-2},-\theta_1 a_{t-2})=[-\theta_1+(-\theta_1)(-\theta_2)]\sigma_a^2=(-\theta_1+\theta_1 \theta_2)\sigma_a^2$$</li>
-<li>滞后k=2的自协方差为：<br>$$\gamma_2=cov(Z_t,Z_{t-2})=cov(a_t-\theta_1 a_{t-1}-\theta_2 a_{t-2},a_{t-2}-\theta_1 a_{t-3}-\theta_2 a_{t-4})=cov(-\theta_2 a_{t-2}, a_{t-2})=-\theta_2 \sigma_a^2$$</li>
-<li>同理相关系数，\(\rho_k=0, \forall k \geq 3\)</li>
-</ul>
-<p>$$ \begin{eqnarray} \rho=\begin{cases} \rho_1=\frac{-\theta_1+\theta_1 \theta_2}{1+\theta_1^2+\theta_2^2} \cr \rho_2=\frac{-\theta_2}{1+\theta_1^2+\theta_2^2} \cr \rho_k=0, \forall k \geq 3 \end{cases} \end{eqnarray}$$</p>
-<h2 id="q阶移动平均过程MA（q）"><a href="#q阶移动平均过程MA（q）" class="headerlink" title="q阶移动平均过程MA（q）"></a>q阶移动平均过程MA（q）</h2><p>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$</p>
-<ul>
-<li>均值\(\mu=\theta_0\)</li>
-<li>方差\(\gamma_0=(1+\theta_1^2+\theta_2^2+…+\theta_q^2)\sigma_a^2\)</li>
-<li>自协方差：<br>$$ \begin{eqnarray} \rho_k=\begin{cases} \frac{-\theta_k+\theta_1 \theta_{k+1}+\theta_2 \theta_{k+2}+…+\theta_{q-k} \theta_{q}}{1+\theta_1^2+\theta_2^2+…+\theta_q^2},k=1,2,…,q \cr 0, \forall k \geq q+1 \end{cases} \end{eqnarray}$$</li>
-<li>自相关：<br>当k=q时,\(\rho_k \neq 0\); 当k&gt;q时，\(\rho_k=0\)<br><strong>我们通常说，q阶移动平均过程的自相关函数在q滞后截尾，即ACF会在lag=q时截尾(cuts off).</strong></li>
-</ul>
-<h2 id="后向移位算子"><a href="#后向移位算子" class="headerlink" title="后向移位算子"></a>后向移位算子</h2><p>任意时间序列上的后向移位算子B定义为：<br>\(BZ_t=Z_{t-1}\), \(B^kZ_t=B^{k-1}(BZ_t)=…=Z_{t-k}, \forall k \in \mathbb{Z}\)<br>因此，B(Z)是原始序列Z的滞后为1的序列。\(B^k(Z)是原始序列滞后为k的序列\)<br>特别的，\(B^0是单位算子，B^0Z=Z\)<br>因此：<br>移动平均过程：<br>$$Z_t=\theta_0+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$<br>可以被重写为：<br>$$Z_t=(1-\theta_1B-\theta_2B^2-…-\theta_qB^q)a_t=\theta(B)a_t$$<br>其中，\(\theta(x)=1-\theta_1x-…-\theta_qx^q\)是MA移动平均的特征多项式</p>
-<h1 id="自回归过程AR"><a href="#自回归过程AR" class="headerlink" title="自回归过程AR"></a>自回归过程AR</h1><p>p阶自回归模型AR(p)定义为：<br>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t \\\\<br>其中，p \geq 0,且p为整数。 \phi是参数。{a_t} \sim WN(0,\sigma_a^2)<br>$$<br>模型可以被重写为：<br>$$\phi(B)Z_t=\theta_0+a_t \\\\<br>其中，\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p是AR的特征多项式$$</p>
-<h2 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h2><p>AR(p)模型有一个唯一的平稳性解，只有当下面AR特征方程的所有根都在单位圆外时。<br>$$\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p=0$$</p>
-<ul>
-<li>求解唯一平稳性解叫做AR(p)自回归过程</li>
-<li>上述条件称作平稳性条件</li>
-<li>对于一个复杂的z值，如果\(\vert z \vert &gt; 1\),我们称它是在单位圆外。 </li>
-<li>例子：找出AR(1)模型的平稳性条件：<br>  \(Z_t=\phi Z_{t-1}+a_t\)<br>  由上可得，\(1-\phi x=0\),则\(x=1/\phi\),因为需要满足|x|&gt;1，则我们有\(|\phi| &lt; 1\)</li>
-<li>例子，找出AR(1),\(Z_t=0.5Z_{t-1}+a_t\)的一般线性过程形式：<br>由前面AR的特征多项式可得，<br>$$(1-0.5B)Z_t=a_t$$<br>因此可以根据等比数列求和性质得到如下式子<br>$$Z_t=\frac{1}{1-0.5B}a_t=(1+0.5B+0.5^2B^2+…)a_t$$<br>进一步得到，即一般线性过程形式：<br>$$Z_t=a_t+0.5a_{t-1}+0.5^2a_{t-2}+…$$<h2 id="一般平稳性条件"><a href="#一般平稳性条件" class="headerlink" title="一般平稳性条件"></a>一般平稳性条件</h2>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t \ (1)$$<br>必须满足如下条件：<br>$$ \begin{eqnarray} \begin{cases} \mu=\frac{1}{1-\phi_1-…-\phi_p} \cr \psi_1=\phi_1, \cr \psi_2=\phi_1\psi_1+\phi_2, \cr … \cr \psi_k=\phi_1\psi_{k-1}+\phi_2\psi_{k-2}+…+\phi_p\psi_{k-p} \end{cases} \end{eqnarray}$$<br>其中，\(\psi是一般线性过程的参数\)<br>一般线性过程是：<br>$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2}  \ (2)$$<br>要想满足平稳性，要求AR模型能够转换成一般线性过程的形式，因此通过比较(1),(2)式子，展开运算，可以得到上述一般平稳性条件</li>
-</ul>
-<h2 id="均值，自协方差，方差，自相关"><a href="#均值，自协方差，方差，自相关" class="headerlink" title="均值，自协方差，方差，自相关"></a>均值，自协方差，方差，自相关</h2><p>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} + a_t $$</p>
-<ul>
-<li>均值<br>我们对等式两边同时求均值：<br>$$\mu=\theta_0+\phi_1 \mu+\phi_2 \mu + …+ \phi_p \mu + 0$$<br>得到：<br>$$\mu = \frac{\theta_0}{1-\phi_1-\phi_2-…-\phi_p}$$<br>可以证明分母不为0.</li>
-<li>自相关<br><img src="/picture/machine-learning/arima1.jpg" alt="arima"><br>将两个式子等式两边对应相乘，然后再等式两边同时求自相关，根据定义，可以得到上述3.3的式子。<br><img src="/picture/machine-learning/arima2.jpg" alt="arima"></li>
-<li>方差<br><img src="/picture/machine-learning/arima4.jpg" alt="arima"><br><img src="/picture/machine-learning/arima3.jpg" alt="arima"><br>上述3.2式子和\(Z_t\)相乘后，再等式两边同时取方差，根据定义以及\(E(a_tZ_t)\)的推导，可以得到上述式子。</li>
-</ul>
-<h1 id="ARMA模型"><a href="#ARMA模型" class="headerlink" title="ARMA模型"></a>ARMA模型</h1><p>英文全称为，the mixed autoregressive-moving average model<br>$$Z_t=\theta_0+\phi_1 Z_{t-1}+\phi_2 Z_{t-2}+…+\phi_p Z_{t-p} \\\\<br>+a_t-\theta_1a_{t-1}-\theta_2a_{t-2}-…-\theta_qa_{t-q}$$<br>我们称\({Z_t}\)是(p,q)阶混合自回归移动平均模型，简记为ARMA(p,q)<br>如果q=0，则模型退化为AR模型；如果p=0,则模型退化为MA模型。二者都是ARMA模型的特例。<br>为了方便，我们重写以上等式为：<br>$$\phi(B)Z_t=\theta_0+\theta(B)a_t \\\\<br>其中，\phi(x)和\theta(x)分别是AR模型和MA模型的的特征多项式$$<br>$$\phi(x)=1-\phi_1x-\phi_2x^2-…-\phi_px^p$$<br>$$\theta(x)=1-\theta_1x-\theta_2x^2-…-\theta_px^q$$</p>
-<p>定理：如果AR多项式等式\(\phi(x)=0\)所有根都在单位圆之外，那么ARMA(p,q)模型存在唯一的平稳性解。<br>当存在平稳性解时，ARMA模型具备如下形式:<br>$$Z_t=\mu+\sum_{j=0}^\infty \psi_j a_{t-j}$$</p>
-<h2 id="如何求解ARMA模型平稳性条件？"><a href="#如何求解ARMA模型平稳性条件？" class="headerlink" title="如何求解ARMA模型平稳性条件？"></a>如何求解ARMA模型平稳性条件？</h2><p>考虑ARMA(1,1)，则：<br>$$Z_t=\phi Z_{t-1}+a_t-\theta a_{t-1}$$<br>比较上述式子的系数可以得到：<br>$$\psi_0 a_t+\psi_1 a_{t-1}+ \psi_2 a_{t-2}+ … \\\\<br>  = \phi \psi_0 a_{t-1} + \phi \psi_1 a_{t-2} + \phi \psi_2 a_{t-3} +…+a_t-\theta a_{t-1}$$<br>可以得出：<br>$$\psi_0=1$$<br>$$\psi_1=\phi \psi_0 - \theta = \phi - \theta$$<br>$$\psi_0=\phi \psi_1 = \phi^2-\phi \theta$$<br>$$…$$<br>$$\psi_k=\phi \psi_k = \phi^k - \phi^{k-1} \theta$$<br>一般的，对于ARMA(p,q),我们可以得到:<br>$$ \begin{eqnarray} \begin{cases} \psi_0=1 \cr \psi_1=-\theta_1+\phi_1, \cr \psi_2=-\theta_2+\phi_2+\phi_1 \psi_1, \cr … \cr \psi_j=\theta_j+ \phi_p \psi_{j-p}+ … + \phi_1 \psi_{j-1} \end{cases} \end{eqnarray}$$<br>而，<br>$$\mu=\frac{\theta_0}{1-\phi_1-\phi_2-…-\phi_p}$$<br>所以有：<br>$$Z_t=\mu+\sum_{j=0}^\infty \psi_j a_{t-j}$$</p>
-<h2 id="可逆性"><a href="#可逆性" class="headerlink" title="可逆性"></a>可逆性</h2><ul>
-<li><p>为什么需要可逆性？<br>  假设我们获取了100个观察值：<br>  $$z_1,z_2,…,z_{100}$$<br>  经过复杂的过程，我们得到了一个AR(1)模型:<br>  $$Z_t=0.6Z_{t-1}+a_t$$<br>  那么该如何解释结果呢？<br>  如果模型变成：<br>  $$Z_t=a_t-0.5a_{t-1}或者Z_t=0.3Z_{t-1}+a_t+0.2a_{t-1}$$<br>  又该如何解释呢？</p>
-<ul>
-<li>定义：如果时间序列\({Z_t}\)是可逆的，则：<br>$$a_t=\pi_0 Z_t+\pi_1 Z_{t-1}+\pi_2 Z_{t-2}+…$$<br>这个性质使得我们能够基于过去观察序列获取信息序列<br>不失一般性，我们令\(\pi_0=1\)<br>AR过程总是可逆的。</li>
-<li>定理：ARMA或MA模型是可逆的，当且仅当MA特征方程的根都在单位圆外。<br>$$\theta(x)=1-\theta_1x-\theta_2x^2-…-\theta_qx^q=0$$</li>
-<li>定义：如果时间序列\({Z_t}\)是可逆的，则定义：<br>$$Z_t=a_t-\pi_1Z_{t-1}-\pi_2Z_{t-2}-…$$<br>为该时间序列的AR表示（autoregressive representation）。</li>
-</ul>
-</li>
-</ul>
-<p>注意：可以发现求解AR表示和求解AR或ARMA模型的唯一平稳性解方法是一样的，同样是需要比较方程两边的系数。<br>相反，求解AR或ARMA模型的唯一平稳性解也叫做AR或ARMA模型的MA表示。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。&lt;/p&gt;
-&lt;h1 id=&quot;一般线性过程&quot;&gt;&lt;a href=&quot;#一般线性过程&quot; class=&quot;headerlink&quot; title=&quot;一般线性过程&quot;&gt;&lt;/a&gt;一般线性过程&lt;/h1&gt;&lt;h2 id=&quot;定义：&quot;&gt;&lt;a href=&quot;#定义：&quot; class=&quot;headerlink&quot; title=&quot;定义：&quot;&gt;&lt;/a&gt;定义：&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;时间序列\({Z_t}\)是线性(linear)的，当且仅当\(Z_t\)的值是白噪声系列的线性函数。&lt;/li&gt;
-&lt;li&gt;时间序列\({Z_t}\)是有因果的(causal),当且仅当\(Z_t\)的值只受到目前为止的信息影响，换句话说\(Z_t\)是独立于未来信息\(a_s\)的，s&amp;gt;t&lt;/li&gt;
-&lt;li&gt;时间序列模型通常是由白噪声驱动的，即\({a_t}\), 时间序列是\({a_t}\)的函数。随机变量\(a_t\)可以被时刻t的信息所解释。白噪声通常叫做新息序列（innovation sequence）或信息序列(information sequence).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;因此，一个线性的、有因果的、平稳的时间序列也被称作一般线性过程(a general linear process)。&lt;/p&gt;
-&lt;p&gt;一般线性过程具有如下形式：&lt;br&gt;$$Z_t=\mu+\sum_{j=0}^{\infty}\psi_j a_{t-j}=\mu+\psi_0a_t+\psi_1a_{t-1}+\psi_2a_{t-2} \\\\&lt;br&gt;其中，{a_t} \sim WN(0,\sigma_a^2) \ and \  \sigma_a^2\sum_{j=0}^{\infty}\psi_j^2&amp;lt;\infty$$&lt;br&gt;不失一般性，我们可以设\(\psi_0=1\)&lt;br&gt;
-    
-    </summary>
-    
-      <category term="统计学" scheme="xtf615.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
-    
-    
-      <category term="统计学" scheme="xtf615.com/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
-    
-      <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
     
       <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>ARIMA时间序列模型(一)</title>
-    <link href="xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B/"/>
-    <id>xtf615.com/2017/03/07/ARIMA时间序列模型/</id>
-    <published>2017-03-07T01:33:02.000Z</published>
-    <updated>2017-03-10T09:27:51.452Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="时间序列是什么？"><a href="#时间序列是什么？" class="headerlink" title="时间序列是什么？"></a>时间序列是什么？</h2><p>定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。</p>
-<p>所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$</p>
-<p>进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。</p>
-<p>回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$</p>
-<p>因变量X的信息是已知的，我们希望对响应变量Y做出推断。</p>
-<p>在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$</p>
-<p>在时间序列中，已知的信息包括：</p>
-<ul>
-<li>时间下标t</li>
-<li>过去的信息</li>
-</ul>
-<p>两个典型的时间序列模型如下：</p>
-<p>$$Z_t=a+bt+\varepsilon_t$$</p>
-<p>and</p>
-<p>$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$</p>
-<p>它们分别对应于确定性模型和随机模型，本文将讨论后者。<br><a id="more"></a>  </p>
-<h1 id="时间序列的均值，方差，协方差"><a href="#时间序列的均值，方差，协方差" class="headerlink" title="时间序列的均值，方差，协方差"></a>时间序列的均值，方差，协方差</h1><ul>
-<li><p><strong>均值函数（The mean function）</strong>：对于一个时间序列\({Z_t,t \in Z}\), 均值函数或平均序列被定义为：</p>
-<p>$$\mu_t = E(Z_t), \ t \in \mathbb{Z} $$</p>
-<p>\(\mu_t\)是在t时刻的期望值，\(\mu_t\) 在不同时刻可以是不同的值。</p>
-</li>
-<li><p><strong>自协方差函数（The auto-covariance function）</strong>：简记为ACVF，定义为：</p>
-<p>$$\gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z}$$</p>
-<p>其中，</p>
-<p>$$cov(Z_t,Z_s)=E[(Z_t-\mu_t)(Z_s-\mu_s)]=E(Z_tZ_s)-\mu_t\mu_s$$</p>
-</li>
-<li><p><strong>方差函数（The variance function）</strong>：特别是在s=t时，我们有：</p>
-<p>$$\gamma(t,t)=cov(Z_t,Z_t)=var(Z_t)$$</p>
-<p>这就是\({Z_t}\)的方差函数</p>
-</li>
-<li><p><strong>自相关函数（The auto-correlation function）</strong>：简记为ACF，定义为：</p>
-<p>$$\rho(t,s)=corr(Z_t,Z_s),  \ t,s \in \gamma(t,s)=cov(Z_t,Z_s) \ t,s \in \mathbb{Z} $$</p>
-<p>其中，</p>
-<p>$$corr(Z_t,Z_s)=\frac{cov(Z_t,Z_s)}{\sqrt{var(Z_t)var(Z_s)}}=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}}$$</p>
-<p><strong>ACVF和ACF有如下性质：</strong></p>
-<p> ACVF:</p>
-</li>
-<li><p>\(\gamma(t,t)=var(Z_t)\)</p>
-</li>
-<li>\(\gamma(t,s)=\gamma(s,t)\)</li>
-<li><p>\(\vert{\gamma(t,s)} \vert \leq \sqrt{\gamma(t,t)\gamma(s,s)} \)</p>
-<p> ACF:</p>
-</li>
-<li><p>\(\rho(t,t)=1\)</p>
-</li>
-<li>\(\rho(t,s)=\rho(s,t)\)</li>
-<li><p>\(\vert{\rho(t,s)}\vert \leq 1\)</p>
-<p><strong>一些重要的性质：</strong></p>
-</li>
-</ul>
-<p>$$cov(aX,Y)=acov(X,Y)$$</p>
-<p>$$cov(X,aY+bZ)=acov(X,Y)+bcov(X,Z)$$</p>
-<p>$$cov(c_1Y_1+c_2Y_2, d_1Z_1+d_2Z_2)=c_1d_1cov(Y_1,Z_1)+c_2d_1cov(Y_2,Z_1)+c_1d_2cov(Y_1,Z_2)+c_2d_2cov(Y_2,Z_2)$$</p>
-<p>$$cov\left[\sum_{i=1}^m c_iY_i, \sum_{j=1}^n d_jZ_j\right]=\sum_{i=1}^m\sum_{j=1}^n c_id_jcov(Y_i,Z_j)$$</p>
-<p>最后一条性质经常用到。</p>
-<h2 id="随机游走"><a href="#随机游走" class="headerlink" title="随机游走"></a>随机游走</h2><p><strong>随机游走（The random walk）</strong>：令序列\({a_t, t \in \mathbb{N}}\) 是服从 \(i.i.d\)独立同分布的随机变量。每个变量都是零均值，方差为\(\sigma_a^2\), 随机游走过程\({Z_t, t \in \mathbb{N}}\)定义为：</p>
-<p>$$Z_t = \sum_{j=1}^t a_j, \ t \in \mathbb{N}$$</p>
-<p>另外，我们可以写作：</p>
-<p>$$Z_t=Z_{t-1}+a_t, \ t \in \mathbb{N}, Z_0=0$$</p>
-<ul>
-<li>\({Z_t}\)均值函数为:</li>
-</ul>
-<p>$$\mu_t=E(Z_t)=E\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^tE(a_j)=0$$</p>
-<ul>
-<li>\({Z_t}\)方差函数为:</li>
-</ul>
-<p>$$\gamma(t,t)=var(Z_t)=var\left(\sum_{j=1}^t a_j\right)=\sum_{j=1}^t var(a_j)=t \cdot \sigma_a^2$$</p>
-<p>注意到，这一过程，方差会随着时间线性增长。</p>
-<ul>
-<li><p>ACVF自协方差函数：对于一切\(t \leq s\),</p>
-<p>$$\gamma(t,s)=cov(Z_t,Z_s) \\\\=cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j + \sum_{j=t+1}^s a_j\right) \\\ =cov \left(\sum_{j=1}^t a_j, \sum_{j=1}^t a_j\right) \\\\=var\left(\sum_{j=1}^t a_j\right) = t \cdot \sigma_a^2$$</p>
-</li>
-<li><p>ACF自相关函数，根据定义有：</p>
-<p>$$\rho(t,s)=\frac{\gamma(t,s)}{\sqrt{\gamma(t,t)\gamma(s,s)}} \\\ = \frac{\sigma_at}{\sqrt{\sigma_a^2t \cdot \sigma_a^2s}} \\\ = \sqrt{t/s}, \ 1 \leq t \leq s$$</p>
-<p>当s=t+1时，</p>
-<p>$$\rho(t,t+1)=corr(Z_t,Z_{t+1})=\sqrt{t/(t+1)} \approx 1, \ 当t无穷大$$</p>
-<p>​</p>
-<p><strong>理解：随机游走可以看作，在时间轴上任意行走一步（大步或小步），是若干时刻的和。</strong></p>
-</li>
-</ul>
-<h2 id="移动平均"><a href="#移动平均" class="headerlink" title="移动平均"></a>移动平均</h2><p><strong>移动平均（a moving average）</strong>：假设\({Z_t, t \in \mathbb{Z}}\) 定义为：</p>
-<p>$$Z_t=a_t-0.5a_{t-1}, \ t \in \mathbb{Z}$$</p>
-<p>同样，a满足独立同分布，零均值，方差为\(\sigma_a^2\)</p>
-<ul>
-<li><p>\({Z_t}\)均值函数为:</p>
-<p>$$\mu_t=E(Z_t)=E(a_t)-0.5E(a_{t-1})=0, \ t \in \mathbb{Z}$$</p>
-</li>
-<li><p>\({Z_t}\)f方差函数为:</p>
-<p>$$var(Z_t)=var(a_t-0.5a_{t-1})=\sigma_a^2+0.5^2\sigma_a^2=1.25\sigma_a^2$$</p>
-</li>
-<li><p>ACVF自协方差函数：</p>
-<p>$$cov(Z_t,Z_{t-1})=cov(a_t-0.5a_{t-1},a_{t-1}-0.5a_{t-2})=cov(a_t,a_{t-1})-0.5cov(a_t,a_{t-2})-0.5cov(a_{t-1},a_{t-1})-0.5cov(a_{t-1},a_{t-1})+0.5^2cov(a_{t-1},a_{t-2})=-0.5cov(a_{t-1},a_{t-1})$$</p>
-<p>或者表示为：</p>
-<p>$$\gamma(t,t-1)=-0.5\sigma_a^2,   \forall t \in \mathbb{Z}$$</p>
-<p>对任意\(k \geq 2\),</p>
-<p>$$cov(Z_t, Z_{t-k})=0$$</p>
-<p>或者表示为，$$\gamma(t,t-k)=0, \ \forall  k \geq 2,t \in \mathbb{Z}$$</p>
-</li>
-<li><p>ACF自相关函数：</p>
-<p>$$\rho(t,s)=-0.4,   if  \ \vert{t-s}\vert = 1 \\\ \rho(t,s)=0, if \ \vert{t-s}\vert \geq 2$$</p>
-<p><strong>理解：移动平均可以看作，若干时刻的线性组合。</strong></p>
-</li>
-</ul>
-<h1 id="平稳性"><a href="#平稳性" class="headerlink" title="平稳性"></a>平稳性</h1><p><strong>强平稳性（strict stationarity）要求：</strong>时间序列\({Z_t}\)为强平稳，只有当对任意的自然数n, 任意的时间点\(t_1\),\(t_2\),..,\(t_n\)以及任意的滞后k, 都满足\(Z_{t_1}\),\(Z_{t_2}\),…,\(Z_{t_n}\)的联合分布 和\(Z_{t_1-k}\),\(Z_{t_2-k}\),…,\(Z_{t_n-k}\)相同。</p>
-<p><strong>弱平稳性(weak stationarity)要求</strong>：时间序列为弱平稳性，只有当均值函数\(\mu_t\)不随时间变化，并且对于任意的时间t和任意的滞后k，都有\(\gamma(t,t-k)=\gamma(0,k)\)</p>
-<p>对于弱平稳性，有如下标志：</p>
-<p>$$\mu = E(Z_t)$$</p>
-<p>$$\gamma_k=cov(Z_t, Z_{t-k}), \ (\gamma_{-k}=\gamma_k)$$</p>
-<p>$$\rho_k=Corr(Z_t,Z_{t-k}); \ (\rho_{-k}=\rho_k)$$</p>
-<p>强平稳性和弱平稳性关系如下：</p>
-<ol>
-<li>强平稳性+有限的秒时刻 =&gt; 弱平稳性</li>
-<li>时间序列的联合分布为多元正太分布，那么这两种定义是一致的</li>
-</ol>
-<h2 id="白噪声"><a href="#白噪声" class="headerlink" title="白噪声"></a>白噪声</h2><p><strong>白噪声（White noise）</strong>：一个很重要的关于平稳性处理的例子就是所谓的白噪声处理。它被定义为满足独立同分布的随机变量\({a_t}\), 零均值并且方差为\(\sigma_a^2&gt;0\), 简记为：\(WN(0,\sigma_a^2)\)</p>
-<p>显然，\({a_t}\)满足强平稳性要求。</p>
-<p>对于弱平稳性，注意到\(\mu_t=E(a_t)=0\)是一个常数，并且，</p>
-<p>$$ \begin{eqnarray} \gamma(t;t-k)=\begin{cases} \sigma_a^2, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} :=\gamma_k$$,</p>
-<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr 0, k \neq 0 \end{cases} \end{eqnarray} $$</p>
-<p>有些书中定义白噪声为一系列不相关的随机变量。</p>
-<p>前面我们提高的随机游走，由于\({Z_t}\)的方差受时间影响线性变化\(var(Z_t)=t\sigma_a^2\)，并且协方差\(\gamma(t,s)=t\sigma_a^2\), 因此不仅仅受滞后k的影响，故不是平稳的时间序列。</p>
-<p>令，$$X_t=\nabla Z_t=Z_t-Z_{t-1}$$</p>
-<p>则\(X_t=a_t\), \({\nabla Z_t}\)是平稳的。</p>
-<p>前面我们还提到移动平均。是由白噪声构成的一个非平凡平稳时间序列。在前面那个例子里，我们有：</p>
-<p>$$\begin{eqnarray} \rho_k=\begin{cases} 1, k=0 \cr -0.4, k \pm 1 \cr 0, \vert k \vert \geq 2  \end{cases} \end{eqnarray}$$</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;基本概念&quot;&gt;&lt;a href=&quot;#基本概念&quot; class=&quot;headerlink&quot; title=&quot;基本概念&quot;&gt;&lt;/a&gt;基本概念&lt;/h1&gt;&lt;h2 id=&quot;时间序列是什么？&quot;&gt;&lt;a href=&quot;#时间序列是什么？&quot; class=&quot;headerlink&quot; title=&quot;时间序列是什么？&quot;&gt;&lt;/a&gt;时间序列是什么？&lt;/h2&gt;&lt;p&gt;定义：时间序列数据是按时间排序的观察序列，是目标在不同时间点下的一系列观察值。&lt;/p&gt;
-&lt;p&gt;所有的时间观察序列数据可以被标记为：\(z_1,z_2,…,z_T\) , 可以当作T个随机变量的一个实例：$$(Z_1,Z_2,..,Z_T)$$&lt;/p&gt;
-&lt;p&gt;进一步定义：时间序列是一系列按照时间排序的随机变量。通常定义为双无穷随机变量序列。标记为：\({Z_t,t \in \mathbb{Z}}\), 或者简记为：\({Z_t}\) 。时间序列是离散时间下的随机过程。&lt;/p&gt;
-&lt;p&gt;回顾线性模型，响应变量Y和多个因变量X，线性模型表示为：$$Y_i=\beta_0+\beta_1X_i+\varepsilon_i$$&lt;/p&gt;
-&lt;p&gt;因变量X的信息是已知的，我们希望对响应变量Y做出推断。&lt;/p&gt;
-&lt;p&gt;在时间序列分析中，我们提出如下模型：$$Y_t=\beta_o+\beta_1Y_{t-1}+\varepsilon_t$$&lt;/p&gt;
-&lt;p&gt;在时间序列中，已知的信息包括：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;时间下标t&lt;/li&gt;
-&lt;li&gt;过去的信息&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;两个典型的时间序列模型如下：&lt;/p&gt;
-&lt;p&gt;$$Z_t=a+bt+\varepsilon_t$$&lt;/p&gt;
-&lt;p&gt;and&lt;/p&gt;
-&lt;p&gt;$$Z_t=\theta_0+\phi Z_{t-1}+\varepsilon_t$$&lt;/p&gt;
-&lt;p&gt;它们分别对应于确定性模型和随机模型，本文将讨论后者。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="统计学" scheme="xtf615.com/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
-    
-    
-      <category term="统计学" scheme="xtf615.com/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"/>
-    
-      <category term="时间序列" scheme="xtf615.com/tags/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97/"/>
-    
-      <category term="ARMA" scheme="xtf615.com/tags/ARMA/"/>
-    
-      <category term="ARIMA" scheme="xtf615.com/tags/ARIMA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>神经网络(系列2)</title>
-    <link href="xtf615.com/2017/02/17/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-%E7%B3%BB%E5%88%972/"/>
-    <id>xtf615.com/2017/02/17/神经网络-系列2/</id>
-    <published>2017-02-17T08:28:37.000Z</published>
-    <updated>2017-08-08T06:10:57.867Z</updated>
-    
-    <content type="html"><![CDATA[<p>神经网络的入门知识参见<a href="/2017/02/13/神经网络/">神经网络(系列1)</a><br>本文主要对神经网络进行深入，探讨神经网络模型的学习。</p>
-<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>首先引入一些便于稍后讨论的新标记方法：<br>假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。<br>将神经网络的分类定义为两种情况：二类分类和多类分类:<br>二类分类：\(S_L=1\), y=0 or 1表示哪一类；<br>K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&gt;2）<br><img src="/picture/machine-learning/network_learn1.jpg" alt="network_learn"><br>我们回顾逻辑回归问题中我们的代价函数为：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$<br>在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：<br>$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$<br><img src="/picture/machine-learning/network_learn2.jpg" alt="network_learn"><br>这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。<br>注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。<br><a id="more"></a></p>
-<h1 id="反向传播算法"><a href="#反向传播算法" class="headerlink" title="反向传播算法"></a>反向传播算法</h1><p>之前我们在计算神经网络预测结果的时候我们采用了一种正向传播方法，我们从第一层开始正向一层一层进行计算，直到最后一层的\(h_θ(x)\)。<br>现在，为了计算代价函数的偏导数\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\),我们需要采用新的方法。</p>
-<h2 id="传统方法"><a href="#传统方法" class="headerlink" title="传统方法"></a>传统方法</h2><p>机器学习可以看做是数理统计的一个应用，在数理统计中一个常见的任务就是拟合，也就是给定一些样本点，用合适的曲线揭示这些样本点随着自变量的变化关系。<br>深度学习同样也是为了这个目的，只不过此时，样本点不再限定为(x, y)点对，而可以是由向量、矩阵等等组成的广义点对(X,Y)。而此时，(X,Y)之间的关系也变得十分复杂，不太可能用一个简单函数表示。然而，人们发现可以用多层神经网络来表示这样的关系，而多层神经网络的本质就是一个多层复合的函数。<br><img src="/picture/machine-learning/network11.jpg" alt="network_learn"><br>对应的表达式如下：<br>$$a_1^{(2)}=g(\Theta_{10}^{(1)}x_0+\Theta_{11}^{(1)}x_1+\Theta_{12}^{(1)}x_2+\Theta_{13}^{(1)}x_3) \\\\<br>a_2^{(2)}=g(\Theta_{20}^{(1)}x_0+\Theta_{21}^{(1)}x_1+\Theta_{22}^{(1)}x_2+\Theta_{23}^{(1)}x_3) \\\\<br>a_3^{(2)}=g(\Theta_{30}^{(1)}x_0+\Theta_{31}^{(1)}x_1+\Theta_{32}^{(1)}x_2+\Theta_{33}^{(1)}x_3)$$<br>$$h_{\Theta}(x)=a_1^{(3)}=g(\Theta_{10}^{(2)}a_0^{(2)}+\Theta_{11}^{(2)}a_1^{(2)}+\Theta_{12}^{(2)}a_2^{(2)}+\Theta_{13}^{(2)}a_3^{(2)})$$<br>和直线拟合一样，深度学习的训练也有一个目标函数，这个目标函数定义了什么样的参数才算一组“好参数”，不过在机器学习中，一般是采用成本函数（cost function），然后，训练目标就是通过调整每一个权值\(\Theta_{ij}\)来使得cost达到最小。cost函数也可以看成是由所有待求权值\(\Theta_{ij}\)为自变量的复合函数，而且基本上是非凸的，即含有许多局部最小值。但实际中发现，采用我们常用的梯度下降法就可以有效的求解最小化cost函数的问题。<br>梯度下降法需要给定一个初始点，并求出该点的梯度向量，然后以负梯度方向为搜索方向，以一定的步长进行搜索，从而确定下一个迭代点，再计算该新的梯度方向，如此重复直到cost收敛。那么如何计算梯度呢？<br>假设我们把cost函数表示为\(J(\Theta_{11},\Theta_{12},\Theta_{13},\Theta_{ij},…,\Theta_{mn})\), 那么它的梯度向量就等于\(\nabla J = \frac{\partial J}{\partial \Theta_{11}}e_{11}+…+\frac{\partial J}{\partial \Theta_{mn}}e_{mn}\), 其中\(e_{ij}\)表示正交单位向量。为此，我们需求出cost函数J对每一个权值\(\Theta_{ij}\)的偏导数。<strong>而BP算法正是用来求解这种多层复合函数的所有变量的偏导数的利器。</strong><br>我们以求e=(a+b)*(b+1)的偏导为例。</p>
-<p>它的复合关系画出图可以表示如下：<br><img src="/picture/machine-learning/network_learn4.png" alt="network_learn"><br>为了求出a=2,b=1时，e的梯度，我们可以先利用偏导数求出不同层之间的邻节点的偏导关系，如下图所示：<br><img src="/picture/machine-learning/network_learn5.png" alt="network_learn"><br>利用链式法则我们知道：<br>$$\frac{\partial e}{\partial a}=\frac{\partial e}{\partial c}\frac{\partial c}{\partial a}$$<br>$$\frac{\partial e}{\partial b}=\frac{\partial e}{\partial c}\frac{\partial c}{\partial b}+\frac{\partial e}{\partial d}\frac{\partial d}{\partial b}$$<br>链式法则在上图中的意义是什么呢？其实不难发现，\(\frac{\partial e}{\partial a}\)的值等于从a到e的路径上的偏导值的乘积，而\(\frac{\partial e}{\partial b}\)的值等于从b到e的路径1(b-c-e)上的偏导值的乘积加上路径2(b-d-e)上的偏导值的乘积。也就是说，对于上层节点p和下层节点q，要求得，需要找到从q节点到p节点的所有路径，并且对每条路径，求得该路径上的所有偏导数之乘积，然后将所有路径的 “乘积” 累加起来才能得到的值。<br>大家也许已经注意到，这样做是<strong>十分冗余</strong>的，因为很多路径被重复访问了。比如上图中，a-c-e和b-c-e就都走了路径c-e。<strong>对于权值动则数万的深度模型中的神经网络，这样的冗余所导致的计算量是相当大的。</strong><br>同样是利用链式法则，BP算法则机智地避开了这种冗余，它对于<strong>每一个路径只访问一次</strong>就能求顶点对所有下层节点的偏导值。<br>正如反向传播(BP)算法的名字说的那样，BP算法是反向(自上往下)来寻找路径的。</p>
-<p>从最上层的节点e开始，初始值为1，以层为单位进行处理。对于e的下一层的所有子节点，将1乘以e到某个节点路径上的偏导值，并将结果“堆放”在该子节点中。等e所在的层按照这样传播完毕后，第二层的每一个节点都“堆放”些值，然后我们针对每个节点，把它里面所有“堆放”的值求和，就得到了顶点e对该节点的偏导。然后将这些第二层的节点各自作为起始顶点，初始值设为顶点e对它们的偏导值，以”层”为单位重复上述传播过程，即可求出顶点e对每一层节点的偏导数。</p>
-<p>以上图为例，节点c接受e发送的1*2并堆放起来，节点d接受e发送的1*3并堆放起来，至此第二层完毕，求出各节点总堆放量并继续向下一层发送。节点c向a发送2*1并对堆放起来，节点c向b发送2*1并堆放起来，节点d向b发送3*1并堆放起来，至此第三层完毕，节点a堆放起来的量为2，节点b堆放起来的量为2*1+3*1=5, 即顶点e对b的偏导数为5.</p>
-<p>举个不太恰当的例子，如果把上图中的箭头表示欠钱的关系，即c→e表示e欠c的钱。以a, b为例，直接计算e对它们俩的偏导相当于a, b各自去讨薪。a向c讨薪，c说e欠我钱，你向他要。于是a又跨过c去找e。b先向c讨薪，同样又转向e，b又向d讨薪，再次转向e。可以看到，追款之路，充满艰辛，而且还有重复，即a, b 都从c转向e。</p>
-<p>而BP算法就是主动还款。e把所欠之钱还给c，d。c，d收到钱，乐呵地把钱转发给了a，b，皆大欢喜。</p>
-<h2 id="路径合并"><a href="#路径合并" class="headerlink" title="路径合并"></a>路径合并</h2><p>将所有路径累加的问题在于，在可能的路径数中，很容易陷入爆炸式组合增长。<br><img src="/picture/machine-learning/network_learn10.png" alt="network_learn"><br>在上图中，从X到Y有3条路径，从Y到Z也有3条路径。如果要求\(\frac{\partial Z}{\partial X}\),我们需要把所有路径累加起来，也就是共9条路径。<br>$$\frac{\partial Z}{\partial X} = \alpha\delta + \alpha\epsilon + \alpha\zeta + \beta\delta + \beta\epsilon + \beta\zeta + \gamma\delta + \gamma\epsilon + \gamma\zeta$$<br>上图只有9条路径，但是随着图复杂程度的增加，路径数很容易呈现爆炸式增长。<br>和直接将所有路径累加相反，更好的方法是合并路径：<br>$$\frac{\partial Z}{\partial X} = (\alpha + \beta + \gamma)(\delta + \epsilon + \zeta)$$<br>这就是前向传播(forward-mode differentiation)和后向传播(reverse-mode differentiation)。它们都是通过合并路径的方法来更有效的计算路径和。和直接显示地把所有路径加起来不同，它们通过在每个节点上，向后合并路径的方式来更有效的计算路径和。实际上，两个方法每条边都只计算了一次。<br>前向传播起始于图的输入节点，一直向前直到最后一个节点。在每个节点上，它将传入(feed in)的每一条路径累加。每一条路径都代表了输入对该节点的影响。通过将它们累加起来，我们获得了不同输入对该节点总的影响。这就是导数的定义。<br><img src="/picture/machine-learning/network_learn11.png" alt="network_learn"><br>前向传播就像你刚刚入门微积分课程时学到的方法。而后向传播，起始于图的输出节点，一直向后直到第一个节点。在每一个节点上，将起源于(originated at)该节点的所有路径合并。<br><img src="/picture/machine-learning/network_learn12.png" alt="network_learn"><br>前向传播跟踪一个输入如何影响每一个节点。反向传播跟踪每一个节点如何影响一个输出节点。即，前向传播将\(\frac{\partial}{\partial X}\)应用到每一个节点(每个节点对输入求导)，而后向传播将\(\frac{\partial Z}{\partial}\)应用到每一个节点（输出对每个节点求导）。</p>
-<h2 id="反向传播优势"><a href="#反向传播优势" class="headerlink" title="反向传播优势"></a>反向传播优势</h2><p>现在，我们可能会疑问，为什么人们更关心后向传播，它看起来似乎和前向传播差不多，那它的优势在哪?<br>让我们回到前面的那个例子中：<br><img src="/picture/machine-learning/network_learn5.png" alt="network_learn"><br>我们可以使用前向传播算法从b自底向上。我们需要求每个节点对b的导数。（即b如何影响每一个节点）<br><img src="/picture/machine-learning/network_learn13.png" alt="network_learn"><br>如果我们使用后向传播从e自顶向下，我们需要求e对每个节点的导数(即每个节点如何影响e)。<br><img src="/picture/machine-learning/network_learn14.png" alt="network_learn"><br>需要强调的是： 当我说反向传播给了我们e对每个节点的导数，需要强调的是确实是<strong>每个节点</strong>，我们得到了\(\frac{\partial e}{\partial a}\)和\(\frac{\partial e}{\partial b}\)，即e对每一个输入的导数。前向传播只给了我们单独的一个b的导数，但是后向传播给了我们所有的输入的导数。<br>对这幅图而言，只得到了2倍的加速比，想象一下如果有<strong>上百万的输入节点和1个输出节点</strong>,前向传播需要我们遍历这个图上百万次才能得到导数，而后向传播只需要遍历1次即可，这就得到了上百万的加速比。<br>在神经网络中，我们的代价函数经常拥有上百万个参数，因此反向传播能够让我们训练的速度大大提高。<br><strong>那前向传播什么时候适用呢？如果只有少量的输入，而拥有大量的输出，此时前向传播速度更快。</strong><br>补充：对信息的处理，分为前向和反向两种，即从因到果和从果到因。前者适合人类的思考模式，但对机器而言，它需要的是运算，显然，反向运算更便捷（如上中所说，这是有前提的，即输入因子多于输出因子，这也符合逻辑，当我们要做出一个判断、得出一个结论，总会从方方面面进行思考，然后在提取、凝练，即归纳、总结），就像梳理头发时，我们都是从发根向发梢梳理——头皮为一个质点，向发梢逐渐发散，从一到多、从总到分的梳理、计算过程。所以反向运算比较普及，是因为运算成本更低。</p>
-<h2 id="反向传播算法-1"><a href="#反向传播算法-1" class="headerlink" title="反向传播算法"></a>反向传播算法</h2><p>我们的目标是为了计算代价函数的偏导数：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)$$<br>我们需要采用一种反向传播算法，也就是首先计算最后一层的误差，然后再一层一层反向求出各层的误差，直到倒数第二层。<br>以一个例子来说明反向传播算法。<br>假设我们的训练集只有一个实例\((x^{(1)},y^{(1)})\),我们的神经网络是一个四层的神经网络，其中 K=4，SL=4，L=4：<br><img src="/picture/machine-learning/network_learn6.jpg" alt="network_learn"><br>前向传播算法：<br>$$a^{(1)}=x \\\\<br>z^{(2)}=\Theta^{(1)}a^{(1)} \\\\<br>a^{(2)}=g(z^{(2)}) (add \ a_0^{(2)}) \\\\<br>z^{(3)}=\Theta^{(2)}a^{(2)} \\\\<br>a^{(3)}=g(z^{3}) (add \ a_0^{(3)}) \\\\<br>z^{(4)}=\Theta^{(3)}a^{(3)} \\\\<br>a^{(4)}=h_\Theta(x)=g(z^{(4)})<br>$$<br>我们从最后一层的误差开始计算，误差是激活单元的预测值（\(a_k^{(4)}\)）与实际值（\(y^{k}\)）之间的误差.（k=1:K）<br>我们用\(\delta\)来表示误差，则：<br>$$\delta^{(4)}=a^{(4)}-y$$<br>我们利用这个误差值来计算前一层的误差:<br>$$\delta^{(3)}=(\Theta^{(3)})^T\delta^{(4)}.*g’(z^{(3)})$$<br>其中,\(g’(z^{(3)})\)为sigmoid函数的导数，\(g’(z^{(3)})=a^{(3)}*(1-a^{(3)})\)。而\((\Theta^{(3)})^T\delta^{(4)}\)则是权重导致的误差的和。<br>注意到：\((\Theta^{(3)})^T\)取了转置，正常\(\Theta\)例如：<br>$$\Theta=\begin{bmatrix} \Theta_{10} \ \Theta_{11} \ \Theta_{12} \ \Theta_{13}\\\ \Theta_{20} \ \Theta_{21} \ \Theta_{22} \ \Theta_{23}\\\ \Theta_{30} \ \Theta_{31} \ \Theta_{32} \ \Theta_{33}\end{bmatrix}$$<br>每一行都代表第j层的所有神经元到第j+1层某一个神经元的连线（权重）。例如第一行就代表第j层的所有神经元到第j+1层的第一个神经元的连线。而转置\(\Theta\)后，每一行代表第j层某一个神经元到第j+1层的所有神经元的连线，可以理解成j层某一个神经元导致的j+1层总误差的情况。<br>另外，.*即点乘，代表矩阵对应位置的数字相乘。<br>下一步是继续计算第二层的误差：<br>$$\delta^{(2)}=(\Theta^{(2)})^T\delta^{(3)}.*g’(z^{(2)})$$<br>因为第一层为输入变量，不存在误差，我们有了所有的误差的表达式后，便可以计算代价函数的偏导数了，假设\(\lambda=0\)，即我们不做任何归一化处理的话：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}$$<br>重要的是清楚地知道上面式子中上下标的含义：<br>l代表目前所计算的是第几层<br>j代表目前计算层中的激活单元的下标，也将是下一层的第j个输入变量的下标。<br>i代表下一层中误差单元的下标，是受到权重矩阵中第i行影响的下一层中的误差单元的下标。<br>即：\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}\)是对第l层的第j个神经元到第l+1层的第i个神经元的连线（权重）求偏导。<br>\(a_j^{(l)}\)是第l层第j个神经元经过sigmoid函数计算后的值。<br>\(\delta_i^{l+1}\)是第l+1层第i个神经元的误差。<br>例如：<br><img src="/picture/machine-learning/network_learn7.jpg" alt="network_learn"><br>对图中红色的这条线求偏导：<br>$$\frac{\partial}{\partial \Theta_{41}^{(1)}}=a_1^{(1)}*\delta_4^{(2)}$$<br>如果我们考虑归一化处理，并且我们的训练集是一个特征矩阵而非向量。在上面的特殊情况中，我们需要计算每一层的误差单元来计算代价函数的偏导数。在更为一般的情况中，我们同样需要计算每一层的误差单元，但是我们需要为<strong>整个训练集</strong>计算误差单元，此时的误差单元也是一个矩阵，我们用\(\Delta_{ij}\)来表示这个误差矩阵。第l层的第i个激活单元受到第j个参数影响而导致的误差。<br>我们的算法：<br><img src="/picture/machine-learning/network_learn8.jpg" alt="network_learn"><br>即首先用正向传播方法计算出每一层的激活单元，利用训练集的结果与神经网络预测的结果求出最后一层的误差，然后利用该误差运用反向传播法计算出直至第二层的所有误差。<br>在求出\(\Delta_{ij}^{(l)}\)后，我们便可以计算代价函数的偏导数了，计算方法如下：<br><img src="/picture/machine-learning/network_learn9.jpg" alt="network_learn"></p>
-<h2 id="反向传播理解"><a href="#反向传播理解" class="headerlink" title="反向传播理解"></a>反向传播理解</h2><h3 id="疑问1：为什么输出层的-delta-为-delta-L-a-L-y"><a href="#疑问1：为什么输出层的-delta-为-delta-L-a-L-y" class="headerlink" title="疑问1：为什么输出层的\(\delta\)为\(\delta^{(L)}=a^{(L)}-y\)?"></a>疑问1：为什么输出层的\(\delta\)为\(\delta^{(L)}=a^{(L)}-y\)?</h3><p>很多人认为输出层的偏差量就是计算值减实际值这么简单，又或者认为是线性回归代价函数求导的结果，即\(J(\Theta)=\frac{1}{2}(h_\Theta(x)-y)^2\),求导得到：\(\frac{\partial}{\partial a^{(L)}}J(\Theta)=a^{(L)}-y\)。其实不然，要知道我们的代价函数是逻辑回归的代价函数。详细见下面分析。</p>
-<h3 id="疑问2：-Theta-l-T-delta-l-1-怎么理解？"><a href="#疑问2：-Theta-l-T-delta-l-1-怎么理解？" class="headerlink" title="疑问2：\((\Theta^{(l)})^T\delta^{(l+1)}\)怎么理解？"></a>疑问2：\((\Theta^{(l)})^T\delta^{(l+1)}\)怎么理解？</h3><p>所谓“偏差”应该这么理解：对于后一层某一个结点上出现的偏差，前一层的每一个结点都要承担一部分责任，所以我们可以把后一层结点的偏差量按照系数比例分配给前一层的结点。同时，前一层的某一个结点，对后一层的每一个节点都承担着责任，那么它的“总责任”就是这些所有的小责任之和。因此这里面矩阵的转置，我们前面也有提到，转置后的每一行实际上代表l层的某一个神经元到l+1层的每一个神经元的连线(权重)。和后一层的\(\delta^{(l+1)}\)进行矩阵乘后，实际上相当于l层的这个神经元分担掉l+1层所有神经元的这些小的误差，将这些小的误差之和作为自己的责任承担下来。如果你仔细想想这个矩阵乘法的计算过程，会发现正好就是上面说的这个责任分配与求和的过程。这就是【疑问2】的答案。</p>
-<h3 id="疑问3：为什么前一层的-delta-l-和后一层的-delta-l-1-的关系是-delta-l-Theta-l-T-delta-l-1-g’-z-l-？"><a href="#疑问3：为什么前一层的-delta-l-和后一层的-delta-l-1-的关系是-delta-l-Theta-l-T-delta-l-1-g’-z-l-？" class="headerlink" title="疑问3：为什么前一层的\(\delta^{(l)}\)和后一层的\(\delta^{(l+1)}\)的关系是\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)？"></a>疑问3：为什么前一层的\(\delta^{(l)}\)和后一层的\(\delta^{(l+1)}\)的关系是\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)？</h3><p>可以发现，在疑问2的基础上，该式子还多了个因子\(.*g’(z^{(l)})\)。为什么呢？详细见下面分析。</p>
-<h3 id="疑问4：为什么-delta-i-l-1-计算完后，还要乘以前一层的-a-j-l-后，才是偏导-frac-partial-partial-Theta-ij-l-J-Theta-的结果？"><a href="#疑问4：为什么-delta-i-l-1-计算完后，还要乘以前一层的-a-j-l-后，才是偏导-frac-partial-partial-Theta-ij-l-J-Theta-的结果？" class="headerlink" title="疑问4：为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果？"></a>疑问4：为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果？</h3><p>即，\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}\)详见下面。</p>
-<h3 id="详细推导"><a href="#详细推导" class="headerlink" title="详细推导"></a>详细推导</h3><p>我们的目标是证明：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1} \\\\<br>其中,\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)}), \\\\可以取l=l+1,求得\delta^{(l+1)},\delta_i^{l+1}为\delta^{(l+1)}的第i个元素，即l+1层误差向量的第i个元素。<br>$$<br><strong>是对第\(l\)层的第\(j\)个神经元到第\(l+1\)层的第\(i\)个神经元的连线（权重）求偏导</strong>。<br>首先回顾一下前面的一些定义：<br>$$a^{(l+1)}=g(z^{(l+1)}) \\\\<br>g(z)=\frac{1}{1+e^{-z}} \\\\<br>z^{(l+1)}=\Theta^{(l)}a^{(l)} \\\\<br>其中,g(z)为sigmoid函数 \\\\<br>z^{(l+1)}代表l+1层经过l层权重加权后的结果 \\\\<br>a^{(l+1)}代表z^{(l+1)}经过sigmoid函数后的输出值 \\\\<br>$$<br>为了使用这些定义，我们可以将上面的偏微分式子使用链式法则展开：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}$$</p>
-<ul>
-<li>首先看最后一项：<br>$$z_i^{(l+1)}=\Theta_{1,i}^{(l)}a_1^{(l)}+\Theta_{2,i}^{(l)}a_2^{(l)}+…$$<br>所以：<br>$$\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}=a_j^{(l)}$$<br>顺便说一下，<strong>右边前两项的乘积，就是课程中引入的\(\delta\)的值</strong>。这就解释了【疑问4】中，为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果，即\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}\)</li>
-<li><p>接下来第二项<br>这就是sigmoid函数的求导：<br>$$g’(z)=\frac{e^{-z}}{(1+e^{-z})^2}=\frac{1}{1+e^{-z}}*\frac{e^{-z}}{(1+e^{-z})}=g(z)(1-g(z))$$<br>根据定义:\(g(z^{(l)})=a^{(l)}\)<br>因此，我们\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)改写成：<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*a^{(l)}.*(1-a^{(l)})$$<br>这个式子留在下面【疑问1】的证明。</p>
-</li>
-<li><p>第一项<br>首先回顾下代价函数:<br>$$J(\Theta)=-ylog(h_\Theta(x))-(1-y)log(1-h_\Theta(x))$$<br>对输出层\(a^{(L)}\)求导：<br>$$\frac{\partial}{\partial a^{(L)}}J(\Theta)=\frac{a^{(L)}-y}{a^{(L)}-(a^{(L)})^2} \\\\<br>注意对于输出层，h_\Theta(x)=a^{(L)}$$<br>因此根据前面定义:\(\delta\)为前两项偏导的乘积，即<br>$$\delta^{(L)}=\frac{a^{(L)}-y}{a^{(L)}-(a^{(L)})^2}a^{(L)}(1-a^{(L)})=a^{(L)}-y$$<br>这就解决了【疑问1】中的疑惑。实际上并不是简单的相减，而只是凑巧结果是这样。<br>对于【疑问1】【疑问2】的推导，即<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})$$<br>根据前面定义:\(\delta\)为前两项偏导的乘积，<br>我们来看下面式子的前两项偏导，<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}$$<br>实际上前两项偏导结果就是：<br>$$\frac{\partial}{\partial z_{i}^{(l+1)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}$$<br>令\(l=l-1\),得到：<br>$$\frac{\partial}{\partial z_{i}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l)}}\frac{\partial a_i^{(l)}}{\partial z_i^{(l)}}$$<br>利用链式法则得到:<br>$$\delta_{j}^{(l)}=\frac{\partial}{\partial z_{j}^{(l)}}J(\Theta)=\sum_k \frac{\partial J(\Theta)}{\partial z_k^{(l+1)}}\frac{\partial z_k^{(l+1)}}{\partial a_j^{(l)}}\frac{\partial a_j^{(l)}}{\partial z_{j}^{(l)}} \\\\<br>=\sum_k \delta_k^{(l+1)} \frac{\partial (\Theta_{kj}^{(l)}a_j^{(l)})}{\partial a_j^{(l)}}g’(z_j^{(l)}) \\\\<br>=\sum_k \delta_k^{(l+1)}\Theta_{kj}^{(l)}g’(z_j^{(l)})$$</p>
-</li>
-</ul>
-<p>1）上式是针对\(l\)层<strong>某一个神经元</strong>的求导，\(i\)(在这里k实际上就是l+1层神经元)代表\(l+1\)层神经元，\(j\)代表\(l\)层神经元。<br>2）求和相当于不同路径累加。<br>所以有：<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})$$<br>1）上式是求\(l\)层所有神经元误差的矩阵形式。<br>2）仔细看\(\Theta_{kj}^{(l)}\)的下标变换，从1开始\(\Theta_{1j}^{(l)}\)，\(\Theta_{2j}^{(l)}\)，\(\Theta_{3j}^{(l)}\)…,实际上就代表\(l\)层的第\(j\)个神经元到\(l+1\)层的所有神经元的连线（权重）。因为\(l+1\)层的神经元代表的是行，即下标中的第一个数字。实际上和\((\Theta^{(l)})^T\delta^{(l+1)}\)矩阵形式是一样的。<br>这就解决了【疑问2】【疑问3】<br><strong>结论</strong>：<br>还有很多人说为什么这个值和很多别的网站，包括维基百科上说的不一样啊？因为很多别的网站包括维基百科，cost函数用的是线性回归的那种，它的偏微分就和逻辑回归的cost函数有差别了。具体地说，就差在分母的那一项上\(a^{(L)}-(a^{(L)})^2\)</p>
-<h2 id="反向传播演示"><a href="#反向传播演示" class="headerlink" title="反向传播演示"></a>反向传播演示</h2><p>说明：图片摘自网上，存在一定的偏差，实际上是一样的，只不过是写法的不同，重点在于<strong>整个过程以及箭头</strong>。首先进行前向传播计算，这里的\(w\)对应\(\Theta\),\(f\)对应\(g\)，即sigmoid函数，\(y\)对应\(a\),即sigmod的输出，\(e\)对应\(z\),即权重的线性组合结果。 \(\delta\)的计算式里的\(g’(z)\)项，图片中是放在最后梯度下降的时候求得导，即\(\frac{d_f}{d_e}\)。最后梯度下降公式中，不要忘记\(\delta\)还要乘以\(y\)，即我们上文讲到的\(a\)。<br><img src="/picture/machine-learning/network_learn_demo1.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo2.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo3.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo4.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo5.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo6.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo7.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo8.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo9.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo10.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo11.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo12.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo13.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo14.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo15.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo16.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo17.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo18.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo19.jpg" alt="demo"></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://colah.github.io/posts/2015-08-Backprop/#fnref1" target="_blank" rel="external">Calculus on Computational Graphs: Backpropagation</a><br><a href="http://galaxy.agh.edu.pl/~vlsi/AI/backp_t_en/backprop.html" target="_blank" rel="external">Principles of training multi-layer neural network using backpropagation</a><br><a href="https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/" target="_blank" rel="external">A Step by Step Backpropagation Example</a><br><a href="http://www.cs.toronto.edu/~fritz/absps/naturebp.pdf" target="_blank" rel="external">Learning representation by back-propagating errors</a><br><a href="http://blog.csdn.net/u014313009/article/details/51039334" target="_blank" rel="external">反向传播算法（过程及公式推导）</a><br><a href="https://www.coursera.org/learn/machine-learning" target="_blank" rel="external">斯坦福机器学习</a><br><a href="http://mooc.guokr.com/note/16702/" target="_blank" rel="external">反向传播算法的一些争论与思考</a><br><a href="https://www.zhihu.com/question/27239198" target="_blank" rel="external">知乎：如何直观的解释back propagation算法？</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;神经网络的入门知识参见&lt;a href=&quot;/2017/02/13/神经网络/&quot;&gt;神经网络(系列1)&lt;/a&gt;&lt;br&gt;本文主要对神经网络进行深入，探讨神经网络模型的学习。&lt;/p&gt;
-&lt;h1 id=&quot;代价函数&quot;&gt;&lt;a href=&quot;#代价函数&quot; class=&quot;headerlink&quot; title=&quot;代价函数&quot;&gt;&lt;/a&gt;代价函数&lt;/h1&gt;&lt;p&gt;首先引入一些便于稍后讨论的新标记方法：&lt;br&gt;假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。&lt;br&gt;将神经网络的分类定义为两种情况：二类分类和多类分类:&lt;br&gt;二类分类：\(S_L=1\), y=0 or 1表示哪一类；&lt;br&gt;K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&amp;gt;2）&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/network_learn1.jpg&quot; alt=&quot;network_learn&quot;&gt;&lt;br&gt;我们回顾逻辑回归问题中我们的代价函数为：&lt;br&gt;$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$&lt;br&gt;在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：&lt;br&gt;$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/network_learn2.jpg&quot; alt=&quot;network_learn&quot;&gt;&lt;br&gt;这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。&lt;br&gt;注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
-    
-    
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
-      <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>神经网络(系列1)</title>
-    <link href="xtf615.com/2017/02/13/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
-    <id>xtf615.com/2017/02/13/神经网络/</id>
-    <published>2017-02-13T10:23:23.000Z</published>
-    <updated>2017-08-08T06:10:44.632Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="非线性假设"><a href="#非线性假设" class="headerlink" title="非线性假设"></a>非线性假设</h1><p>我们之前学的，无论是线性回归还是逻辑回归都有这样一个缺点，即：当特征太多时，计算的负荷会非常大。<br>下面是一个例子：<br><img src="/picture/machine-learning/network1.jpg" alt="network"><br>当我们使用\(x_1,x_2\)的多次项式进行预测时，我们可以应用得很好。<br>之前我们已经看到过，使用非线性的多项式项，能够帮助我们建立更好的分类模型。假设我们有非常多的特征，例如大于100个变量，我们希望用这100个特征来构建一个非线性的多项式模型，结果将是数量非常惊人的特征组合，即便我们只采用两两特征的组合\(x_1x_2+x_1x_3+x_1x_4+…+x_2x_3+x_2x_4+…+x_{99}x_{100}\),我们也会有接近5000个组合而成的特征。这对于一般的逻辑回归来说需要计算的特征太多了。<br>假设我们希望训练一个模型来识别视觉对象（例如识别一张图片上是否是一辆汽车）。<br>我们怎样才能这么做呢？一种方法是我们利用很多汽车的图片和很多非汽车的图片，然后利用这些图片上一个个像素的值（饱和度或亮度）来作为特征。<br>假如我们只选用灰度图片，每个像素则只有一个值（而非RGB值），我们可以选取图片上的两个不同位置上的两个像素，然后训练一个逻辑回归算法利用这两个像素的值来判断图片上是否是汽车：<br><img src="/picture/machine-learning/network2.jpg" alt="network"><br>假使我们采用的都是  50x50像素的小图片，并且我们将所有的像素视为特征，则会有2500个特征，如果我们要进一步将两两特征组合构成一个多项式模型，则会有约\(\frac{2500^2}{2}\)个（接近3百万个）特征。普通的逻辑回归模型，不能有效地处理这么多的特征，这时候我们就需要神经网络。</p>
-<h1 id="神经元和大脑"><a href="#神经元和大脑" class="headerlink" title="神经元和大脑"></a>神经元和大脑</h1><p>神经网络是一种很古老的算法，它最初产生的目的是制造能模拟大脑的机器。<br>接下来我将介绍神经网络。它能很好地解决不同的机器学习问题。首先介绍一些神经网络的背景知识，由此我们能知道可以用它们来做什么。不管是将其应用到现代的机器学习问题上，还是应用到那些你可能会感兴趣的问题中。也许，这一伟大的人工智能梦想在未来能制造出真正的智能机器。另外，我们还将讲解神经网络是怎么涉及这些问题的，神经网络产生的原因是人们想尝试设计出模仿大脑的算法，从某种意义上说如果我们想要建立学习系统，那为什么不去模仿我们所认识的最神奇的学习机器——人类的大脑呢？<br><a id="more"></a></p>
-<h2 id="起源"><a href="#起源" class="headerlink" title="起源"></a>起源</h2><p>神经网络逐渐兴起于二十世纪八九十年代，应用得非常广泛。但由于各种原因，在90年代的后期应用减少了。但是最近，神经网络又东山再起了。其中一个原因是：神经网络是计算量有些偏大的算法。近些年计算机的运行速度变快，才足以真正运行起大规模的神经网络。正是由于这个原因和其他一些我们后面会讨论到的技术因素，如今的神经网络对于许多应用来说是最先进的技术。当你想模拟大脑时，是指想制造出与人类大脑作用效果相同的机器。大脑可以学会去以看而不是听的方式处理图像，学会处理我们的触觉我们能学习数学，学着做微积分，而且大脑能处理各种不同的令人惊奇的事情。似乎如果你想要模仿它，你得写很多不同的软件来模拟所有这些五花八门的奇妙的事情。不过能不能假设大脑做所有这些，不同事情的方法，不需要用上千个不同的程序去实现。相反的，大脑处理的方法，只需要一个单一的学习算法就可以了？</p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><ul>
-<li><p>如图，大脑的这一部分这一小片红色区域是你的听觉皮层，你现在正在理解我的话，这靠的是耳朵。耳朵接收到声音信号，并把声音信号传递给你的听觉皮层.<br><img src="/picture/machine-learning/network3.jpg" alt="network"></p>
-</li>
-<li><p>神经系统科学家做了下面这个有趣的实验，把耳朵到听觉皮层的神经切断。在这种情况下，将其重新接到一个动物的大脑上，这样从眼睛到视神经的信号最终将传到听觉皮层。如果这样做了。那么结果表明听觉皮层将会学会“看”。这里的“看”代表了我们所知道的每层含义。所以，如果你对动物这样做，那么动物就可以完成视觉辨别任务，它们可以看图像，并根据图像做出适当的决定。它们正是通过脑组织中的这个部分完成的。</p>
-</li>
-<li>下面再举另一个例子，这块红色的脑组织是你的躯体感觉皮层，这是你用来处理触觉的，如果你做一个和刚才类似的重接实验，那么躯体感觉皮层也能学会“看”。这个实验和其它一些类似的实验，被称为神经重接实验，从这个意义上说，如果人体有同一块脑组织可以处理光、声或触觉信号，那么也许存在一种学习算法，可以同时处理视觉、听觉和触觉，而不是需要运行上千个不同的程序，或者上千个不同的算法来做这些大脑所完成的成千上万的美好事情。也许我们需要做的就是找出一些近似的或实际的大脑学习算法，然后实现它大脑通过自学掌握如何处理这些不同类型的数据。在很大的程度上，可以猜想如果我们把几乎任何一种传感器接入到大脑的几乎任何一个部位的话，大脑就会学会处理它。</li>
-<li>这张图是用舌头学会“看”的一个例子。它的原理是：这实际上是一个名为BrainPort的系统，它现在正在FDA(美国食品和药物管理局的临床试验阶段，它能帮助失明人士看见事物。它的原理是，你在前额上带一个灰度摄像头，面朝前，它就能获取你面前事物的低分辨率的灰度图像。你连一根线到舌头上安装的电极阵列上，那么每个像素都被映射到你舌头<br>的某个位置上，可能电压值高的点对应一个暗像素电压值低的点。对应于亮像素，即使依靠它现在的功能，使用这种系统就能让你我在几十分钟里就学会用我们的舌头“看”东西。<br><img src="/picture/machine-learning/network4.jpg" alt="network"></li>
-<li>这是关于人体回声定位或者说人体声纳。你有两种方法可以实现：你可以弹响指，或者咂舌头。不过现在有失明人士，确实在学校里接受这样的培训，并学会解读从环境反弹回来的声波模式—这就是声纳。如果你搜索 YouTube之后，就会发现有些视频讲述了一个令人称奇的孩子，他因为癌症眼球惨遭移除，虽然失去了眼球，但是通过打响指，他可以四处走动而不撞到任何东西，他能滑滑板，他可以将篮球投入篮框中。注意这是一个没有眼球的孩子。<br><img src="/picture/machine-learning/network5.jpg" alt="network"></li>
-<li>这是触觉皮带，如果你把它戴在腰上，蜂鸣器会响，而且总是朝向北时发出嗡嗡声。它可以使人拥有方向感，用类似于鸟类感知方向的方式。<br><img src="/picture/machine-learning/network6.jpg" alt="network"></li>
-<li>还有一些离奇的例子。如果你在青蛙身上插入第三只眼，青蛙也能学会使用那只眼睛。因此，这将会非常令人惊奇。如果你能把几乎任何传感器接入到大脑中，大脑的学习算法就能找出学习数据的方法，并处理这些数据。从某种意义上来说，如果我们能找出大脑的学习算法，然后在计算机上执行大脑学习算法或与之相似的算法，也许这将是我们向人工智能迈进做出的最好的尝试。人工智能的梦想就是：有一天能制造出真正的智能机器。<br><img src="/picture/machine-learning/network7.jpg" alt="network"><br>神经网络可能为我们打开一扇进入遥远的人工智能梦的窗户。</li>
-</ul>
-<h1 id="模型表示（1）"><a href="#模型表示（1）" class="headerlink" title="模型表示（1）"></a>模型表示（1）</h1><p>为了构建神经网络模型，我们需要首先思考大脑中的神经网络是怎样的？每一个神经元都可以被认为是一个处理单元 /神经核（processing unit/Nucleus），它含有许多输入/树突（input/Dendrite），并且有一个输出/轴突（output/Axon）。神经网络是大量神经元相互链接并通过电脉冲来交流的一个网络。<br><img src="/picture/machine-learning/network8.jpg" alt="network"><br>下面是一组神经元的示意图，神经元利用微弱的电流进行沟通。这些弱电流也称作动作电位，其实就是一些微弱的电流。所以如果神经元想要传递一个消息，它就会就通过它的轴突，发送一段微弱电流给其他神经元，这就是轴突。<br>这里是一条连接到输入神经，或者连接另一个神经元树突的神经，接下来这个神经元接收这条消息，做一些计算，它有可能会反过来将在轴突上的自己的消息传给其他神经元。这就是所有人类思考的模型：我们的神经元把自己的收到的消息进行计算，并向其他神经元传递消息。这也是我们的感觉和肌肉运转的原理。如果你想活动一块肌肉，就会触发一个神经元给你的肌肉发送脉冲，并引起你的肌肉收缩。如果一些感官：比如说眼睛想要给大脑传递一个消息，那么它就像这样发送电脉冲给大脑的。<br><img src="/picture/machine-learning/network9.jpg" alt="network"><br>神经网络模型建立在很多神经元之上，每一个神经元又是一个个学习模型。这些神经元（也叫激活单元，activation unit）采纳一些特征作为输出，并且根据本身的模型提供一个输出。下图是一个以逻辑回归模型作为自身学习模型的神经元示例，在神经网络中，参数又可被称为权重（weight）。<br><img src="/picture/machine-learning/network10.jpg" alt="network"><br>我们设计出了类似于神经元的神经网络，效果如下：<br><img src="/picture/machine-learning/network11.jpg" alt="network"><br>其中\(x_1,x_2,x_3\)是输入单元（input units），我们将原始数据输入给它们。\(a_1,a_2,a_3\)是中间单元，它们负责将数据进行处理，然后呈递到下一层。最后是输出单元，它负责计算\(h_θ(x)\)。<br>神经网络模型是许多逻辑单元按照不同层级组织起来的网络，每一层的输出变量都是下一层的输入变量。下图为一个 3层的神经网络，第一层成为输入层（Input Layer），最后一层称为输出层（Output Layer），中间一层成为隐藏层（Hidden Layers）。我们为每一层都增加一个偏差单位（bias unit）：<br><img src="/picture/machine-learning/network12.jpg" alt="network"><br>下面引入一些标记法来帮助描述模型：<br>\(a_i^{(j)}\)代表第j层的第i个激活单元。\(\Theta^{(j)}\)代表从第j层映射到第j+1层时的权重的矩阵。例如\(\Theta^{(1)}\)代表从第一层映射到第二层的权重矩阵。其尺寸为：以第<strong>j+1</strong>层的激活单元数量为<strong>行数</strong>，以第<strong>j</strong>层的激活单元数加1为<strong>列数</strong>的矩阵。<br>例如：上图所示的神经网络中\(\Theta^{(1)}\)的尺寸为3*4。<br>对于上图所示的模型，激活单元和输出分别表达为：</p>
-<p>$$a_1^{(2)}=g(\Theta_{10}^{(1)}x_0+\Theta_{11}^{(1)}x_1+\Theta_{12}^{(1)}x_2+\Theta_{13}^{(1)}x_3) \\\\<br>a_2^{(2)}=g(\Theta_{20}^{(1)}x_0+\Theta_{21}^{(1)}x_1+\Theta_{22}^{(1)}x_2+\Theta_{23}^{(1)}x_3) \\\\<br>a_3^{(2)}=g(\Theta_{30}^{(1)}x_0+\Theta_{31}^{(1)}x_1+\Theta_{32}^{(1)}x_2+\Theta_{33}^{(1)}x_3)$$<br>上面进行的讨论中只是将特征矩阵中的一行(一个训练实例)喂给了神经网络，我们需要将整个训练集都喂给我们的神经网络算法来学习模型。<br>注意：<strong>\(\Theta\)的下标和上标需要注意一下！下标的第一个数字：代表第j+1层神经元的编号，第二个数字代表第j层神经元的编号。上标则代表神经元层数的编号。</strong><br>我们可以知道：每一个a都是由上一层所有的x和每一个x所对应的参数决定的。<br>（我们把这样从左到右的算法称为前向传播算法(FORWARD PROPAGATION)）<br>把X，a分别用矩阵表示：<br>$$X=\begin{bmatrix} x_0 \\\ x_1 \\\ x_2 \\\ x_3\end{bmatrix}\\\\<br>\Theta=\begin{bmatrix} \Theta_{10} \ \Theta_{11} \ \Theta_{12} \ \Theta_{13}\\\ \Theta_{20} \ \Theta_{21} \ \Theta_{22} \ \Theta_{23}\\\ \Theta_{30} \ \Theta_{31} \ \Theta_{32} \ \Theta_{33}\end{bmatrix} \\\\<br>a=\begin{bmatrix} a_1 \\\ a_2 \\\ a_3\end{bmatrix} \\\\<br>我们可以得到\Theta X=a。<br>$$</p>
-<h1 id="模型表示（2）"><a href="#模型表示（2）" class="headerlink" title="模型表示（2）"></a>模型表示（2）</h1><p>( FORWARD PROPAGATION  )相对与使用循环来编码，利用向量化的方法会使得计算更为简便。以上面的神经网络为例，试着计算第二层的值：</p>
-<p>$$x=\begin{bmatrix} x_0 \\\ x_1 \\\ x_2 \\\ x_3\end{bmatrix}\\\\<br>z^{(2)}=\begin{bmatrix} z_1^{(2)} \\\ z_2^{(2)} \\\ z_3^{(2)}\end{bmatrix}$$<br><img src="/picture/machine-learning/network13.jpg" alt="network"><br>我们令：\(z^{(2)}=\Theta^{(1)}x\),则\(a^{(2)}=g(z^{(2)})\),计算后添加\(a_0^{(2)}=1\)。计算输出值为：<br><img src="/picture/machine-learning/network14.jpg" alt="network"><br>令：\(z^{(3)}=\Theta^{(2)}a^{(2)}\),则\(h_\theta(x)=a^{(3)}=g(z^{(3)})\)<br>这只是针对训练集中一个训练实例所进行的计算。如果我们要对整个训练集进行计算，我们需要将训练集特征矩阵进行转置，使得同一个实例的特征都在同一列里。即：<br>\(z^{(2)}=\Theta^{(1)}*X^T\) , \(a^{(2)}=g(z^{(2)})\)<br>为了更好地了解Neuron Networks的工作原理，我们先把左半部分遮住：<br><img src="/picture/machine-learning/network15.jpg" alt="network"><br>右半部分其实就是以\(a_0,a_1,a_2,a_3\)按照Logistic Regression的方式输出h(x)：<br><img src="/picture/machine-learning/network16.jpg" alt="network"><br>其实神经网络就像是logistic  regression，只不过我们把logistic regression中的输入向量\([x1 \sim x3]\)变成了中间层的\([a_1^{(2)} \sim a_3^{(2)}]\)<br>即：<br>$$h(x)=g(\theta_0^{(2)}a_0^{(2)}+\theta_1^{(2)}a_1^{(2)}+\theta_2^{(2)}a_2^{(2)}+\theta_3^{(2)}a_3^{(2)})$$<br>我们可以把\(a_0,a_1,a_2,a_3\)看成更为高级的特征值，也就是\(x_0,x_1,x_2,x_3\)的进化体，并且它们是由x决定的，因为是梯度下降的，所以a是变化的，并且变得越来越厉害，所以<strong>这些更高级的特征值远比仅仅将x次方厉害</strong>，也能更好的预测新数据。<br>这就是神经网络相比于逻辑回归和线性回归的优势。</p>
-<h1 id="例子和直观理解（1）"><a href="#例子和直观理解（1）" class="headerlink" title="例子和直观理解（1）"></a>例子和直观理解（1）</h1><p>从本质上讲，神经网络能够通过学习得出其自身的一系列特征。在普通的逻辑回归中，我们被限制为使用数据中的原始特征\(x_1,x_2,…,x_n\)，我们虽然可以使用一些二项式项来组合这些特征，但是我们仍然受到这些原始特征的限制。在神经网络中，原始特征只是输入层，在我们上面三层的神经网络例子中，第三层也就是输出层做出的预测利用的是第二层的特征，而非输入层中的原始特征，我们可以认为第二层中的特征是神经网络通过学习后自己得出的一系列用于预测输出变量的新特征。<br>神经网络中，单层神经元（无中间层）的计算可用来表示逻辑运算，比如逻辑AND、逻辑或OR。</p>
-<h2 id="举例说明：逻辑与AND"><a href="#举例说明：逻辑与AND" class="headerlink" title="举例说明：逻辑与AND"></a>举例说明：逻辑与AND</h2><p>下图是神经网络的设计与Output层的表达式：<br><img src="/picture/machine-learning/network17.jpg" alt="network"><br>其中，\(\theta_0=-30,\theta_1=20,\theta_2=20\)<br>输出函数h(x)为：<br>$$h_\Theta(x)=g(-30+20x_1+20x_2)$$<br>我们知道g(x)的图像是：<br><img src="/picture/machine-learning/network18.jpg" alt="network"><br>真值表如下：<br><img src="/picture/machine-learning/network19.jpg" alt="network"><br>所以我们有:<br>$$h_\Theta(x) \approx x_1 AND x_2$$</p>
-<h2 id="举例说明：逻辑或OR"><a href="#举例说明：逻辑或OR" class="headerlink" title="举例说明：逻辑或OR"></a>举例说明：逻辑或OR</h2><p><img src="/picture/machine-learning/network20.jpg" alt="network"><br>OR与AND整体一样，区别只在于\(\Theta\)的取值不同。</p>
-<h1 id="例子和直观理解（2）"><a href="#例子和直观理解（2）" class="headerlink" title="例子和直观理解（2）"></a>例子和直观理解（2）</h1><p>们可以利用神经元来组合成更为复杂的神经网络以实现更复杂的运算。</p>
-<h2 id="XNOR"><a href="#XNOR" class="headerlink" title="XNOR"></a>XNOR</h2><p>XNOR代表：输入的两个值必须一样，均为1或均为0），<br>即：\(XNOR=(x_1 \ AND \ x_2) \ OR \ ((NOT \ x_1) \ AND \ (NOT \ x_2))\)<br>首先构造一个能表达\((NOT x_1) AND (NOT x_2)\)部分的神经元，都取0表达式才真：<br><img src="/picture/machine-learning/network21.jpg" alt="network"><br>然后将表示AND的神经元和表示\((NOT x_1)AND(NOT x_2)\)的神经元以及表示OR的神经元进行组合。<br>下图的神经元（三个权重分别为-30，20，20）可以被视为作用同于逻辑与（AND）：<br><img src="/picture/machine-learning/network22.jpg" alt="network"><br>下图的神经元（三个权重分别为-10，20，20）可以被视为作用等同于逻辑或（OR）：<br><img src="/picture/machine-learning/network23.jpg" alt="network"><br>组合：<br><img src="/picture/machine-learning/network24.jpg" alt="network"><br>\(x_1或x_2其中1个为1，1个为0的话，则a_1和a_2都为0，结果为0。\)<br>我们就得到了一个能实现XNOR运算符功能的神经网络。按这种方法我们可以逐渐构造出越来越复杂的函数，也能得到更加厉害的特征值。这就是神经网络的厉害之处。</p>
-<h1 id="多类问题"><a href="#多类问题" class="headerlink" title="多类问题"></a>多类问题</h1><p>当我们有不止两种分类时（也就是y=1,2,3….），比如以下这种情况，该怎么办？如果我们要训练一个神经网络算法来识别路人、汽车、摩托车和卡车，在输出层我们应该有4个值。例如，第一个值为1或0用于预测是否是行人，第二个值用于判断是否为汽车。<br>输入向量x有三个维度，两个中间层，输出层4个神经元分别用来表示4类，也就是每一个数据在输出层都会出现\([a b c d]^T\)，且a,b,c,d中仅有一个为1，表示当前类。下面是该神经网络的可能结构示例：<br><img src="/picture/machine-learning/network25.jpg" alt="network"><br><img src="/picture/machine-learning/network26.jpg" alt="network"><br>神经网络算法的输出结果为四种可能情形之一：<br><img src="/picture/machine-learning/network27.jpg" alt="network"></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://open.163.com/special/opencourse/machinelearning.html" target="_blank" rel="external">斯坦福大学机器学习视频教程</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;非线性假设&quot;&gt;&lt;a href=&quot;#非线性假设&quot; class=&quot;headerlink&quot; title=&quot;非线性假设&quot;&gt;&lt;/a&gt;非线性假设&lt;/h1&gt;&lt;p&gt;我们之前学的，无论是线性回归还是逻辑回归都有这样一个缺点，即：当特征太多时，计算的负荷会非常大。&lt;br&gt;下面是一个例子：&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/network1.jpg&quot; alt=&quot;network&quot;&gt;&lt;br&gt;当我们使用\(x_1,x_2\)的多次项式进行预测时，我们可以应用得很好。&lt;br&gt;之前我们已经看到过，使用非线性的多项式项，能够帮助我们建立更好的分类模型。假设我们有非常多的特征，例如大于100个变量，我们希望用这100个特征来构建一个非线性的多项式模型，结果将是数量非常惊人的特征组合，即便我们只采用两两特征的组合\(x_1x_2+x_1x_3+x_1x_4+…+x_2x_3+x_2x_4+…+x_{99}x_{100}\),我们也会有接近5000个组合而成的特征。这对于一般的逻辑回归来说需要计算的特征太多了。&lt;br&gt;假设我们希望训练一个模型来识别视觉对象（例如识别一张图片上是否是一辆汽车）。&lt;br&gt;我们怎样才能这么做呢？一种方法是我们利用很多汽车的图片和很多非汽车的图片，然后利用这些图片上一个个像素的值（饱和度或亮度）来作为特征。&lt;br&gt;假如我们只选用灰度图片，每个像素则只有一个值（而非RGB值），我们可以选取图片上的两个不同位置上的两个像素，然后训练一个逻辑回归算法利用这两个像素的值来判断图片上是否是汽车：&lt;br&gt;&lt;img src=&quot;/picture/machine-learning/network2.jpg&quot; alt=&quot;network&quot;&gt;&lt;br&gt;假使我们采用的都是  50x50像素的小图片，并且我们将所有的像素视为特征，则会有2500个特征，如果我们要进一步将两两特征组合构成一个多项式模型，则会有约\(\frac{2500^2}{2}\)个（接近3百万个）特征。普通的逻辑回归模型，不能有效地处理这么多的特征，这时候我们就需要神经网络。&lt;/p&gt;
-&lt;h1 id=&quot;神经元和大脑&quot;&gt;&lt;a href=&quot;#神经元和大脑&quot; class=&quot;headerlink&quot; title=&quot;神经元和大脑&quot;&gt;&lt;/a&gt;神经元和大脑&lt;/h1&gt;&lt;p&gt;神经网络是一种很古老的算法，它最初产生的目的是制造能模拟大脑的机器。&lt;br&gt;接下来我将介绍神经网络。它能很好地解决不同的机器学习问题。首先介绍一些神经网络的背景知识，由此我们能知道可以用它们来做什么。不管是将其应用到现代的机器学习问题上，还是应用到那些你可能会感兴趣的问题中。也许，这一伟大的人工智能梦想在未来能制造出真正的智能机器。另外，我们还将讲解神经网络是怎么涉及这些问题的，神经网络产生的原因是人们想尝试设计出模仿大脑的算法，从某种意义上说如果我们想要建立学习系统，那为什么不去模仿我们所认识的最神奇的学习机器——人类的大脑呢？&lt;br&gt;
-    
-    </summary>
-    
-      <category term="神经网络" scheme="xtf615.com/categories/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
-    
-    
-      <category term="机器学习" scheme="xtf615.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-      <category term="人工智能" scheme="xtf615.com/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/"/>
-    
-      <category term="神经网络" scheme="xtf615.com/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
     
   </entry>
   

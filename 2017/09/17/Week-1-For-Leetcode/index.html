@@ -1,0 +1,1056 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="基础算法,Leetcode," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode (Week 1)">
+<meta property="og:url" content="xtf615.com/2017/09/17/Week-1-For-Leetcode/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/leetcode1.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/leetcode2.png">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/leetcode3.jpg">
+<meta property="og:image" content="xtf615.com/picture/machine-learning/leetcode4.png">
+<meta property="og:updated_time" content="2017-09-17T12:25:10.728Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Leetcode (Week 1)">
+<meta name="twitter:description" content="本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。">
+<meta name="twitter:image" content="xtf615.com/picture/machine-learning/leetcode1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/09/17/Week-1-For-Leetcode/"/>
+
+
+
+
+
+  <title> Leetcode (Week 1) | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/09/17/Week-1-For-Leetcode/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Leetcode (Week 1)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-17T15:28:05+08:00">
+                2017-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Leetcode/" itemprop="url" rel="index">
+                    <span itemprop="name">Leetcode</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。<br><a id="more"></a></p>
+<h1 id="InPlace-Merge"><a href="#InPlace-Merge" class="headerlink" title="InPlace Merge"></a>InPlace Merge</h1><p>　　第一道题是归并排序。归并排序基本思路是使用分治法进行求解。这里的关键操作在于Merge两个有序的数组。通常的做法是，付出O(n)空间复杂度的代价，新建一个数组，然后使用两个指针分别遍历原数组的左右两边，依次选择较小的值放到新数组，最后复制新数组的值到原数组。(也可以一开始复制原数组左右两边到两个小数组，然后遍历依次放到原数组中)<br>　　这里面我们付出了O(n)的空间复杂度和O(n)的时间复杂度的代价。能否使得空间复杂度降低为O(1)？</p>
+<h2 id="内存反转"><a href="#内存反转" class="headerlink" title="内存反转　　"></a>内存反转　　</h2><p>　　这里使用的是循环移位的策略，也称作内存反转。如下所示：<br>　　<strong>Q</strong>:给定序列,\(a_1,a_2,…,a_m, b_1,b_2,…,b_n\),把它变成\(b_1,b_2,…,b_n, a_1,a_2,…,a_m\)?<br>　　<strong>A</strong>:先对\(a_1,a_2,…,a_m\)进行反转；再对\(b_1,b_2,…,b_n\)进行反转，最后再对整体进行反转，就可以得到\(b_1,b_2,…,b_n, a_1,a_2,…,a_m\)。代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exchange</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> s, <span class="keyword">int</span> m, <span class="keyword">int</span> e)</span></span>&#123;</div><div class="line">    reverse(A,s, m);</div><div class="line">    reverse(A,m+<span class="number">1</span>,e);</div><div class="line">    reverse(A, s, e);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> t = A[x];</div><div class="line">    A[x] = A[y];</div><div class="line">    A[y] = t;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">reverse</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> s, <span class="keyword">int</span> e)</span></span>&#123;</div><div class="line">    <span class="keyword">while</span>(s &lt; e)&#123;</div><div class="line">        swap(A, s++, e--);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="原地归并"><a href="#原地归并" class="headerlink" title="原地归并"></a>原地归并</h2><p>　　假设数据如下图所示：<br><img src="/picture/machine-learning/leetcode1.jpg" alt="leetcode"><br>　　开始时\(i,j\)分别指向这个数组的两个有序子序列的第一个值，然后指针向后移动,<strong>直到</strong>找到比20大的值，即移动到30，此时我们知道\(i\)指针之前的值一定是两个子序列最小的块。<br>　　接着，先用一个临时指针记录\(j\)的位置。然后把第二个序列的指针\(j\)向后移动，<strong>直到</strong>找到比30大的值，即移动到55，即如下图所示：<br><img src="/picture/machine-learning/leetcode2.png" alt="leetcode"><br>　　这样，<strong>我们把[i,index)和[index,j)的内存块进行交换</strong>，再移动i指针，移动步长step=j-index，两个子数组的分界点mid也要相应的向后移动step=j-index。如下图：<br><img src="/picture/machine-learning/leetcode3.jpg" alt="leetcode"><br>　　这样可以看出\(i\)之前的都已经排好序，而以\(i\)开始的子序列和以\(j\)开始的子序列又是开始的问题模型，同样的操作进行下去最终排序完成。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">inplaceMerge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> start, <span class="keyword">int</span> mid, <span class="keyword">int</span> end)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> i = start;</div><div class="line">    <span class="keyword">int</span> j = mid+<span class="number">1</span>;</div><div class="line">    <span class="keyword">while</span>(i &lt;= mid &amp;&amp; j &lt;= end)&#123;<span class="comment">//两个条件都需要测试</span></div><div class="line">        <span class="keyword">int</span> step = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(i &lt;= mid &amp;&amp; A[i] &lt;= A[j])&#123;++i;&#125;<span class="comment">//找到第一个比A[j]大的数</span></div><div class="line">        </div><div class="line">        <span class="keyword">while</span>(j &lt;= end &amp;&amp; A[j] &lt; A[i])&#123;++j;++step;&#125;<span class="comment">//找到比A[i]大的所有A[j]</span></div><div class="line">        </div><div class="line">        exchange(A, i, mid, j<span class="number">-1</span>);<span class="comment">//反转</span></div><div class="line">        i += step; <span class="comment">//移动指针</span></div><div class="line">        mid += step;<span class="comment">//分割点也要后移</span></div><div class="line">        </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A)</span> </span>&#123;</div><div class="line">    mergeSort(A, <span class="number">0</span>,  A.size()<span class="number">-1</span>);</div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">mergeSort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;A, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span>(start &lt; end)&#123;</div><div class="line">        <span class="keyword">int</span> mid = (start + end)/<span class="number">2</span>;</div><div class="line">        mergeSort(A, start, mid);</div><div class="line">        mergeSort(A, mid+<span class="number">1</span>, end);</div><div class="line">        inplaceMerge(A, start, mid, end);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Two-Sum-1"><a href="#Two-Sum-1" class="headerlink" title="Two Sum (#1)"></a>Two Sum (#1)</h1><p>　　问题：给定一个无序数组，在O(n)时间内寻找两个数的和为target，返回这两个数的下标。题目已经保证了结果是唯一的。<br>　　分析：如果是O(n^2)复杂度，那么只要两个循环遍历就能找到。另外，O(n)时间复杂度意味着不能排序，返回下标也意味着最好不要打乱原数组的顺序。我们联想到哈希表获取元素的时间复杂度为O(1)，如果将数据处理成target-某个数=另一个数，那么使用哈希表查找就能查找到另一个数(key:原始数据,value:下标)。但是由于题目没有保证元素都不相同，因此不能先循环，处理每个数存入哈希表(相同的数会覆盖)。这里使用的是边遍历边存储到哈希表，如果在哈希表中找到另一个数，则直接返回结果，否则将该数存入哈希表中。代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Solution &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="comment">/**</span></div><div class="line">    *每个数处理成target-该数 7 2 -2 -6</div><div class="line">    *对map进行查找，如果存在等于target-该数的数值，则找到。否则存储map该&#123;原始数据:位置&#125; 题目中说不存在相同的数</div><div class="line">    *</div><div class="line">    */</div><div class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; twoSum(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target) &#123;</div><div class="line">        <span class="built_in">unordered_map</span>&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt; <span class="built_in">map</span>;</div><div class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); ++i)&#123;</div><div class="line">            <span class="keyword">int</span> findNum = target - nums[i];</div><div class="line">            <span class="keyword">if</span>(<span class="built_in">map</span>.find(findNum) != <span class="built_in">map</span>.end())&#123;<span class="comment">//find查找的是key是否存在</span></div><div class="line">                result.push_back(i);</div><div class="line">                result.push_back(<span class="built_in">map</span>[findNum]);</div><div class="line">            &#125;</div><div class="line">            <span class="built_in">map</span>[nums[i]] = i;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>　　变型：如果加上一个条件原数组是有序的，那么可以使用另外一种方法找到所有和为target的数据对。<br>　　分析：可以使用两个指针\(i,j\),分别指向有序数组的低端和高端，如果两个指针所在位置的数据之和为target，则加入结果集。如果和小于target，说明\(i\)指向的数太小了，必须稍微大一点才可以；或者说\(j\)指向的数不够大，任凭j怎么往左移都没用，因为\(j\)指向的数最大。因此向右移动\(i\)指针。如果和大于target，说明\(j\)指向的太大了，因此往左移动\(j\)指针。<br>　　为了去掉重复的结果，需要在和等于target的条件里，移动两个指针，直到遇到不一样的数。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">int</span>[]&gt; twoSum(Integer[] nums, <span class="keyword">int</span> target) &#123;</div><div class="line">    List&lt;<span class="keyword">int</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>[]&gt;();</div><div class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = nums.length - <span class="number">1</span>;</div><div class="line">    <span class="keyword">while</span>(i &lt; j)&#123;</div><div class="line">        <span class="keyword">if</span>(nums[i] + nums[j] == target)&#123;</div><div class="line">            result.add(<span class="keyword">new</span> <span class="keyword">int</span>[]&#123;nums[i], nums[j]&#125;);</div><div class="line">            <span class="keyword">while</span>(i &lt; j &amp;&amp; nums[i+<span class="number">1</span>] == nums[i])&#123;++i;&#125;<span class="comment">//filter duplicate</span></div><div class="line">            <span class="keyword">while</span>(i &lt; j &amp;&amp; nums[j-<span class="number">1</span>] == nums[j])&#123;--j;&#125;<span class="comment">//filter duplicate</span></div><div class="line">            ++i;</div><div class="line">            --j;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(nums[i] + nums[j] &lt; target)&#123;</div><div class="line">            ++i;</div><div class="line">        &#125;<span class="keyword">else</span> &#123;</div><div class="line">            --j;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Three-Sum-15"><a href="#Three-Sum-15" class="headerlink" title="Three Sum (#15)"></a>Three Sum (#15)</h1><p>　　问题：给定一个数组，在O(n^2)复杂度内找出任何3个和为0的数，返回数据对即可。<br>　　分析：该题可以进行排序求解，返回数据而不是下标。可以利用Two Sum中变型策略。首先固定一个数，然后使用Two Sum求解。即，使用for循环遍历数组，固定当前数，然后找到所有和当前数搭配的和0的其余两个数，即twoTarget = -nums[i]。具体代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">int</span>[]&gt; threeSum(Integer[] nums) &#123;</div><div class="line">    Arrays.sort(nums);</div><div class="line">    List&lt;<span class="keyword">int</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>[]&gt;();</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length-<span class="number">1</span>; ++i)&#123;</div><div class="line">        <span class="keyword">if</span>(i != <span class="number">0</span> &amp;&amp; nums[i] == nums[i-<span class="number">1</span>]) <span class="comment">//相同元素不需要再查找了</span></div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        <span class="keyword">int</span> s = i+<span class="number">1</span>, e = nums.length - <span class="number">1</span>;</div><div class="line">        <span class="keyword">int</span> target = -nums[i];</div><div class="line">        <span class="keyword">while</span>(s &lt; e)&#123;</div><div class="line">            <span class="keyword">int</span> twoSum = nums[s] + nums[e];</div><div class="line">            <span class="keyword">if</span>(twoSum == target) &#123;</div><div class="line">                result.add(<span class="keyword">new</span> <span class="keyword">int</span>[]&#123;nums[i],nums[s],nums[e]&#125;);</div><div class="line">                <span class="keyword">while</span> (s &lt; e &amp;&amp; nums[s+<span class="number">1</span>] == nums[s]) ++s;<span class="comment">//filter duplicate</span></div><div class="line">                <span class="keyword">while</span> (s &lt; e &amp;&amp; nums[e-<span class="number">1</span>] == nums[e]) --e;<span class="comment">//filter duplicate</span></div><div class="line">                --s;<span class="comment">//move</span></div><div class="line">                --e;<span class="comment">//move</span></div><div class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(twoSum &lt; target)&#123;</div><div class="line">                ++s;</div><div class="line">            &#125;<span class="keyword">else</span>&#123;</div><div class="line">                --e;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　注意上述去重操作。
+　　</p>
+<h1 id="Swap-Elements-By-Xor"><a href="#Swap-Elements-By-Xor" class="headerlink" title="Swap Elements By Xor"></a>Swap Elements By Xor</h1><p>　　可以使用异或操作交换数据。原理是使用异或的性质：</p>
+<ul>
+<li>任意两个相同的数异或都为0</li>
+<li>任意数(1或者0)和0异或都为本身。1 xor 0 = 1, 0 xor 0 = 1;因此式子中有0的地方可以直接去掉0。</li>
+<li>异或满足结合律和交换律。<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> &amp;x, <span class="keyword">int</span> &amp;y)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span>(x == y) <span class="keyword">return</span>;</div><div class="line">    x ^= y; <span class="comment">// x = x ^ y</span></div><div class="line">    y ^= x; <span class="comment">// y = x ^ y ^ y = x ^ (y ^ y) = x ^ (0) = x </span></div><div class="line">    x ^= y; <span class="comment">// x = x ^ y ^ x =  y</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　运行原理如上述代码注释部分。<br>　　这里有一个陷进，如果两个相同的数传入，实际上交换完没变。但是因为相同的数异或为0，使得x和y都等于0了。因此最好要一开始检查一下是否相同。</p>
+<h1 id="Number-of-1-Bits-191"><a href="#Number-of-1-Bits-191" class="headerlink" title="Number of 1 Bits(#191)"></a>Number of 1 Bits(#191)</h1><p>　　统计位当中1的个数。正常想法就是看看最后1位是不是1，是就累加。然后不断往右移位，直到数变成0为止。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="keyword">uint32_t</span> n)</span></span>&#123;</div><div class="line">        <span class="keyword">int</span> c = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(n)&#123;</div><div class="line">            <span class="keyword">int</span> t = n &amp; <span class="number">1</span>;</div><div class="line">            <span class="keyword">if</span>(t)&#123;c++;&#125;</div><div class="line">            n &gt;&gt;= <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> c;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　另一种方法，利用\(n \&amp;= (n-1) \),<strong>该式子会将n最右边的1变成0</strong>。如果本身为0,与之后肯定为0不变；如果最右边是1，减一后为0，再&amp;之后就变成0了。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">hammingWeight</span><span class="params">(<span class="keyword">uint32_t</span> n)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span>(n)&#123;<span class="comment">//非零</span></div><div class="line">        ++count;</div><div class="line">        n &amp;= (n<span class="number">-1</span>); <span class="comment">//关键，每次都会把最靠右边的1变成0。</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> count;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Count-Bits-338"><a href="#Count-Bits-338" class="headerlink" title="Count Bits(#338)"></a>Count Bits(#338)</h1><p>　　问题：统计range(n)范围内所有数当中位为1的个数。要求时间复杂度为O(n)。<br>　　分析：正常会对每个数求1的个数，复杂度为O(n * sizeof(integer))。这里由于要求出前面数的1的个数，因此可以利用前面的数，动态规划思想。将大的数化成前面小的数。一种方法是，单独抽出最后一位，则原始的数可以往右移1位变成前面的数。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; countBits(<span class="keyword">int</span> num) &#123;</div><div class="line">        <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; result(num+<span class="number">1</span>, <span class="number">0</span>);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= num; ++i)&#123;</div><div class="line">            result[i] = result[i&gt;&gt;<span class="number">1</span>] + (i &amp; <span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　另一种，化大数为前面的数，是利用前面提到的将某个数位当中最右边1化为0.则：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">result[i] = result[i &amp; (i<span class="number">-1</span>)] + <span class="number">1</span>;</div></pre></td></tr></table></figure></p>
+<h1 id="Reverse-Bits-190"><a href="#Reverse-Bits-190" class="headerlink" title="Reverse Bits (#190)"></a>Reverse Bits (#190)</h1><p>　　问题：反转数的二进制位。<br>　　分析：可以新建一个数\(m=0\),m先左移一位腾出一个位置，然后从原始数的最后一位开始，不断用m求或运算。直到原始数位全部遍历完毕。复杂度为O(sizeof(int)).<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">uint32_t</span> reverseBits(<span class="keyword">uint32_t</span> n) &#123;</div><div class="line">    <span class="keyword">uint32_t</span> m = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; ++i)&#123;</div><div class="line">        m &lt;&lt;= <span class="number">1</span>; <span class="comment">//先挪出一个位置</span></div><div class="line">        m |= (n &amp; <span class="number">1</span>);</div><div class="line">        n &gt;&gt;= <span class="number">1</span>;  </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> m;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　另外，还有个O(log sizeof(int))复杂度的算法如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">uint32_t</span> reverseBits(<span class="keyword">uint32_t</span> n) &#123;</div><div class="line">    n = (n &gt;&gt; <span class="number">16</span>) | (n &lt;&lt; <span class="number">16</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xff00ff00</span>) &gt;&gt; <span class="number">8</span>) | ((n &amp; <span class="number">0x00ff00ff</span>) &lt;&lt; <span class="number">8</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xf0f0f0f0</span>) &gt;&gt; <span class="number">4</span>) | ((n &amp; <span class="number">0x0f0f0f0f</span>) &lt;&lt; <span class="number">4</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xcccccccc</span>) &gt;&gt; <span class="number">2</span>) | ((n &amp; <span class="number">0x33333333</span>) &lt;&lt; <span class="number">2</span>);</div><div class="line">    n = ((n &amp; <span class="number">0xaaaaaaaa</span>) &gt;&gt; <span class="number">1</span>) | ((n &amp; <span class="number">0x55555555</span>) &lt;&lt; <span class="number">1</span>);</div><div class="line">    <span class="keyword">return</span> n;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Reverse-Integer-7"><a href="#Reverse-Integer-7" class="headerlink" title="Reverse Integer(#7)"></a>Reverse Integer(#7)</h1><p>　　问题：反转整数<br>　　分析：新建一个数result初始化为0，每次取出最后一位，使用result<em>10+最后一位。即可得到逆序。例如：123： ( (0\</em>10+3)* 10)+2)*10 + 1 = 321. 注意溢出的处理，策略是：将求得的结果tmp=result*10+最后一位,根据：(tmp-最后一位）/10，逆序求出result，看看跟原来的result是否相等，不相等说明溢出了。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">reverse</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span>(x)&#123;</div><div class="line">        <span class="keyword">int</span> last = x % <span class="number">10</span>;</div><div class="line">        <span class="keyword">int</span> tmp = result * <span class="number">10</span> + last;</div><div class="line">        <span class="keyword">if</span>((tmp-last)/<span class="number">10</span> != result) <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">//溢出</span></div><div class="line">        result = tmp;</div><div class="line">        x /= <span class="number">10</span>; </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">    <span class="comment">//for 8 bit binary number abcdefgh, the process is as follow:</span></div><div class="line">    <span class="comment">//abcdefgh -&gt; efghabcd -&gt; ghefcdab -&gt; hgfedcba</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Judge-Route-Circle-657"><a href="#Judge-Route-Circle-657" class="headerlink" title="Judge Route Circle(# 657)"></a>Judge Route Circle(# 657)</h1><p>　　问题：机器人上下左右移动，给出一个移动序列，判断是否回到出发点。<br>　　答：两个数分别统计上下和左右情况，上下抵消，左右抵消。最后都为0则回到原点。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">judgeCircle</span><span class="params">(<span class="built_in">string</span> moves)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> x = <span class="number">0</span>, y = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; moves.size(); ++i)&#123;</div><div class="line">        <span class="keyword">if</span>(moves[i] == <span class="string">'U'</span>)&#123;</div><div class="line">            x += <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'D'</span>)&#123;</div><div class="line">            x -= <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'R'</span>)&#123;</div><div class="line">            y += <span class="number">1</span>;</div><div class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(moves[i] == <span class="string">'L'</span>)&#123;</div><div class="line">            y -= <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> x == <span class="number">0</span> &amp;&amp; y == <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Merge-Two-Sorted-Array-88"><a href="#Merge-Two-Sorted-Array-88" class="headerlink" title="Merge Two Sorted Array(#88)"></a>Merge Two Sorted Array(#88)</h1><p>　　问题：给定两个有序的数组nums1,nums2,要求将nums2 Merge到nums1，使得nums1保持有序。只能利用nums1空间，题目已经保证nums1能保证容纳的下nums2的元素。<br>　　分析：常规想法是从第一个数开始merge到nums1中，这样就需要移数操作。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums1, <span class="keyword">int</span> m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums2, <span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> count_i = <span class="number">0</span>, count_j = <span class="number">0</span>, size = m + n;</div><div class="line">        <span class="keyword">int</span> end = m; </div><div class="line">        <span class="keyword">int</span> p = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span>(p &lt; size)&#123; <span class="comment">//每个元素都遍历,p指向当前nums1需要同nums2比较的位置</span></div><div class="line">            <span class="keyword">if</span>(count_j &gt;= n) <span class="keyword">break</span>; <span class="comment">//nums2已经merge完毕则结束</span></div><div class="line">            <span class="keyword">if</span>(count_i &lt; m &amp;&amp; nums1[p] &lt;= nums2[count_j])&#123;<span class="comment">//nums1还没merge完毕，</span></div><div class="line">                count_i++;</div><div class="line">                p++;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span>&#123;</div><div class="line">               <span class="keyword">if</span>(count_i &lt; m)&#123;<span class="comment">//nums[1]还没全部遍历完毕才移动</span></div><div class="line">                   move(nums1, p, end<span class="number">-1</span>);<span class="comment">//移动p之后的元素</span></div><div class="line">               &#125;</div><div class="line">               nums1[p] = nums2[count_j]; <span class="comment">//放到p这个位置</span></div><div class="line">               count_j++;</div><div class="line">               p++; </div><div class="line">               end++;<span class="comment">//尾部编号+1</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> start, <span class="keyword">int</span> end)</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = end; i &gt;= start; --i)&#123;</div><div class="line">            nums[i+<span class="number">1</span>] = nums[i];</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>　　上述复杂度为O(n^2)。另一种想法是从尾部开始merge。两个指针分别指向两个数组的最后一个元素，将二者中大的数挪到nums1最后一个位置p=m+n-1,一直到p=0或者nums2已经全部放到nums1中了，则停止循环。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A, <span class="keyword">int</span> m, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; B, <span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> i = m - <span class="number">1</span>, j = n - <span class="number">1</span>;</div><div class="line">    <span class="keyword">int</span> p = m + n - <span class="number">1</span>;<span class="comment">//最后一个位置</span></div><div class="line">    <span class="keyword">while</span>(p &gt;= <span class="number">0</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(j &lt; <span class="number">0</span>) <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">if</span>(i &gt;= <span class="number">0</span> &amp;&amp; A[i] &gt;= B[j])&#123;</div><div class="line">            A[p] = A[i--];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span>&#123;</div><div class="line">            A[p] = B[j--];</div><div class="line">        &#125;</div><div class="line">        --p;      </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　还可以利用上面提到到的Inplace Merge方法，将nums2的元素直接全部放到nums1尾部，然后调用InplaceMerge方法。</p>
+<h1 id="Merge-Two-Sorted-List-21"><a href="#Merge-Two-Sorted-List-21" class="headerlink" title="Merge Two Sorted List(#21)"></a>Merge Two Sorted List(#21)</h1><p>　　问：将两个有序链表merge到一起。<br>　　答：一种思路是将list2 Merge到list1，不断重新构造list1即可。如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function">ListNode* <span class="title">mergeTwoLists</span><span class="params">(ListNode* l1, ListNode* l2)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span>(l1 == <span class="literal">NULL</span>) <span class="keyword">return</span> l2;</div><div class="line">    <span class="keyword">if</span>(l2 == <span class="literal">NULL</span>) <span class="keyword">return</span> l1;</div><div class="line">    </div><div class="line">    <span class="keyword">if</span>(l1-&gt;val &gt; l2-&gt;val)&#123;<span class="comment">//交换，保证l1的第一个数比l2的第一个数小</span></div><div class="line">        ListNode *t = l1;</div><div class="line">        l1 = l2;</div><div class="line">        l2 = t;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ListNode *p = l1, *pre = l1, *q = l2;</div><div class="line">      </div><div class="line">    <span class="keyword">while</span>(p != <span class="literal">NULL</span> || q != <span class="literal">NULL</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(p == <span class="literal">NULL</span>)&#123;<span class="comment">//l1已经到头了</span></div><div class="line">            pre-&gt;next = q;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(q == <span class="literal">NULL</span>) <span class="keyword">break</span>;<span class="comment">//l2已经全部merge完毕了</span></div><div class="line">        </div><div class="line">        <span class="keyword">if</span>(p-&gt;val &lt;= q-&gt;val)&#123;</div><div class="line">            pre = p;</div><div class="line">            p = p-&gt;next;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            ListNode *tmp = q-&gt;next; </div><div class="line">            q-&gt;next = p;</div><div class="line">            pre-&gt;next = q;</div><div class="line">            pre = pre-&gt;next;<span class="comment">//移动</span></div><div class="line">            q = tmp;<span class="comment">//移动</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> l1;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　还有种方法是，新建一条新的链表，这个空间复杂度实际上是O(1),除了浪费一个头节点以外，其余的节点都是list1和list2上已经存在的节点。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function">ListNode* <span class="title">mergeTwoLists</span><span class="params">(ListNode* l1, ListNode* l2)</span> </span>&#123;</div><div class="line">    ListNode dump = ListNode(INT_MAX);</div><div class="line">    ListNode *tail = &amp;dump;</div><div class="line">    <span class="keyword">while</span>(l1 != <span class="literal">NULL</span> &amp;&amp; l2 != <span class="literal">NULL</span>)&#123;</div><div class="line">        <span class="keyword">if</span>(l1-&gt;val &lt;= l2-&gt;val) &#123;</div><div class="line">            tail-&gt;next = l1;</div><div class="line">            tail = tail-&gt;next;</div><div class="line">            l1 = l1-&gt;next;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            tail-&gt;next = l2;</div><div class="line">            tail = tail-&gt;next;</div><div class="line">            l2 = l2-&gt;next;</div><div class="line">        &#125;   </div><div class="line">    &#125;</div><div class="line">    tail-&gt;next = (l1 == <span class="literal">NULL</span>)? l2:l1;</div><div class="line">    <span class="keyword">return</span> dump.next;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Merge-Two-Binary-Trees-617"><a href="#Merge-Two-Binary-Trees-617" class="headerlink" title="Merge Two Binary Trees(#617)"></a>Merge Two Binary Trees(#617)</h1><p>　　问题：将两个二叉树Merge起来，如果位置相同则数据相加，否则添加该节点到新树上。如下图：<br><img src="/picture/machine-learning/leetcode4.png" alt="leetcode"><br>　　分析：显然这题需要使用递归操作。我们目标是将Tree2 Merge到Tree1上。首先，任意一棵树为NULL，则返回令一颗树即可，都不为空，则val相加，然后递归调用merge两棵树的左子树，merge两棵树的右子树。merge左子树时，如果Tree1的左子树为空，则需要将Tree2的左子树接到Tree1的左子树上。merge右子树时，如果Tree1的右子树为空，则需要将Tree2的右子树接到Tree1的右子树上。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> TreeNode &#123;</div><div class="line">      <span class="keyword">int</span> val;</div><div class="line">      TreeNode *left;</div><div class="line">      TreeNode *right;</div><div class="line">      TreeNode(<span class="keyword">int</span> x) : val(x), left(<span class="literal">NULL</span>), right(<span class="literal">NULL</span>) &#123;&#125;</div><div class="line">&#125;;</div><div class="line"><span class="function">TreeNode* <span class="title">mergeTrees</span><span class="params">(TreeNode* t1, TreeNode* t2)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span>(t1 == <span class="literal">NULL</span> &amp;&amp; t2 == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="keyword">if</span>(t1 == <span class="literal">NULL</span> &amp;&amp; t2 != <span class="literal">NULL</span>) <span class="keyword">return</span> t2;</div><div class="line">    <span class="keyword">if</span>(t1 != <span class="literal">NULL</span> &amp;&amp; t2 == <span class="literal">NULL</span>) <span class="keyword">return</span> t1;</div><div class="line">    </div><div class="line">    t1-&gt;val += t2-&gt;val;</div><div class="line">    </div><div class="line">    mergeTrees(t1-&gt;left, t2-&gt;left);<span class="comment">//左子树merge</span></div><div class="line">    <span class="keyword">if</span>(t1-&gt;left == <span class="literal">NULL</span>)&#123;</div><div class="line">        t1-&gt;left = t2-&gt;left;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    mergeTrees(t1-&gt;right, t2-&gt;right);<span class="comment">//右子树merge</span></div><div class="line">    <span class="keyword">if</span>(t1-&gt;right == <span class="literal">NULL</span>)&#123;</div><div class="line">        t1-&gt;right = t2-&gt;right;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> t1;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Hamming-Distance-461"><a href="#Hamming-Distance-461" class="headerlink" title="Hamming Distance(#461)"></a>Hamming Distance(#461)</h1><p>　　问题：求两个序列的汉明码距离。<br>　　分析：汉明码距离就是二进制相应位置上不同数的总数。比如 0001和0100，第2位和第4位不同，则距离为2。求解很简单，两个数求异或。然后求异或结果的1的个数即可。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* 先异或操作，然后统计1的个数。*/</span></div><div class="line">   <span class="function"><span class="keyword">int</span> <span class="title">hammingDistance</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</div><div class="line">       <span class="keyword">int</span> z = x ^ y; <span class="comment">// xor</span></div><div class="line">       <span class="keyword">return</span> count_not_zero_bits(z);</div><div class="line">   &#125;   </div><div class="line">   <span class="comment">/* 统计非零位的个数，也就是统计任意一个数的二进制表示中1的个数*/</span></div><div class="line">   <span class="function"><span class="keyword">int</span> <span class="title">count_not_zero_bits</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</div><div class="line">       <span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line">       <span class="keyword">while</span>(x)&#123;<span class="comment">//x非零</span></div><div class="line">           ++count;</div><div class="line">           x &amp;= (x<span class="number">-1</span>); <span class="comment">//关键，每次都会把最靠右边的1变成0。如果最右边为0,与之后肯定为0不变；如果最右边是1，减一为0，与之后就变成0了。 </span></div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> count;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础算法/" rel="tag"># 基础算法</a>
+          
+            <a href="/tags/Leetcode/" rel="tag"># Leetcode</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/" rel="next" title="算法设计与分析(Lecture 1)">
+                <i class="fa fa-chevron-left"></i> 算法设计与分析(Lecture 1)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">70</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#InPlace-Merge"><span class="nav-number">1.</span> <span class="nav-text">InPlace Merge</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#内存反转"><span class="nav-number">1.1.</span> <span class="nav-text">内存反转　　</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原地归并"><span class="nav-number">1.2.</span> <span class="nav-text">原地归并</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Two-Sum-1"><span class="nav-number">2.</span> <span class="nav-text">Two Sum (#1)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Three-Sum-15"><span class="nav-number">3.</span> <span class="nav-text">Three Sum (#15)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swap-Elements-By-Xor"><span class="nav-number">4.</span> <span class="nav-text">Swap Elements By Xor</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Number-of-1-Bits-191"><span class="nav-number">5.</span> <span class="nav-text">Number of 1 Bits(#191)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Count-Bits-338"><span class="nav-number">6.</span> <span class="nav-text">Count Bits(#338)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reverse-Bits-190"><span class="nav-number">7.</span> <span class="nav-text">Reverse Bits (#190)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reverse-Integer-7"><span class="nav-number">8.</span> <span class="nav-text">Reverse Integer(#7)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Judge-Route-Circle-657"><span class="nav-number">9.</span> <span class="nav-text">Judge Route Circle(# 657)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge-Two-Sorted-Array-88"><span class="nav-number">10.</span> <span class="nav-text">Merge Two Sorted Array(#88)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge-Two-Sorted-List-21"><span class="nav-number">11.</span> <span class="nav-text">Merge Two Sorted List(#21)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge-Two-Binary-Trees-617"><span class="nav-number">12.</span> <span class="nav-text">Merge Two Binary Trees(#617)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hamming-Distance-461"><span class="nav-number">13.</span> <span class="nav-text">Hamming Distance(#461)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

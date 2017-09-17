@@ -4,6 +4,92 @@
 
     
   <url>
+    <loc>xtf615.com/2017/09/07/Python%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2017-09-17T12:26:59.705Z</lastmod>
+    <data>
+        <display>
+        <title>Python核心编程读书笔记</title>
+        <pubTime>2017-09-07T12:05:12.000Z</pubTime>
+        
+        <tag>Python</tag>
+         
+         
+           
+             
+              <breadCrumb title="学习笔记" url="xtf615.com/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/09/17/Week-1-For-Leetcode/</loc>
+    <lastmod>2017-09-17T12:25:10.728Z</lastmod>
+    <data>
+        <display>
+        <title>Leetcode (Week 1)</title>
+        <pubTime>2017-09-17T07:28:05.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>Leetcode</tag>
+         
+         
+           
+             
+              <breadCrumb title="Leetcode" url="xtf615.com/categories/Leetcode/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/</loc>
+    <lastmod>2017-09-17T07:07:58.840Z</lastmod>
+    <data>
+        <display>
+        <title>算法设计与分析(Lecture 1)</title>
+        <pubTime>2017-09-16T01:08:05.000Z</pubTime>
+        
+        <tag>算法设计与分析</tag>
+         
+        <tag>课堂笔记</tag>
+         
+         
+           
+             
+              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/09/12/%E4%BD%BF%E7%94%A8Apriori%E8%BF%9B%E8%A1%8C%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2017-09-17T07:07:38.884Z</lastmod>
+    <data>
+        <display>
+        <title>使用Apriori进行关联分析</title>
+        <pubTime>2017-09-12T12:13:47.000Z</pubTime>
+        
+        <tag>Apriori</tag>
+         
+        <tag>关联分析</tag>
+         
+         
+           
+             
+              <breadCrumb title="关联分析" url="xtf615.com/categories/%E5%85%B3%E8%81%94%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/08/17/cnn-written/</loc>
     <lastmod>2017-08-22T13:47:00.000Z</lastmod>
     <data>
@@ -59,9 +145,9 @@
         <title>神经网络(系列2)</title>
         <pubTime>2017-02-17T08:28:37.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -83,9 +169,9 @@
         <title>神经网络(系列1)</title>
         <pubTime>2017-02-13T10:23:23.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -229,9 +315,9 @@
         <title>SVM支持向量机</title>
         <pubTime>2017-03-28T00:26:31.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>支持向量机</tag>
          
@@ -261,13 +347,13 @@
         
         <tag>大数据</tag>
          
+        <tag>分布式</tag>
+         
         <tag>redis</tag>
          
         <tag>ActiveMQ</tag>
          
         <tag>车联网</tag>
-         
-        <tag>分布式</tag>
          
          
            
@@ -511,9 +597,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -537,9 +623,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -563,9 +649,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARMA</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>ARMA</tag>
          
          
            
@@ -639,9 +725,9 @@
         <title>机器学习概念</title>
         <pubTime>2017-01-18T01:25:34.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>概念</tag>
          
@@ -687,11 +773,11 @@
         <title>redis分布式环境搭建教程</title>
         <pubTime>2016-12-29T07:56:43.000Z</pubTime>
         
-        <tag>redis</tag>
-         
         <tag>分布式</tag>
          
         <tag>环境</tag>
+         
+        <tag>redis</tag>
          
         <tag>缓存</tag>
          
@@ -715,11 +801,11 @@
         <title>spark分布式环境搭建教程</title>
         <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
+        <tag>spark</tag>
+         
         <tag>大数据</tag>
          
         <tag>分布式</tag>
-         
-        <tag>spark</tag>
          
         <tag>内存</tag>
          
