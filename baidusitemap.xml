@@ -4,6 +4,38 @@
 
     
   <url>
+    <loc>xtf615.com/2017/09/30/Learning-Theory-2/</loc>
+    <lastmod>2017-09-30T09:11:21.630Z</lastmod>
+    <data>
+        <display>
+        <title>Learning Theory(2)</title>
+        <pubTime>2017-09-30T08:49:06.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>正则化</tag>
+         
+        <tag>特征选择</tag>
+         
+        <tag>贝叶斯估计</tag>
+         
+        <tag>概率论</tag>
+         
+        <tag>极大似然估计</tag>
+         
+        <tag>最大后验估计</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/09/24/Week-2-For-Leetcode/</loc>
     <lastmod>2017-09-24T13:27:05.993Z</lastmod>
     <data>
@@ -167,9 +199,9 @@
         <title>神经网络(系列2)</title>
         <pubTime>2017-02-17T08:28:37.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -191,9 +223,9 @@
         <title>神经网络(系列1)</title>
         <pubTime>2017-02-13T10:23:23.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -337,9 +369,9 @@
         <title>SVM支持向量机</title>
         <pubTime>2017-03-28T00:26:31.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>支持向量机</tag>
          
@@ -395,9 +427,9 @@
         <title>基于股评的情感分析和股市投资策略研究</title>
         <pubTime>2017-05-14T13:26:39.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>时间序列</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>金融</tag>
          
@@ -460,38 +492,6 @@
         <tag>误差分析</tag>
          
         <tag>销蚀分析</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/03/30/Learning-Theory-2/</loc>
-    <lastmod>2017-03-31T07:19:33.634Z</lastmod>
-    <data>
-        <display>
-        <title>Learning Theory(2)</title>
-        <pubTime>2017-03-30T03:44:06.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>正则化</tag>
-         
-        <tag>特征选择</tag>
-         
-        <tag>贝叶斯估计</tag>
-         
-        <tag>概率论</tag>
-         
-        <tag>极大似然估计</tag>
-         
-        <tag>最大后验估计</tag>
          
          
            
@@ -619,9 +619,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -645,9 +645,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARIMA</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>ARIMA</tag>
          
          
            
@@ -671,9 +671,9 @@
          
         <tag>时间序列</tag>
          
-        <tag>ARMA</tag>
-         
         <tag>ARIMA</tag>
+         
+        <tag>ARMA</tag>
          
          
            
@@ -747,9 +747,9 @@
         <title>机器学习概念</title>
         <pubTime>2017-01-18T01:25:34.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>概念</tag>
          

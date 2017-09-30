@@ -90,10 +90,10 @@
 <meta name="description" content="本部分将继续讨论学习理论的相关知识。学习理论内容包括：模型/特征选择(model/feature selection)、贝叶斯统计和正则化(Bayesian statistics and Regularization)。本文重点在于贝叶斯统计和正则化。将重点理解这句话，从贝叶斯估计的角度来看,正则化项对应于模型的先验概率。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Learning Theory(2)">
-<meta property="og:url" content="xtf615.com/2017/03/30/Learning-Theory-2/index.html">
+<meta property="og:url" content="xtf615.com/2017/09/30/Learning-Theory-2/index.html">
 <meta property="og:site_name" content="蘑菇先生学习记">
 <meta property="og:description" content="本部分将继续讨论学习理论的相关知识。学习理论内容包括：模型/特征选择(model/feature selection)、贝叶斯统计和正则化(Bayesian statistics and Regularization)。本文重点在于贝叶斯统计和正则化。将重点理解这句话，从贝叶斯估计的角度来看,正则化项对应于模型的先验概率。">
-<meta property="og:updated_time" content="2017-03-31T07:19:33.634Z">
+<meta property="og:updated_time" content="2017-09-30T09:11:21.630Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Learning Theory(2)">
 <meta name="twitter:description" content="本部分将继续讨论学习理论的相关知识。学习理论内容包括：模型/特征选择(model/feature selection)、贝叶斯统计和正则化(Bayesian statistics and Regularization)。本文重点在于贝叶斯统计和正则化。将重点理解这句话，从贝叶斯估计的角度来看,正则化项对应于模型的先验概率。">
@@ -124,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="xtf615.com/2017/03/30/Learning-Theory-2/"/>
+  <link rel="canonical" href="xtf615.com/2017/09/30/Learning-Theory-2/"/>
 
 
 
@@ -293,7 +293,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/03/30/Learning-Theory-2/">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/09/30/Learning-Theory-2/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="xuetf">
@@ -332,8 +332,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-30T11:44:06+08:00">
-                2017-03-30
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-30T16:49:06+08:00">
+                2017-09-30
               </time>
             
 
@@ -413,7 +413,7 @@
 <hr>
 <p>　　以上等式都是基于训练集\(S\)的，我们可以暂且忽略S来理解。<br>　　<strong>第一个等式理解</strong>：联合概率密度和边缘概率密度关系。更一般的即：针对连续型随机变量\((X,Y)\),设它的联合概率密度为\(f(x,y)\)，则：<br>$$f_X(x)=\int_{ - \infty }^{ + \infty } f(x,y)dy$$<br>　　上式称为随机变量\((X,Y)\)关于X的边缘概率密度。同理可以求Y的边缘概率密度。我们将\(\theta\)替换y就可以得到，\(p(x)=\int p(x,\theta) d\theta\)。<br>　　<strong>第二个等式理解</strong>：条件概率和联合概率关系，即：<br>$$p(x|y)=\frac{p(x,y)}{p(y)}$$<br>　　同样，可以将\(\theta\)替换y，并整理就可以得到，\(p(x,\theta)=p(x|\theta)p(\theta)\)。<br>　　对每个式子加上\(|S\)即可得到上述公式，注意\(p(x|\theta,S)\)就是指在\(\theta和S\)条件下,相当于\(p(x|\theta)\)和\(p(x|S)\),也即\(p(x|(\theta,S))\)。</p>
 <hr>
-<p>　　上面式子中，\(x\)是测试样本，\(S\)是训练集。\(x\)和\(S\)的选取是独立进行的，因此，\(p(x|θ,S)\)可以写成\(p(x|θ)\)。所以，贝叶斯估计的核心问题就是下面这个公式：<br>$$p(x|S)=\int p(x|\theta)p(\theta|S)d\theta　　　　　(2)$$<br>　　下面这句话一定要理解：这里<strong>\(p(x|θ)\)是\(θ\)关于测试样本\(x\)这一个点的似然估计</strong>，而<strong>\(p(θ|S)\)则是\(θ\)在已有样本集合上的后验概率</strong>。这就是为什么本文一开始并没有直接讲贝叶斯估计，而是先说明极大似然估计和最大后验估计的原因。其中，\(p(x|θ)\)和极大似然估计中的似然函数\(p(x;θ)\)其实是一样的，而后验概率\(p(θ|S)\)为：<br>$$p(\theta|S)=\frac{p(S|\theta)p(\theta)}{p(S)}=\frac{p(S|\theta)p(\theta)}{\int p(S|\theta)p(\theta)d\theta}　　　(3)\\\\<br>p(S|\theta)=\prod_{k=1}^m p(x^{(k)}|\theta) \\\\<br>其中，p(S|θ)和极大似然估计中的p(S;θ)一样，\\\\<br>同理，p(x^{(k)}|\theta)和极大似然估计中的p(x^{(k)};\theta)是一样的。\\\\<br>不同点在于，关于\theta是未知的固定值还是随机变量的区别。<br>$$<br>　　在上述贝叶斯公式里，实际上后验概率也是条件概率的一种。条件概率：在某条件下事件发生的概率。后验概率：已知原分布下,在实际发生某事件时,原先某情况的可能性。二者关联我认为是，后验概率里的”原分布”相当于条件概率里的”某条件”的一种情况。<br>　　因此贝叶斯公式的分子，相当于条件概率里的\(P(S,\theta)\)联合概率，而分母是先通过条件概率\(P(S|\theta)p(\theta)\)得到联合概率\(P(S,\theta)\),然后通过联合概率求得边缘概率\(p(S)\)。<br>　　具体的，给定一个训练集\(S={\{(x^{(i)},y^{(i)})\}}_{i=1}^m\)，参数\(\theta\)的后验概率分布如下：<br>$$p(\theta|S)=\frac{p(S|\theta)p(\theta)}{p(S)}<br>=\frac{\left(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta)\right)p(\theta)}{\int_{\theta}\left(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta)p(\theta)\right)d\theta}　　 \\\\<br>其中，p(y^{(i)}|x^{(i)},\theta)=p(y^{(i)}|(x^{(i)},\theta)),即在x^{(i)},\theta已知情况下,样本类别为y^{(i)}的概率。<br>$$　<br>　　注意到前面似然估计中我们用的是，\(p(y^{(i)}|x^{(i)};\theta)\)的x和与\(\theta\)以分号隔开，表示\(\theta\)是一个具体的未知值。上述贝叶斯估计用的是\(p(y^{(i)}|x^{(i)},\theta)\)的x和\(\theta\)之间以逗号隔开，表示\(\theta\)是随机变量。<br>　　公式2中的\(p(y^{(i)}|x^{(i)},\theta)\)形式来源于所选模型，比如使用贝叶斯Logistic回归模型(bayesian logistic model,BLR),那么有：<br>$$p(y^{(i)}|x^{(i)},\theta)=h_\theta(x^{(i)})^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}}\\\\<br>其中,h_\theta(x^{(i)})=\frac{1}{1+exp(-\theta^Tx^{(i)})}$$<br>　　在对新样本进行预测时，根据上述得到的公式(2)，可以使用如下公式计算后验概率：<br>$$p(y|x,S)=\int_{\theta} p(y|x,\theta)p(\theta|S)d\theta$$<br>　　上式中的\(p(\theta|S)\)后验概率使用贝叶斯公式(3)计算。<br>　　如果预测的是在给定x情况下y的值，则使用下列公式：<br>$$E[y|x,S]=\int_y yp(y|x,S)dy$$</p>
+<p>　　上面式子中，\(x\)是测试样本，\(S\)是训练集。\(x\)和\(S\)的选取是独立进行的，因此，\(p(x|θ,S)\)可以写成\(p(x|θ)\)。所以，贝叶斯估计的核心问题就是下面这个公式：<br>$$p(x|S)=\int p(x|\theta)p(\theta|S)d\theta　　　　　(2)$$<br>　　下面这句话一定要理解：这里<strong>\(p(x|θ)\)是\(θ\)关于测试样本\(x\)这一个点的似然估计</strong>，而<strong>\(p(θ|S)\)则是\(θ\)在已有样本集合上的后验概率</strong>。<br>　　上面这个式子就是贝叶斯估计最核心的公式，它把<strong>类条件概率密度\(p(x|S)\)</strong> （这里一定要理解为什么是类条件概率密度，其实这个的准确写法可以是\(p(x|S_i)\),或者 \(p(x|w_i,S_i)\)，具体原因参见本文前面关于极大似然估计的部分）和未知参数向量\(θ\)的<strong>后验概率密度</strong>\(p(θ|S)\)联系在了一起。如果后验概率密度\(p(θ|S)\)在某一个值\(\hat{θ}\)附近形成显著的尖峰，那么就有\(p(x|S)≈p(x|\hat{θ})\)，就是说，可以用估计值\(\hat{θ}\)近似代替真实值所得的结果。<br>　　因此，贝叶斯估计实际上解决的根本问题不是去估计参数(\(P(\theta|S)\)),而是求新的测试样本可能出现的概率(\(P(x|S)\))，也就是样本的类条件概率密度函数的值，或者说是要学习到类条件概率密度函数。只不过我们需要利用到后验概率密度\(P(\theta|S)\)来求类条件概率\(P(x|S)\)，并且会在后验概率密度\(p(θ|S)\)形成尖峰处(n不断增大，\(\sigma\)越来越小，即估计的不确定性不断降低)，近似取得该类条件概率\(P(x|S)\)的估计值。<br>　　这也是为什么本文一开始并没有直接讲贝叶斯估计，而是先说明极大似然估计和最大后验估计的原因。其中，\(p(x|θ)\)和极大似然估计中的似然函数\(p(x;θ)\)其实是一样的，而后验概率\(p(θ|S)\)为：<br>$$p(\theta|S)=\frac{p(S|\theta)p(\theta)}{p(S)}=\frac{p(S|\theta)p(\theta)}{\int p(S|\theta)p(\theta)d\theta}　　　(3)\\\\<br>p(S|\theta)=\prod_{k=1}^m p(x^{(k)}|\theta) \\\\<br>其中，p(S|θ)和极大似然估计中的p(S;θ)一样，\\\\<br>同理，p(x^{(k)}|\theta)和极大似然估计中的p(x^{(k)};\theta)是一样的。\\\\<br>不同点在于，关于\theta是未知的固定值还是随机变量的区别。<br>$$<br>　　贝叶斯公式的分子，相当于条件概率里的\(P(S,\theta)\)联合概率，而分母是先通过条件概率\(P(S|\theta)p(\theta)\)得到联合概率\(P(S,\theta)\),然后通过联合概率求得边缘概率\(p(S)\)。<br>　　具体的，给定一个训练集\(S={\{(x^{(i)},y^{(i)})\}}_{i=1}^m\)，参数\(\theta\)的后验概率分布如下：<br>$$p(\theta|S)=\frac{p(S|\theta)p(\theta)}{p(S)}<br>=\frac{\left(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta)\right)p(\theta)}{\int_{\theta}\left(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta)p(\theta)\right)d\theta}　　 \\\\<br>其中，p(y^{(i)}|x^{(i)},\theta)=p(y^{(i)}|(x^{(i)},\theta)),即在x^{(i)},\theta已知情况下,样本类别为y^{(i)}的概率。<br>$$　<br>　　注意到前面似然估计中我们用的是，\(p(y^{(i)}|x^{(i)};\theta)\)的x和与\(\theta\)以分号隔开，表示\(\theta\)是一个具体的未知值。上述贝叶斯估计用的是\(p(y^{(i)}|x^{(i)},\theta)\)的x和\(\theta\)之间以逗号隔开，表示\(\theta\)是随机变量。<br>　　公式2中的\(p(y^{(i)}|x^{(i)},\theta)\)形式来源于所选模型，比如使用贝叶斯Logistic回归模型(bayesian logistic model,BLR),那么有：<br>$$p(y^{(i)}|x^{(i)},\theta)=h_\theta(x^{(i)})^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}}\\\\<br>其中,h_\theta(x^{(i)})=\frac{1}{1+exp(-\theta^Tx^{(i)})}$$<br>　　在对新样本进行预测时，根据上述得到的公式(2)，可以使用如下公式计算后验概率：<br>$$p(y|x,S)=\int_{\theta} p(y|x,\theta)p(\theta|S)d\theta$$<br>　　上式中的\(p(\theta|S)\)后验概率使用贝叶斯公式(3)计算。<br>　　如果预测的是在给定x情况下y的值，则使用下列公式：<br>$$E[y|x,S]=\int_y yp(y|x,S)dy$$</p>
 <h2 id="最大后验估计和贝叶斯估计的联系"><a href="#最大后验估计和贝叶斯估计的联系" class="headerlink" title="最大后验估计和贝叶斯估计的联系"></a>最大后验估计和贝叶斯估计的联系</h2><p>　　上述公式2称作全贝叶斯预测(fully Bayesian prediction)。可以看到，贝叶斯估计需要在在\(\theta\)上计算后验概率\(p(\theta|S)\)。不幸的是计算该后验分布非常困难，因为根据(3)，需要在\(\theta\)上求积分，即对所有的参数求积分，而\(\theta\)经常是高维度的。<br>　　因此实践中，经常对后验分布进行近似求解。一个通常的近似方法是对公式2中的后验分布中的\(\theta\)使用点估计来代替。即：<br>$$\hat{\theta}_{MAP}=arg\max_{\theta}p(\theta|S)=arg\max_{\theta}p(S|\theta)p(\theta)=arg\max_{\theta}(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta))p(\theta)$$<br>　　\(p(y^{(i)}|x^{(i)},\theta)\)是\(\theta\)在样本点\((x^{(i)},y^{(i)})\)的点估计，实际上该公式就是最大后验估计中的公式。即<strong>最大后验估计是贝叶斯估计的一种近似。</strong><br>　　 从以上可以看出，一方面，极大似然估计和最大后验概率都是参数的点估计。在频率学派中，参数固定了，预测值也就固定了。<strong>最大后验概率是贝叶斯学派的一种近似手段</strong>，因为完全贝叶斯估计不一定可行。</p>
 <h1 id="贝叶斯估计和正则化"><a href="#贝叶斯估计和正则化" class="headerlink" title="贝叶斯估计和正则化"></a>贝叶斯估计和正则化</h1><p>　　正则化，对于监督学习而言，我们有如下的目标函数：<br>$$\theta^{*}=arg \min_{\theta} \sum_{i} L(y^{(i)},f(x^{(i)};\theta))+\lambda \Omega(\theta)$$<br>　　其中，第一项\(L(y^{(i)},f(x^{(i)};\theta))\)衡量我们的模型对第\(i\)个样本的预测值\(f(x^{(i)};\theta)\)和真实标签\(y^{(i)}\)之间的误差。我们要最小化这一项，根据ERM，即训练误差最小化。但我们不仅要保证训练误差最小，我们更希望模型的泛化误差小，所以加上第二项，也就是对参数\(\theta\)的正则化函数\(\Omega(\theta)\)取约束我们的模型，使其尽量简单，即惩罚复杂的模型，约束要优化的参数。这个正则化函数就是我们常说的\(L_0,L_1,L_2\)范数。这是防止过拟合的重要手段。<br>　　上述方法我们经常使用极大似然估计来最优化。注意此时估计时，是<strong>需要加上正则化项</strong>才能防止过拟合的。<br>　　那么前面我们提到的贝叶斯估计，又是如何做到防止过拟合呢? 我们知道全贝叶斯估计很难计算，因此使用最大后验估计来近似。这里我们直接讨论最大后验估计。<strong>我们要从最大后验估计推导出上述目标函数的形式，即加了正则化项的极大似然估计。</strong><br>　　$$\hat{\theta}_{MAP}=arg\max_{\theta}p(\theta|S)=arg\max_{\theta}p(S|\theta)p(\theta)=arg\max_{\theta}(\prod_{i=1}^m p(y^{(i)}|x^{(i)},\theta))p(\theta)$$<br>　　　当\(\theta\)的先验概率分布满足均值为0的正态分布的时候，对于\(\theta\)的每一个分量\(\theta_j\)，都有：<br>$$p(\theta_j)=\mathcal{N}(\theta_j|0,\sigma^2)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{\theta_j^2}{2\sigma^2}}$$<br>　　此时，根据\(\theta_i\)之间独立同分布，有，\(p(\theta) = \prod_{j=1}^n p(\theta_i)\)</p>
 <p>　　对最大后验估计两边取对数有：<br>$$log(\hat{\theta}_{MAP})=arg\max_{\theta} \sum_{i=1}^m \left(log \ p(y^{(i)}|x^{(i)},\theta)\right)+log \ p(\theta) \\\\<br>=arg\min_{\theta} -\sum_{i=1}^m \left(log \ p(y^{(i)}|x^{(i)},\theta)\right)-log \ p(\theta)$$<br>　<br>　　代入公式展开有：<br>$$\theta^{*}=log(\hat{\theta}_{MAP})=arg\min_{\theta} -\sum_{i=1}^m \left(log \ p(y^{(i)}|x^{(i)},\theta)\right)-log \ p(\theta)\\\\<br>=arg\min_{\theta} -\sum_{i=1}^m log \ p(y^{(i)}|x^{(i)},\theta)-\sum_{j=1}^n log \ p(\theta) \\\\<br>= arg\min_{\theta} -\sum_{i=1}^m log \ p(y^{(i)}|x^{(i)},\theta)+\frac{1}{2\sigma^2}\sum_{j=1}^n \theta_j^2+nlog(\sqrt{2\pi\sigma^2}) \\\\<br>= arg\min_{\theta} -\sum_{i=1}^m log \ p(y^{(i)}|x^{(i)},\theta)+\lambda\sum_{j=1}^n \theta_j^2 \\\\<br>(\lambda=\frac{1}{\sigma^2},常数可以去掉)<br>$$<br>　　对比下式：<br>$$\theta^{*}=arg \min_{\theta} \sum_{i} L(y^{(i)},f(x^{(i)};\theta))+\lambda \Omega(\theta)$$<br>　　可以看到，似然函数部分对应于损失函数(训练误差)，而先验概率部分对应于正则化项。此处是\(L_2\)正则化，等价于参数\(\theta\)的先验概率分布满足正态分布。<br>　　最终的公式就是岭回归计算公式。与上面最大似然估计推导出的最小二乘相比，最大后验估计就是在最大似然估计公式乘以高斯先验，这就理解了L2正则就是加入高斯先验知识。<br>　　拓展，当先验概率分布满足均值为0的拉普拉斯分布的时候，即:<br>$$p(\theta_j)=\mathcal{Lplace}(\theta_j|0,b)=\frac{1}{2b}e^{-\frac{|\theta_j|}{b}}$$<br>　　此时根据最大后验估计可以推导出：<br>$$\theta^{*}= arg\min_{\theta} -\sum_{i=1}^m log \ p(y^{(i)}|x^{(i)},\theta)+\lambda\sum_{j=1}^n |\theta_j| \\\\<br>(\lambda=\frac{1}{b})<br>$$<br>　　最终的公式就是Lasso计算公式。与上面最大似然估计推导出的最小二乘相比，最大后验估计就是在最大似然估计公式乘以拉普拉斯先验，这里就理解了L1正则就是加入拉普拉斯先验知识。<br>　　我们之前学习的线性回归的代价函数使用的最小二乘法，实际上是在最大似然法基础上加上残差的正态分部假设得出的。同样如果假设残差是拉普拉斯分布，得出的就是最小一乘。<br>　　总结一句，<strong>从贝叶斯估计的角度来看,正则化项对应于模型的先验概率。</strong></p>
@@ -483,8 +483,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/03/29/Learning-Theory/" rel="next" title="Learning Theory">
-                <i class="fa fa-chevron-left"></i> Learning Theory
+              <a href="/2017/09/24/Week-2-For-Leetcode/" rel="next" title="Week 2 For Leetcode">
+                <i class="fa fa-chevron-left"></i> Week 2 For Leetcode
               </a>
             
           </div>
@@ -492,10 +492,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/01/ml-advice/" rel="prev" title="Advice for applying Machine Learning">
-                Advice for applying Machine Learning <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
