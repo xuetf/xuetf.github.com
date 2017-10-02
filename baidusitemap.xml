@@ -4,6 +4,32 @@
 
     
   <url>
+    <loc>xtf615.com/2017/07/08/PCA/</loc>
+    <lastmod>2017-10-02T09:58:26.632Z</lastmod>
+    <data>
+        <display>
+        <title>主成分分析</title>
+        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>降维</tag>
+         
+        <tag>主成分分析</tag>
+         
+        <tag>空间映射</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/09/30/Learning-Theory-2/</loc>
     <lastmod>2017-09-30T09:11:21.630Z</lastmod>
     <data>
@@ -199,9 +225,9 @@
         <title>神经网络(系列2)</title>
         <pubTime>2017-02-17T08:28:37.000Z</pubTime>
         
-        <tag>人工智能</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>人工智能</tag>
          
         <tag>神经网络</tag>
          
@@ -223,9 +249,9 @@
         <title>神经网络(系列1)</title>
         <pubTime>2017-02-13T10:23:23.000Z</pubTime>
         
-        <tag>人工智能</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>人工智能</tag>
          
         <tag>神经网络</tag>
          
@@ -284,32 +310,6 @@
 
     
   <url>
-    <loc>xtf615.com/2017/07/08/PCA/</loc>
-    <lastmod>2017-07-12T01:51:28.525Z</lastmod>
-    <data>
-        <display>
-        <title>主成分分析</title>
-        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>空间映射</tag>
-         
-        <tag>降维</tag>
-         
-        <tag>主成分分析</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>xtf615.com/2017/07/10/Factor-Analysis/</loc>
     <lastmod>2017-07-11T09:13:28.649Z</lastmod>
     <data>
@@ -319,9 +319,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>无监督学习</tag>
-         
         <tag>空间映射</tag>
+         
+        <tag>无监督学习</tag>
          
          
            
@@ -369,9 +369,9 @@
         <title>SVM支持向量机</title>
         <pubTime>2017-03-28T00:26:31.000Z</pubTime>
         
-        <tag>人工智能</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>人工智能</tag>
          
         <tag>支持向量机</tag>
          
@@ -427,9 +427,9 @@
         <title>基于股评的情感分析和股市投资策略研究</title>
         <pubTime>2017-05-14T13:26:39.000Z</pubTime>
         
-        <tag>时间序列</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>时间序列</tag>
          
         <tag>金融</tag>
          
@@ -567,9 +567,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>逻辑回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
@@ -593,9 +593,9 @@
          
         <tag>梯度下降</tag>
          
-        <tag>线性回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>线性回归</tag>
          
          
            
@@ -747,9 +747,9 @@
         <title>机器学习概念</title>
         <pubTime>2017-01-18T01:25:34.000Z</pubTime>
         
-        <tag>人工智能</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>人工智能</tag>
          
         <tag>概念</tag>
          
