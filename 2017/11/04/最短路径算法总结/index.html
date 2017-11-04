@@ -1,0 +1,1034 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="基础算法,最短路径,图算法," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="归纳最短路径算法，包括单源最短路径：Dijkstra、Bellman Ford；所有结点对最短路径Johnson、Floyd Warshall。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最短路径算法总结">
+<meta property="og:url" content="xtf615.com/2017/11/04/最短路径算法总结/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="归纳最短路径算法，包括单源最短路径：Dijkstra、Bellman Ford；所有结点对最短路径Johnson、Floyd Warshall。">
+<meta property="og:updated_time" content="2017-11-04T15:31:34.540Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最短路径算法总结">
+<meta name="twitter:description" content="归纳最短路径算法，包括单源最短路径：Dijkstra、Bellman Ford；所有结点对最短路径Johnson、Floyd Warshall。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/11/04/最短路径算法总结/"/>
+
+
+
+
+
+  <title> 最短路径算法总结 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/11/04/最短路径算法总结/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                最短路径算法总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-04T19:38:54+08:00">
+                2017-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/基础算法/" itemprop="url" rel="index">
+                    <span itemprop="name">基础算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　归纳最短路径算法，包括单源最短路径：Dijkstra、Bellman Ford；所有结点对最短路径Johnson、Floyd Warshall。<br><a id="more"></a></p>
+<h1 id="图结构存储"><a href="#图结构存储" class="headerlink" title="图结构存储"></a>图结构存储</h1><p>　　邻接表或邻接矩阵。</p>
+<h2 id="邻接表"><a href="#邻接表" class="headerlink" title="邻接表"></a>邻接表</h2><h3 id="链表方式的邻接表"><a href="#链表方式的邻接表" class="headerlink" title="链表方式的邻接表"></a>链表方式的邻接表</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// common define</span></div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MAXV = <span class="number">100</span> + <span class="number">1</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> INF = <span class="number">1e5</span>;</div><div class="line"><span class="keyword">struct</span> E &#123;</div><div class="line">    <span class="keyword">int</span> w; <span class="comment">//权重</span></div><div class="line">    <span class="keyword">int</span> v; <span class="comment">//该边终点 </span></div><div class="line">    E* next;<span class="comment">//下一条边</span></div><div class="line">    E()&#123;&#125;</div><div class="line">    E(<span class="keyword">int</span> w, <span class="keyword">int</span> v): w(w), v(v), next(<span class="literal">NULL</span>)&#123;&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> V &#123;</div><div class="line">    E* head;</div><div class="line">    <span class="keyword">int</span> u;<span class="comment">//编号</span></div><div class="line">    <span class="keyword">int</span> d; <span class="comment">//上界</span></div><div class="line">    <span class="keyword">int</span> pi;<span class="comment">//前驱节点下标</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> Graph &#123;</div><div class="line">    V adj[MAXV]; <span class="comment">//顶点数组 </span></div><div class="line">    <span class="keyword">int</span> n; <span class="comment">//顶点个数</span></div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">    Graph()&#123;&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="function">E* <span class="title">createEdge</span><span class="params">(<span class="keyword">int</span> w, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> E(w, v); </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(Graph* G, <span class="keyword">int</span> u, E* e)</span> </span>&#123;</div><div class="line">    <span class="comment">//头插入法</span></div><div class="line">    <span class="comment">//e-&gt;next = G-&gt;adj[u].head;</span></div><div class="line">    <span class="comment">//G-&gt;adj[u].head = e;</span></div><div class="line"></div><div class="line">    <span class="comment">//尾插入法</span></div><div class="line">    E* p = G-&gt;adj[u].head;</div><div class="line">    <span class="keyword">if</span> (p == <span class="literal">NULL</span>) &#123; G-&gt;adj[u].head = e; <span class="keyword">return</span>; &#125;</div><div class="line">    <span class="keyword">while</span> (p-&gt;next) &#123;</div><div class="line">        p = p-&gt;next;</div><div class="line">    &#125;</div><div class="line">    p-&gt;next = e;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">(Graph* G)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; G-&gt;n &gt;&gt; G-&gt;m; </div><div class="line">    <span class="keyword">for</span> (u = <span class="number">1</span>; u &lt;= G-&gt;n; ++u) &#123;</div><div class="line">        G-&gt;adj[u].u = u;</div><div class="line">        G-&gt;adj[u].head = <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= G-&gt;m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w; </div><div class="line">        E* e = createEdge(w, v);</div><div class="line">        link(G, u, e);</div><div class="line">        <span class="comment">//无向图 e = createEdge(w, u);link(G, v, e);</span></div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">printGraphAdjList</span><span class="params">(Graph *G)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= G-&gt;n; ++u) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; G-&gt;adj[u].u;<span class="comment">//输出顶点头下标</span></div><div class="line">        E *p = G-&gt;adj[u].head;</div><div class="line">        <span class="keyword">while</span> (p) &#123;</div><div class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">"-----&gt;"</span> &lt;&lt; p-&gt;v;</div><div class="line">            p = p-&gt;next;</div><div class="line">        &#125;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Vector方式邻接表"><a href="#Vector方式邻接表" class="headerlink" title="Vector方式邻接表"></a>Vector方式邻接表</h3><p>　　还有一种不用链表来保存边，使用vector来保存边，平时写算法题时更方便。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> E &#123;</div><div class="line">    <span class="keyword">int</span> v;</div><div class="line">    <span class="keyword">int</span> w;</div><div class="line">    E(<span class="keyword">int</span> v, <span class="keyword">int</span> w): v(v), w(w)&#123;&#125;</div><div class="line">    E()&#123;&#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> Graph &#123;</div><div class="line">    <span class="built_in">vector</span>&lt;E&gt; adj[MAXV];</div><div class="line">    <span class="keyword">int</span> n;</div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">&#125;;</div><div class="line">Graph graph;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph.n &gt;&gt; graph.m;</div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph.adj[u].push_back(E(v, w));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="邻接矩阵"><a href="#邻接矩阵" class="headerlink" title="邻接矩阵"></a>邻接矩阵</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> GraphMatrix &#123;</div><div class="line">    <span class="keyword">int</span> A[MAXV][MAXV];</div><div class="line">    <span class="keyword">int</span> n;</div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">&#125;;</div><div class="line">GraphMatrix graph;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph.n &gt;&gt; graph.m;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i)&#123; </div><div class="line">        fill_n(graph.A[i], graph.n+<span class="number">1</span>, INF);<span class="comment">//从下标1开始存，记得graph.n+1</span></div><div class="line">        graph.A[i][i] = <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph.A[u][v] = w;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="单源最短路径"><a href="#单源最短路径" class="headerlink" title="单源最短路径"></a>单源最短路径</h1><h2 id="Dijkstra"><a href="#Dijkstra" class="headerlink" title="Dijkstra"></a>Dijkstra</h2><p>　　Dijkstra算法前提是，不存在负权重的边。图存储使用vector方式的邻接表存储。使用Pair数据结构存入Priority Queue，first保存路径上界，second存节点下标。每次从队列取出新的节点u，relax从u出发可达的所有节点v的路径上界,并加入Queue。注意，这个刚加入的节点V可能之前已经加入过Queue中了，记作v’, 相当于此处重复加入到队列中了，但是最短路径上界d的值不一样，后面会<strong>先取到</strong>后加入的该节点，记作v’’。“if (d[u] &lt; v_m.first) continue;”的作用就是当再取到v’(v’’更先出队)的时候，判断v’’是否已经出队了，如果d[u]&lt;距离上界，说明v’’出队且更新了最小上界，此时要忽略v’。<br>　　如果支持Decrease Key的队列的话，完全可以一开始就把所有节点插入到优先队列，后面relax的时候，直接Decrease队列里的节点的路径上界Key就可以了，不存在重复插入到队列的问题。<br>　　时间复杂度取决于优先队列实现的结构。Dijkstra总共操作n次插入，n次Extract_min,m次decrease key（不支持decrease_key的情况下，我们算法实际上是m次插入，m次extract_min）。如果是二叉堆实现的优先队列，一次插入花费O(logn), 一次Extract_min花费O(logn),一次decrease_key花费O(logn)，总共O(nlogn+nlogn+mlogn)，即O(nlogn+mlogn)，对于m&gt;n的情况，则为O(mlogn)。如果使用斐波那契堆，O(1)插入，O(logn)Extract_min，O(1)decrease key。则总时间为O(n+nlogn+m),对于m&gt;n，则为O(m+nlogn).<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt; P; <span class="comment">//first存d,second存下标</span></div><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; d(MAXV, INF);</div><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; parent(MAXV, <span class="number">0</span>);</div><div class="line"><span class="keyword">struct</span> cmp &#123;</div><div class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(P &amp;p1, P &amp;p2)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> p1.first &gt; p2.first;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">dijkstra</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    d[s] = <span class="number">0</span>;<span class="comment">//重要!!</span></div><div class="line">    priority_queue&lt;P, <span class="built_in">vector</span>&lt;P&gt;, cmp&gt; pq;</div><div class="line">    pq.push(P(<span class="number">0</span>, s));</div><div class="line">    <span class="keyword">while</span> (!pq.empty()) &#123;</div><div class="line">        P v_m = pq.top(); pq.pop();<span class="comment">//总共执行n次</span></div><div class="line">        <span class="keyword">int</span> u = v_m.second;</div><div class="line">        <span class="keyword">if</span> (d[u] &lt; v_m.first) <span class="keyword">continue</span>;<span class="comment">//d[u]小于上界,说明之前更新过了，重复放入的元素</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; graph.adj[u].size(); ++i) &#123;<span class="comment">//总共执行m次</span></div><div class="line">            E e = graph.adj[u][i];</div><div class="line">            <span class="keyword">if</span> (d[e.v] &gt; d[u] + e.w) &#123;</div><div class="line">                d[e.v] = d[u] + e.w;</div><div class="line">                parent[e.v] = u;</div><div class="line">                pq.push(P(d[e.v], e.v));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　Running:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph.n &gt;&gt; graph.m;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph.adj[u].push_back(E(v, w));</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_shortest_path</span><span class="params">(<span class="keyword">int</span> s, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (v == s) &#123; <span class="built_in">cout</span> &lt;&lt; s &lt;&lt; <span class="string">" "</span>; <span class="keyword">return</span>; &#125;</div><div class="line">    <span class="keyword">if</span> (parent[v] == <span class="number">0</span>) &#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"no path from "</span> &lt;&lt; s &lt;&lt; <span class="string">" to "</span> &lt;&lt; v &lt;&lt; <span class="built_in">endl</span>; &#125;</div><div class="line">    print_shortest_path(s, parent[v]);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; v &lt;&lt; <span class="string">" "</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_dijkstra</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i) &#123;</div><div class="line">        print_shortest_path(s, i);</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">",dist="</span> &lt;&lt; d[i] &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    createGraph();</div><div class="line">    dijkstra(<span class="number">1</span>);</div><div class="line">    print_dijkstra(<span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="Bellman-Ford"><a href="#Bellman-Ford" class="headerlink" title="Bellman Ford"></a>Bellman Ford</h2><p>　　Bellman Ford算法的前提是“不存在从源点S可达的负圈”。该算法可以用于检测是否存在源点可达的负圈。</p>
+<h3 id="算法导论中"><a href="#算法导论中" class="headerlink" title="算法导论中"></a>算法导论中</h3><p>　　存储结构同Dijkstra一致，采用vector方式的邻接链表。时间复杂度O(VE)。每次relax所有边，即遍历出发点u，然后relex从”u出发”的所有边，共relax |V|-1次。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bellman_ford</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    d[s] = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt;= graph.n - <span class="number">1</span>; ++k) &#123;<span class="comment">//经过k条边,实际上这样子不是每次只看经过小于等于k条边，时间复杂度O(VE)</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph.n; ++u) &#123; <span class="comment">//relax从不同顶点出发的所有边,这里面两个循环共调用|E|次。</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; graph.adj[u].size(); ++j) &#123;</div><div class="line">                E e = graph.adj[u][j];<span class="comment">//边</span></div><div class="line">                <span class="keyword">int</span> v = e.v;</div><div class="line">                <span class="keyword">if</span> (d[v] &gt; d[u] + e.w) &#123;</div><div class="line">                    d[v] = d[u] + e.w;</div><div class="line">                    parent[v] = u;</div><div class="line">                &#125;</div><div class="line">            &#125;<span class="comment">//end for</span></div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">    <span class="comment">//检查有没有从s可达的负圈,遍历所有边</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph.n; ++u) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; graph.adj[u].size(); ++j) &#123;</div><div class="line">            E e = graph.adj[u][j];<span class="comment">//边</span></div><div class="line">            <span class="keyword">if</span> (d[e.v] &gt; d[u] + e.w) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="算法课上"><a href="#算法课上" class="headerlink" title="算法课上"></a>算法课上</h3><p>　　动态规划。opt[v][k],代表经过至多k条边，从源点s到v的最短路径。k从1一直到|V|-1。此种需要考虑“到v”的所有边u，因此用邻接矩阵比较方便。(邻接矩阵第v列)。乍看时间复杂度为O(V^3), 实际上是O(VE)，内部两个循环遍历所有的边，总执行次数是O(E)。<br>$$\begin{equation} opt[v][k]= min \left\{ \begin{aligned} opt[v][k-1] \\\ min_{(u,v) \in E}\{OPT[u, k-1]+w(u, v)\} \end{aligned}  \right. \end{equation}$$</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> GraphMatrix &#123;</div><div class="line">    <span class="keyword">int</span> A[MAXV][MAXV];</div><div class="line">    <span class="keyword">int</span> n;</div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">&#125;;</div><div class="line">GraphMatrix graph_2;</div><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; parent(MAXV, <span class="number">0</span>);</div><div class="line"><span class="keyword">int</span> opt[MAXV][MAXV];</div><div class="line"><span class="comment">//得用邻接矩阵存比较方便，因为需要遍历到v节点的所有u.</span></div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bellman_ford_2</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph_2.n; ++v) &#123;</div><div class="line">        opt[v][<span class="number">0</span>] = INF;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//这个初始化在上面之后，保证opt[s][0] = 0;</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; graph_2.n; ++k) &#123;</div><div class="line">        opt[s][k] = <span class="number">0</span>;<span class="comment">//到达s，经过k条边</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt;= graph_2.n - <span class="number">1</span>; ++k) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph_2.n; ++v) &#123;</div><div class="line">            opt[v][k] = opt[v][k - <span class="number">1</span>];<span class="comment">//先赋值初始化！</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph_2.n; ++u) &#123;<span class="comment">//获取v的所有前缀,显然就是领接矩阵的第v列</span></div><div class="line">                <span class="keyword">int</span> w = graph_2.A[u][v];</div><div class="line">                <span class="keyword">if</span> (opt[u][k - <span class="number">1</span>] + w &lt; opt[v][k]) &#123;<span class="comment">//获取所有前缀到达的最小值</span></div><div class="line">                    opt[v][k] = opt[u][k - <span class="number">1</span>] + w;</div><div class="line">                    parent[v] = u;</div><div class="line">                &#125;</div><div class="line">            &#125;<span class="comment">//end for</span></div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">     <span class="comment">//检查有没有从s可达的负圈</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph_2.n; ++u) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph_2.n; ++v) &#123;</div><div class="line">            <span class="keyword">if</span> (opt[v][graph_2.n<span class="number">-1</span>] &gt; opt[u][graph_2.n<span class="number">-1</span>] + graph_2.A[u][v]) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_shortest_path</span><span class="params">(<span class="keyword">int</span> s, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (v == s) &#123; <span class="built_in">cout</span> &lt;&lt; s &lt;&lt; <span class="string">" "</span>; <span class="keyword">return</span>; &#125;</div><div class="line">    <span class="keyword">if</span> (parent[v] == <span class="number">0</span>) &#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"no path from "</span> &lt;&lt; s &lt;&lt; <span class="string">" to "</span> &lt;&lt; v &lt;&lt; <span class="built_in">endl</span>; <span class="keyword">return</span>; &#125;</div><div class="line">    print_shortest_path(s, parent[v]);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; v &lt;&lt; <span class="string">" "</span>;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_path</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph_2.n; ++v) &#123;</div><div class="line">        print_shortest_path(s, v);</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">",dist="</span> &lt;&lt; opt[v][graph_2.n<span class="number">-1</span>] &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph_2</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph_2.n &gt;&gt; graph_2.m;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph_2.n; ++i)&#123; </div><div class="line">        fill_n(graph_2.A[i], graph_2.n+<span class="number">1</span>, INF);</div><div class="line">        graph_2.A[i][i] = <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph_2.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph_2.A[u][v] = w;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    createGraph_2();</div><div class="line">    <span class="keyword">bool</span> no_negative_circle = bellman_ford_2(<span class="number">1</span>);</div><div class="line">    <span class="keyword">if</span> (no_negative_circle) &#123;</div><div class="line">        print_path(<span class="number">1</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"have negative circle"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="所有节点对最短路径"><a href="#所有节点对最短路径" class="headerlink" title="所有节点对最短路径"></a>所有节点对最短路径</h1><h2 id="Johnson"><a href="#Johnson" class="headerlink" title="Johnson"></a>Johnson</h2><p>　　基于Bellman Ford算法和Dijkstra。可以证明通过下面方式重新赋予权重能够不改变最短路径。<br>$$\hat{w}(u,v) = w(u,v)+h(u)-h(v), h函数将节点映射到实数上$$<br>　　考虑到Bellman Ford允许负权重边存在，不允许负圈存在。而Dijkstra不允许负权重边存在，如果能够通过上面的构造将负权重转成非负的权重。那么就可以使用Dijkstra算法。这样处理完，整体思路是先用Bellman Ford检查是否存在负圈，无负圈的情况下，再针对每个起始点，使用Dijkstra算法找到所有节点对最短路径。<br>　　具体构造，增加一个源点S’,S’到各个顶点的权重为0，且是单向的。因为单向的，S’的加入不可能导致新圈的产生，另外S’可达任意节点，则新图G’如果存在从S’可达的负圈，则原图一定存在某个负圈。可以运行Bellman Ford算法先检查从S’出发是否存在可达的负圈。<br>　　对于权重修改，任意顶点u的h映射函数定义为，从S’到u的最短路径长度，即h(u) = dist(S’,u)。这样构造新的权重，\(\hat{w}(u,v) = w(u,v)+dist(S’,u)-dist(S’,v) \geq 0\)，可以保证新权重大于等于0，因为如果小于等于0，则\(dist(S’,v) \geq w(u,v) + dist(S’, u)\),显然这和dist(S’,v)是从S’到v的最短路径矛盾。<br>因此对于增加完S’的新图，保证了权重为0，可以对每个节点使用Dijkstra算法。实际的距离\(dist(u,v)=\hat{dist}(u,v) - dist(S’,u) + dist(S’, v)\),\(\hat{dist}(u,v)\)为修改完权重后\(u-&gt;v\)的最短路径。<br>　　该算法对稀疏图很有效，即边的数量比较少的情况下。如果Dijkstra使用斐波那契队列实现优先队列，即时间复杂度为\(O(m+nlogn)\),则Johnson算法时间复杂度为\(O(mn+n^2logn)\)，显然对于稠密图m&gt;&gt;n,则m占主导，算法较慢。此时使用下述讨论的Floyd Warshall算法较好，该算法时间复杂度为\(O(V^3)\)，跟m无关，对于稠密图会很有优势。<br>　　完整代码如下:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;queue&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="comment">//节点编号1 ~ |V|</span></div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MAXV = <span class="number">100</span> + <span class="number">1</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> INF = <span class="number">1e5</span>;</div><div class="line"></div><div class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; dist(MAXV, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(MAXV, INF)); <span class="comment">// 距离矩阵，第一维是起始点,0编号存放S'到各个点的距离</span></div><div class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; parent(MAXV, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(MAXV, <span class="number">0</span>));<span class="comment">//前驱子图，第一维是起始点</span></div><div class="line"></div><div class="line"><span class="keyword">struct</span> E &#123;</div><div class="line">    <span class="keyword">int</span> v;</div><div class="line">    <span class="keyword">int</span> w;</div><div class="line">    E(<span class="keyword">int</span> v, <span class="keyword">int</span> w) : v(v), w(w) &#123;&#125;</div><div class="line">    E() &#123;&#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">typedef</span> pair&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt; P; <span class="comment">//first存d,second存下标</span></div><div class="line"></div><div class="line"><span class="keyword">struct</span> Graph &#123;</div><div class="line">    <span class="built_in">vector</span>&lt;E&gt; adj[MAXV];</div><div class="line">    <span class="keyword">int</span> n;</div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">&#125;;</div><div class="line">Graph graph;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">bellman_ford</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    dist[s][s] = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> n = graph.n + <span class="number">1</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt;= n - <span class="number">1</span>; ++k) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">0</span>; u &lt;= graph.n; ++u) &#123; <span class="comment">//u从0开始，0代表新添加的点</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; graph.adj[u].size(); ++j) &#123;</div><div class="line">                E e = graph.adj[u][j];</div><div class="line">                <span class="keyword">int</span> v = e.v;</div><div class="line">                <span class="keyword">if</span> (dist[s][v] &gt; dist[s][u] + e.w) &#123;</div><div class="line">                    dist[s][v] = dist[s][u] + e.w;</div><div class="line">                &#125;<span class="comment">//end if</span></div><div class="line">            &#125;<span class="comment">//end for</span></div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">     <span class="comment">//检查有没有从s可达的负圈</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">0</span>; u &lt;= graph.n; ++u) &#123; <span class="comment">// u从0开始</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; graph.adj[u].size(); ++j) &#123;</div><div class="line">            E e = graph.adj[u][j];<span class="comment">//边</span></div><div class="line">            <span class="keyword">if</span> (dist[s][e.v] &gt; dist[s][u] + e.w) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">            &#125;<span class="comment">//endif</span></div><div class="line">        &#125;<span class="comment">//end for</span></div><div class="line">    &#125;<span class="comment">//end for</span></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> cmp &#123;</div><div class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(P &amp;p1, P &amp;p2)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> p1.first &gt; p2.first;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">//O(nlogn + mlogn), m&gt;n时，O(mlogn); 斐波那契堆 O(nlogn + m)</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">dijkstra</span><span class="params">(<span class="keyword">int</span> s)</span> </span>&#123;</div><div class="line">    dist[s][s] = <span class="number">0</span>;</div><div class="line">    priority_queue&lt;P, <span class="built_in">vector</span>&lt;P&gt;, cmp&gt; pq;</div><div class="line">    pq.push(P(<span class="number">0</span>, s));</div><div class="line">    <span class="keyword">while</span> (!pq.empty()) &#123;</div><div class="line">        P v_m = pq.top(); pq.pop();<span class="comment">//共执行n次,logn </span></div><div class="line">        <span class="keyword">int</span> u = v_m.second;</div><div class="line">        <span class="keyword">if</span> (dist[s][u] &lt; v_m.first) <span class="keyword">continue</span>;<span class="comment">//d[u]小于上界,说明之前更新过了，重复放入的元素</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; graph.adj[u].size(); ++i) &#123;<span class="comment">//共执行m次</span></div><div class="line">            E e = graph.adj[u][i];</div><div class="line">            <span class="keyword">if</span> (dist[s][e.v] &gt; dist[s][u] + e.w) &#123;</div><div class="line">                dist[s][e.v] = dist[s][u] + e.w;</div><div class="line">                parent[s][e.v] = u;</div><div class="line">                pq.push(P(dist[s][e.v], e.v));<span class="comment">//logn</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//O(mnlogn+n*nlogn),m&gt;n时，O(mnlogn); 对于斐波那契堆为O(mn + n*nlogn)</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">johnson</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">//create G' add S' s' = 0</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i) &#123;</div><div class="line">        graph.adj[<span class="number">0</span>].push_back(E(i, <span class="number">0</span>));<span class="comment">//w = 0</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!bellman_ford(<span class="number">0</span>)) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"the input graph contains a negative-weight cycle"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//d(u)= shortest path from S to u,w'(u,v)=w(u,v)+dist(u)-dist(v) &gt;= 0</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph.n; ++u) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">0</span>; v &lt; graph.adj[u].size(); ++v) &#123;</div><div class="line">            graph.adj[u][v].w = graph.adj[u][v].w + dist[<span class="number">0</span>][u] - dist[<span class="number">0</span>][v];<span class="comment">//update w'</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> u = <span class="number">1</span>; u &lt;= graph.n; ++u) &#123;</div><div class="line">        dijkstra(u);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph.n; ++v) &#123;<span class="comment">//更新所有从u出发到所有顶点的距离</span></div><div class="line">            dist[u][v] = dist[u][v] - dist[<span class="number">0</span>][u] + dist[<span class="number">0</span>][v];<span class="comment">//d'(u,v)=d(u,v)+dist(u)-dist(v)</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph.n &gt;&gt; graph.m;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph.adj[u].push_back(E(v, w));</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_shortest_path</span><span class="params">(<span class="keyword">int</span> s, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (v == s) &#123; <span class="built_in">cout</span> &lt;&lt; s &lt;&lt; <span class="string">" "</span>; <span class="keyword">return</span>; &#125;</div><div class="line">    <span class="keyword">if</span> (parent[s][v] == <span class="number">0</span>) &#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"no path from "</span> &lt;&lt; s &lt;&lt; <span class="string">" to "</span> &lt;&lt; v &lt;&lt; <span class="built_in">endl</span>; <span class="keyword">return</span>; &#125;</div><div class="line">    print_shortest_path(s, parent[s][v]);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; v &lt;&lt; <span class="string">" "</span>;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_path</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> s = <span class="number">1</span>; s &lt;= graph.n; ++s) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"start point="</span> &lt;&lt; s &lt;&lt; <span class="string">":"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph.n; ++v) &#123;</div><div class="line">            print_shortest_path(s, v);</div><div class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">",dist="</span> &lt;&lt; dist[s][v] &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    createGraph();</div><div class="line">    johnson();</div><div class="line">    print_path();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="Floyd-Warshall"><a href="#Floyd-Warshall" class="headerlink" title="Floyd Warshall"></a>Floyd Warshall</h2><p>　　动态规划算法。整体思想是考察i-&gt;j最短路径，对于中间节点1~k，k是最大下标，考察i-&gt;j中间是否会经过该节点k。如果不经过k，则最短路径可能经过中间节点1~k-1。如果经过k，则原问题化成两个子问题，i-&gt;k,k-&gt;j。<br>$$\begin{equation} d_{ij}^{(k)}=  \left\{ \begin{aligned} w_{ij}, k=0 \\\ min(d_{ij}^{(k-1)}, d_{ik}^{(k-1)} + d_{kj}^{(k-1)}),k&gt;0  \end{aligned} \right. \end{equation}$$<br>　　该算法时间复杂度为\(O(V^3)\)，对于稠密图很有用。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="comment">//节点编号1 ~ |V|</span></div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MAXV = <span class="number">100</span> + <span class="number">1</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> INF = <span class="number">1e5</span>;</div><div class="line"></div><div class="line"><span class="keyword">struct</span> Graph &#123;</div><div class="line">    <span class="keyword">int</span> A[MAXV][MAXV];</div><div class="line">    <span class="keyword">int</span> n;</div><div class="line">    <span class="keyword">int</span> m;</div><div class="line">&#125;;</div><div class="line">Graph graph;</div><div class="line"></div><div class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; dist(MAXV, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(MAXV, INF)); <span class="comment">// 距离矩阵，第一维是起始点,0编号存放S'到各个点的距离</span></div><div class="line"><span class="built_in">vector</span>&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; parent(MAXV, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;(MAXV, <span class="number">0</span>));<span class="comment">//前驱子图，第一维是起始点,初始化为0</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">floyd_warshall</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">//init</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i) &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt;= graph.n; ++j) &#123;</div><div class="line">            dist[i][j] = graph.A[i][j];</div><div class="line">        &#125;</div><div class="line">        dist[i][i] = <span class="number">0</span>;<span class="comment">//自己到自己距离为0，非常重要！！再赋值一次</span></div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt;= graph.n; ++k) <span class="comment">//k有n种选择</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i)</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt;= graph.n; ++j) &#123; <span class="comment">//考虑i-&gt;j,是否经过中间某个点k</span></div><div class="line">                <span class="keyword">if</span> (dist[i][j] &gt; dist[i][k] + dist[k][j]) &#123;</div><div class="line">                    dist[i][j] = dist[i][k] + dist[k][j];<span class="comment">//经过k更短</span></div><div class="line">                    parent[i][j] = k;<span class="comment">//i-&gt;j，经过k。记录中间节点。i-&gt;j: i-&gt;k,k-&gt;j. </span></div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">createGraph</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> u, v, k, w;</div><div class="line">    <span class="built_in">cin</span> &gt;&gt; graph.n &gt;&gt; graph.m;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= graph.n; ++i) &#123;</div><div class="line">        fill_n(graph.A[i], graph.n+<span class="number">1</span>, INF);<span class="comment">//记得初始化，重要！</span></div><div class="line">        graph.A[i][i] = <span class="number">0</span>;<span class="comment">//重要！</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (k = <span class="number">1</span>; k &lt;= graph.m; ++k) &#123;</div><div class="line">        <span class="built_in">cin</span> &gt;&gt; u &gt;&gt; v &gt;&gt; w;</div><div class="line">        graph.A[u][v] = w;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_shortest_path</span><span class="params">(<span class="keyword">int</span> s, <span class="keyword">int</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (parent[s][v] == <span class="number">0</span>) &#123; <span class="built_in">cout</span> &lt;&lt; v &lt;&lt; <span class="string">' '</span>; <span class="keyword">return</span>; &#125;<span class="comment">//s-&gt;v不需要经过任何中间点，则直接打印！</span></div><div class="line">    print_shortest_path(s, parent[s][v]);</div><div class="line">    print_shortest_path(parent[s][v], v);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_path</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> s = <span class="number">1</span>; s &lt;= graph.n; ++s) &#123;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"start point="</span> &lt;&lt; s &lt;&lt; <span class="string">":"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> v = <span class="number">1</span>; v &lt;= graph.n; ++v) &#123;</div><div class="line">            <span class="keyword">if</span> (dist[s][v] == INF) &#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"no path from "</span> &lt;&lt; s &lt;&lt; <span class="string">" to "</span> &lt;&lt; v &lt;&lt; <span class="built_in">endl</span>; <span class="keyword">continue</span>; &#125;</div><div class="line">            <span class="built_in">cout</span> &lt;&lt; s &lt;&lt; <span class="string">" "</span>;</div><div class="line">            print_shortest_path(s, v);</div><div class="line">            <span class="built_in">cout</span> &lt;&lt; <span class="string">",dist="</span> &lt;&lt; dist[s][v] &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    createGraph();</div><div class="line">    floyd_warshall();</div><div class="line">    print_path();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础算法/" rel="tag"># 基础算法</a>
+          
+            <a href="/tags/最短路径/" rel="tag"># 最短路径</a>
+          
+            <a href="/tags/图算法/" rel="tag"># 图算法</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/13/Week-4-For-Leetcode/" rel="next" title="Week-4-For-Leetcode">
+                <i class="fa fa-chevron-left"></i> Week-4-For-Leetcode
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#图结构存储"><span class="nav-number">1.</span> <span class="nav-text">图结构存储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#邻接表"><span class="nav-number">1.1.</span> <span class="nav-text">邻接表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#链表方式的邻接表"><span class="nav-number">1.1.1.</span> <span class="nav-text">链表方式的邻接表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector方式邻接表"><span class="nav-number">1.1.2.</span> <span class="nav-text">Vector方式邻接表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#邻接矩阵"><span class="nav-number">1.2.</span> <span class="nav-text">邻接矩阵</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单源最短路径"><span class="nav-number">2.</span> <span class="nav-text">单源最短路径</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Dijkstra"><span class="nav-number">2.1.</span> <span class="nav-text">Dijkstra</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bellman-Ford"><span class="nav-number">2.2.</span> <span class="nav-text">Bellman Ford</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法导论中"><span class="nav-number">2.2.1.</span> <span class="nav-text">算法导论中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算法课上"><span class="nav-number">2.2.2.</span> <span class="nav-text">算法课上</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#所有节点对最短路径"><span class="nav-number">3.</span> <span class="nav-text">所有节点对最短路径</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Johnson"><span class="nav-number">3.1.</span> <span class="nav-text">Johnson</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Floyd-Warshall"><span class="nav-number">3.2.</span> <span class="nav-text">Floyd Warshall</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script charset="utf-8" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

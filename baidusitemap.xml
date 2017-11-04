@@ -4,25 +4,67 @@
 
     
   <url>
-    <loc>xtf615.com/2017/07/08/PCA/</loc>
-    <lastmod>2017-10-02T09:58:26.632Z</lastmod>
+    <loc>xtf615.com/2017/10/13/Week-4-For-Leetcode/</loc>
+    <lastmod>2017-11-04T15:40:16.811Z</lastmod>
     <data>
         <display>
-        <title>主成分分析</title>
-        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
+        <title>Week-4-For-Leetcode</title>
+        <pubTime>2017-10-13T11:49:56.000Z</pubTime>
         
-        <tag>机器学习</tag>
+        <tag>基础算法</tag>
          
-        <tag>降维</tag>
-         
-        <tag>主成分分析</tag>
-         
-        <tag>空间映射</tag>
+        <tag>Leetcode</tag>
          
          
            
              
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+              <breadCrumb title="Leetcode" url="xtf615.com/categories/Leetcode/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/10/06/Week-3-For-Leetcode/</loc>
+    <lastmod>2017-11-04T15:33:13.720Z</lastmod>
+    <data>
+        <display>
+        <title>Week-3-For-Leetcode</title>
+        <pubTime>2017-10-06T01:48:14.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>Leetcode</tag>
+         
+         
+           
+             
+              <breadCrumb title="Leetcode" url="xtf615.com/categories/Leetcode/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/11/04/%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/</loc>
+    <lastmod>2017-11-04T15:31:34.540Z</lastmod>
+    <data>
+        <display>
+        <title>最短路径算法总结</title>
+        <pubTime>2017-11-04T11:38:54.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>最短路径</tag>
+         
+        <tag>图算法</tag>
+         
+         
+           
+             
+              <breadCrumb title="基础算法" url="xtf615.com/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/"/>
           
         </display>
     </data>
@@ -31,7 +73,7 @@
     
   <url>
     <loc>xtf615.com/2017/09/30/Learning-Theory-2/</loc>
-    <lastmod>2017-09-30T09:11:21.630Z</lastmod>
+    <lastmod>2017-10-27T11:40:01.866Z</lastmod>
     <data>
         <display>
         <title>Learning Theory(2)</title>
@@ -50,6 +92,80 @@
         <tag>极大似然估计</tag>
          
         <tag>最大后验估计</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/03/25/%E7%94%9F%E6%88%90%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2017-10-12T09:10:42.807Z</lastmod>
+    <data>
+        <display>
+        <title>生成算法</title>
+        <pubTime>2017-03-25T02:09:22.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>生成算法</tag>
+         
+        <tag>朴素贝叶斯</tag>
+         
+        <tag>文本挖掘</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/09/17/Week-1-For-Leetcode/</loc>
+    <lastmod>2017-10-06T03:32:53.374Z</lastmod>
+    <data>
+        <display>
+        <title>Leetcode (Week 1)</title>
+        <pubTime>2017-09-17T07:28:05.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>Leetcode</tag>
+         
+         
+           
+             
+              <breadCrumb title="Leetcode" url="xtf615.com/categories/Leetcode/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/07/08/PCA/</loc>
+    <lastmod>2017-10-02T09:58:26.632Z</lastmod>
+    <data>
+        <display>
+        <title>主成分分析</title>
+        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>空间映射</tag>
+         
+        <tag>降维</tag>
+         
+        <tag>主成分分析</tag>
          
          
            
@@ -97,28 +213,6 @@
            
              
               <breadCrumb title="学习笔记" url="xtf615.com/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/09/17/Week-1-For-Leetcode/</loc>
-    <lastmod>2017-09-17T12:25:10.728Z</lastmod>
-    <data>
-        <display>
-        <title>Leetcode (Week 1)</title>
-        <pubTime>2017-09-17T07:28:05.000Z</pubTime>
-        
-        <tag>基础算法</tag>
-         
-        <tag>Leetcode</tag>
-         
-         
-           
-             
-              <breadCrumb title="Leetcode" url="xtf615.com/categories/Leetcode/"/>
           
         </display>
     </data>
@@ -225,9 +319,9 @@
         <title>神经网络(系列2)</title>
         <pubTime>2017-02-17T08:28:37.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -249,9 +343,9 @@
         <title>神经网络(系列1)</title>
         <pubTime>2017-02-13T10:23:23.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>神经网络</tag>
          
@@ -319,9 +413,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>空间映射</tag>
-         
         <tag>无监督学习</tag>
+         
+        <tag>空间映射</tag>
          
          
            
@@ -369,9 +463,9 @@
         <title>SVM支持向量机</title>
         <pubTime>2017-03-28T00:26:31.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>支持向量机</tag>
          
@@ -427,13 +521,13 @@
         <title>基于股评的情感分析和股市投资策略研究</title>
         <pubTime>2017-05-14T13:26:39.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>时间序列</tag>
          
-        <tag>金融</tag>
+        <tag>机器学习</tag>
          
         <tag>情感分析</tag>
+         
+        <tag>金融</tag>
          
          
            
@@ -529,32 +623,6 @@
     </url>
 
     
-  <url>
-    <loc>xtf615.com/2017/03/25/%E7%94%9F%E6%88%90%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2017-03-27T15:54:15.135Z</lastmod>
-    <data>
-        <display>
-        <title>生成算法</title>
-        <pubTime>2017-03-25T02:09:22.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>生成算法</tag>
-         
-        <tag>朴素贝叶斯</tag>
-         
-        <tag>文本挖掘</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
     
     
   <url>
@@ -567,9 +635,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>逻辑回归</tag>
-         
         <tag>广义线性模型</tag>
+         
+        <tag>逻辑回归</tag>
          
          
            
@@ -593,9 +661,9 @@
          
         <tag>梯度下降</tag>
          
-        <tag>广义线性模型</tag>
-         
         <tag>线性回归</tag>
+         
+        <tag>广义线性模型</tag>
          
          
            
@@ -721,13 +789,13 @@
         
         <tag>机器学习</tag>
          
-        <tag>情感分析</tag>
-         
         <tag>自然语言处理</tag>
          
         <tag>分词</tag>
          
         <tag>NLTK</tag>
+         
+        <tag>情感分析</tag>
          
          
            
@@ -747,9 +815,9 @@
         <title>机器学习概念</title>
         <pubTime>2017-01-18T01:25:34.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
         <tag>人工智能</tag>
+         
+        <tag>机器学习</tag>
          
         <tag>概念</tag>
          
