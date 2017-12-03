@@ -52,7 +52,7 @@ $$X=\begin{bmatrix}|　\\ 　|　\\ ...　 \\ | \\\\　 x^{(1)} \\ x^{(2)}\\ ...
 　　使用拉格朗日方程求解该最大化问题，则：
 $$\ell=u^T \left(\frac{1}{m} \sum_{i=1}^m x^{(i)} {x^{(i)}}^T \right)u-\lambda(||u||_2-1)=u^T \Sigma u - \lambda(u^Tu-1)$$
 　　对u求导：
-$$\nabla_u \ell=\nabla_u(u^T (\Sigma)-\lambda(u^Tu-1))=\nabla_u u^T\Sigma u-\lambda \nabla_u u^T u \\\\
+$$\nabla_u \ell=\nabla_u(u^T \Sigma u -\lambda(u^Tu-1))=\nabla_u u^T\Sigma u-\lambda \nabla_u u^T u \\\\
 =\nabla_u tr(u^T\Sigma u)-\lambda \nabla_u tr(u^T u)=(\nabla_{u^T}tr(u^T \Sigma u))^T-\lambda(\nabla_{u^T}tr(u^T u))^T \\\\
 ={(\Sigma u)^T}^T-\lambda{u^T}^T=\Sigma u-\lambda u$$
 令倒数为0，可知u就是\\(\Sigma\\)特征向量。
