@@ -63,9 +63,9 @@ $$
 $$
 w_{ij}=w_{ji}= \begin{cases} 0& {x_i \notin KNN(x_j) \;and \;x_j \notin KNN(x_i)}\\ exp(-\frac{||x_i-x_j||_2^2}{2\sigma^2})& {x_i \in KNN(x_j)\; or\; x_j \in KNN(x_i}) \end{cases}
 $$
-　具体处理过程为，首先按正常$k$近邻得到邻接矩阵$W$，此时$w_{ij}$可能不等于$w_{ji}$（一者为0，另一者为高斯相似函数值）。令：
+　具体处理过程为，首先按正常$k$近邻得到邻接矩阵$W$，此时$w_{ij}$可能不等于$w_{ji}$（一者为0，另一者为高斯相似函数值。若相等则不变）。令：
 $$
-W := (W+W^T)
+W := (W \ | \  W^T)
 $$
 2)$Mutual\  KNN \ Graph$, $i,j$必须两个点都是彼此的邻近点，否则都赋值成0。
 $$
@@ -128,6 +128,7 @@ $$
   	\end{array}
   	\right]
   $$
+
 
 
 

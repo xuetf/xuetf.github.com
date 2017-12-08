@@ -16,4 +16,4 @@ categories: Paper Reading
 
 
 
-[1]: /paper/Spectral%20Clustering.html
+[1]: /paper/Spectral_Clustering.html
