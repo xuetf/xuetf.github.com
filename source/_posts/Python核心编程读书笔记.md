@@ -2,7 +2,7 @@
 title: Python核心编程读书笔记
 date: 2017-09-07 20:05:12
 tags: [Python]
-categories: 学习笔记
+categories: 语言学习
 ---
 　　本文是Python核心编程的读书笔记。
 <!--more-->

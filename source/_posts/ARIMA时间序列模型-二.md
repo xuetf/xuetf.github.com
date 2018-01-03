@@ -2,7 +2,7 @@
 title: ARIMA时间序列模型(二)
 date: 2017-03-07 13:49:28
 tags: [统计学,时间序列,人工智能,ARIMA]
-categories: 统计学
+categories: 时间序列分析
 ---
 　　前面我们介绍了时间序列模型的概念、数学基础等。本文将接着介绍时间序列模型的更多理论性质，包括一般线性过程(general linear process)，自回归模型AR(the autoregressive model),移动平均模型MA(the moving average)以及ARMA模型。
 

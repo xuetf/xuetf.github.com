@@ -1,7 +1,7 @@
 ---
 title: redis分布式环境搭建教程
 date: 2016-12-29 15:56:43
-categories: redis
+categories: 大数据
 tags: [redis, 缓存, 分布式, HA方案, 环境]
 ---
 # redis部署说明

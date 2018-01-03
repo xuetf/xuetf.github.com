@@ -1,8 +1,8 @@
 ---
-title: Week 2 For Leetcode
+title: Leetcode (Week 2)
 date: 2017-09-24 09:55:32
 tags: [基础算法,Leetcode]
-categories: Leetcode
+categories: 算法设计与分析
 ---
 　本文是Leetcode刷题计划第二周的总结。
 <!--more-->

@@ -2,7 +2,7 @@
 title: ARIMA时间序列模型(一)
 date: 2017-03-07 09:33:02
 tags: [统计学,时间序列,ARMA,ARIMA]
-categories: 统计学
+categories: 时间序列分析
 ---
 
 # 基本概念

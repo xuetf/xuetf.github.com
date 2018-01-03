@@ -2,7 +2,7 @@
 title: Week-3-For-Leetcode
 date: 2017-10-06 09:48:14
 tags: [基础算法,Leetcode]
-categories: Leetcode
+categories: 算法设计与分析
 ---
 　　Leetcode第三周总结。
 <!--more-->

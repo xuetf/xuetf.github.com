@@ -2,7 +2,7 @@
 title: Leetcode (Week 1)
 date: 2017-09-17 15:28:05
 tags: [基础算法,Leetcode]
-categories: Leetcode
+categories: 算法设计与分析
 ---
 　　本文是Leetcode刷题计划第一周的总结。另外，还包括了一些课堂上学习到的算法的练习，下面将围绕每一道题进行分析。
 <!--more-->

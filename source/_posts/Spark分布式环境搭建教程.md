@@ -2,7 +2,7 @@
 title: spark分布式环境搭建教程
 date: 2016-12-29 21:31:00
 tags: [spark,大数据,分布式,内存,环境]
-categories: spark
+categories: 大数据
 ---
 # 概述
   本文是对spark2.0.2分布式集群搭建的一个详细说明。旨在通过阅读该文章帮助开发人员快速搭建spark分布式集群。

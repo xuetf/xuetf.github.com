@@ -2,7 +2,7 @@
 title: hadoop分布式环境搭建教程
 date: 2016-12-29 18:53:29
 tags: [hadoop,大数据,分布式,环境]
-categories: hadoop
+categories: 大数据
 ---
 # 概述
 本文是搭建hadoop分布式集群的一个详细说明，旨在通过本文，快速入手hadoop

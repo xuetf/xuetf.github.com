@@ -2,7 +2,7 @@
 title: Python实现时间序列分析
 date: 2017-03-08 09:54:58
 tags: [统计学,时间序列,人工智能,ARIMA]
-categories: 统计学
+categories: 时间序列分析
 ---
 
 

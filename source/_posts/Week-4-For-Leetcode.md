@@ -2,7 +2,7 @@
 title: Week-4-For-Leetcode
 date: 2017-10-13 19:49:56
 tags: [基础算法,Leetcode]
-categories: Leetcode
+categories: 算法设计与分析
 ---
 　　Leetcode第四周总结, 还包括一些课堂作业。
 <!--more-->

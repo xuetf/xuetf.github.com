@@ -2,7 +2,7 @@
 title: windows下idea编程实现远程发布任务到Spark集群
 date: 2016-12-30 19:47:13
 tags: [spark,idea,scala]
-categories: spark
+categories: 大数据
 ---
 # 说明
 本文的目标是：在windows下，使用idea编写spark任务，并可直接右键运行提交至远程Linux Spark集群上，不需要打包后再拷贝至远程Linux服务器上，再使用命令运行。
