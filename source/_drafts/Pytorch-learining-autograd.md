@@ -3,6 +3,7 @@ title: Pytorch learining (1)
 date: 2018-01-04 14:58:11
 tags: [Pytorch,学习笔记]
 categories: 语言学习
+layout: false
 ---
 
 # Autograd Mechanics
