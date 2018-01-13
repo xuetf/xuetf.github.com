@@ -1,0 +1,33 @@
+backup：
+删除next中的.git文件夹
+git init
+git checkout -b backup
+git add .
+git commit -m 'backup'
+git remote add origin https://github.com/xuetf/xuetf.github.com.git
+git push origin backup
+
+migrate:
+git clone -b backup https://github.com/xuetf/xuetf.github.com.git
+npm install hexo-cli -g
+npm install
+npm install hexo-deployer-git
+
+替换node_modules/marked/lib/marked.js
+
+修改文件后：
+1）静态文件上传：
+hexo g
+hexo d
+2）源文件上传：
+git add
+git commit -m 'comccvment'
+git push origin backup
+
+
+
+
+
+
+若要删除远程某个备份分支，执行命令：
+git push origin :backup
