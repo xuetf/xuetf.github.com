@@ -1,4 +1,4 @@
-backup：
+ backup：
 删除next中的.git文件夹
 git init
 git checkout -b backup
