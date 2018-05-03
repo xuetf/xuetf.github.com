@@ -1,7 +1,7 @@
 ---
 title: AlphaGo Zero论文解析
 date: 2018-02-12 12:18:10
-tags: [深度学习,强化学习,人工智能]
+tags: [深度学习,强化学习,人工智能,Paper]
 categories: 深度学习
 comments: true
 ---
