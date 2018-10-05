@@ -2,7 +2,7 @@
 title: LDA主题模型
 date: 2018-08-13 21:03:05
 tags: [主题模型,机器学习,nlp,推荐系统]
-categories: 机器学习
+categories: 自然语言处理
 comments: true
 ---
 
