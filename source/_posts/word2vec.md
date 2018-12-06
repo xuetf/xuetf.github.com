@@ -39,7 +39,7 @@ CBOW最早是Mikolov等大牛在2013年提出的。CBOW要利用若干个上下�
 
 ![CBOW](/picture/machine-learning/CBOW1.png)
 
-#### input-hidden
+#### 输入层到隐藏层
 
 从输入层到隐藏层的连接权重可以使用矩阵$\mathbf {W}_{V \times N}$来表示：
 $$
@@ -57,9 +57,9 @@ $$
 $$
 $x$是某个单词的one-hot向量表示，且该单词在词典中的下标为$k$，即$x_k=1$, $x_{k^{\prime}}=0, \\ k^{\prime} \neq k$。因此只用到$W^T$的第$k$列，也即$\mathbf W$的第$k$行。因此，$\mathbf W$的第$k$行即为第$k$个单词的**输入词向量**，相当于直接将$\mathbf W$的第$k$行拷贝到隐藏层单元$\mathbf h$上。该输入词向量也是我们最终学习到的词向量（后面的输出词向量我们不需要）。
 
-在上述神经网络中，相当于输入层到输出层的激活函数为线性激活函数。另外，由于具有上述的性质，因此通常输入层到输出层不显示绘制出来，直接通过查表操作(如TensorFlow中embedding_lookup)拿出单词的词向量，然后传入到下一层，只不过这个词向量也需要通过反向传播来优化。
+在上述神经网络中，相当于输入层到隐藏层的激活函数为线性激活函数。另外，由于具有上述的性质，因此通常输入层到隐藏层不显示绘制出来，直接通过查表操作(如TensorFlow中embedding_lookup)拿出单词的词向量，然后传入到下一层，只不过这个词向量也需要通过反向传播来优化。
 
-#### hidden-output
+#### 隐藏层到输出层
 
 从隐藏层到输出层，同样有连接权重矩阵$\mathbf W^{\prime}_{N \times V}={w^{\prime}_{ij}}$来表示。注意，$\mathbf W$和$\mathbf W^{\prime}$不是转置的关系，是不同的两个矩阵。$\mathbf W^{\prime}$用于预测输出词向量。
 $$
@@ -71,7 +71,7 @@ w_{21}^{\prime} &w_{22}^{\prime}&...&w_{2V}^{\prime}\\
  w_{N1}^{\prime} &w_{N2}^{\prime}&...&w_{NV}^{\prime}
  \end{pmatrix}
 $$
-$\mathbf W^{\prime}$的每一**列**可以解释为相应单词的输出词向量，即：第一列为词典中第一个单词的输出词向量表示，第$k$列为词典中第$k$个词的输出词向量表示，记做$v^{\prime}_{w_k}$。
+$\mathbf W^{\prime}$的每一**列**可以解释为相应单词的**输出词向量**，即：第一列为词典中第一个单词的输出词向量表示，第$k$列为词典中第$k$个词的输出词向量表示，记做$v^{\prime}_{w_k}$。
 
 计算输出层每个单元$j$的**未激活值**，这个$j$就是基本定义中的输出单词(标签)在词典中的下标。
 $$
@@ -89,7 +89,9 @@ $y_j$是第$j$个输出神经元的激活值。
 $$
 p(w_j|w_I)=\frac{\exp({\mathbf v_{w_j}'}^T \mathbf v_{w_I})}{\sum_{j'=1}^V\exp({\mathbf v_{w_j}'}^T \mathbf v_{w_I})}   \tag{4}
 $$
-这个式子是优化难点，分母上需要计算**每个输出**单词的未激活值，计算复杂度太高。这也是后面优化技术出现的原因。
+
+我们的优化目标是，对于$j=O, p(w_j|w_I) \rightarrow 1$, 对于$j \neq O, p(w_j|w_I) \rightarrow 0$。
+但是这个式子是优化难点，分母上需要计算**每个输出**单词的未激活值，计算复杂度太高。这也是后面优化技术出现的原因。
 
 再强调一遍，对于某个单词$w$，$v_w$和$v^{\prime}_w$是单词的两种向量表示形式。其中$v_w$实际上是权重矩阵$\mathbf W$（input->hidden）的某一行向量，$v^{\prime}_w$则是权重矩阵$\mathbf W^{\prime}$（hidden->output）的某一列向量。前者称作输入向量，后者称作输出向量。
 
@@ -151,7 +153,7 @@ $$
   2）如果$y_j<t_j$（“underestimating”)，这种情况只有在$t_j=1$时才会发生，此时$w_j=w_O$，也就是预测$w_j$作为中心词的概率值过小了，这个输出词$w_j$有很大可能就是上下文词$w_I$的中心词，或者说这个中心词和上下文词差别很小。那么优化的结果是，将隐藏向量$h$的一部分加入$v^{\prime}_{w_O}$，使得$v^{\prime}_{w_O}$与$v_{w_I}$更接近。 
   3）如果$y_j$与$t_j$非常接近，则此时$e_j$非常接近于0，故更新参数基本上没什么变化。
 
-  上述远近是针对向量内积而言，也即再向量空间中两个点的距离。可以证明：
+  上述远近是针对向量内积而言，也即在向量空间中两个点的距离。可以证明：
   $$
   (v+\alpha h)^T \cdot h > v^T \cdot h \rightarrow \text{加上h的某比例分量，则和h更接近} \\
   (v-\alpha h)^T \cdot h < v^T \cdot h \rightarrow \text{减去h的某比例分量，则和h更远离} \\
@@ -165,7 +167,7 @@ $$
   $$
   \frac{\partial E}{\partial h_i} = \sum_{j}^V \frac{\partial E}{\partial u_j} \cdot \frac{\partial u_j}{\partial h_i}  = \sum_j e_j w_{ij}^{\prime} :=EH_i    \tag{12}
   $$
-  $\mathbf{EH}$是$N$维向量，$\mathbf{EH}=\mathbf W^{\prime}_{N\times V} \cdot \mathbf{e}_{V \times 1}$
+  $\mathbf{EH}$是$N$维向量，$\mathbf{EH}=\mathbf W^{\prime}_{N\times V} \cdot \mathbf{e}_{V \times 1}=\sum_{j=1}^{V} e_j \times \mathbf{v}_{j}^{\prime}$
 
 - 再求$E$对$\mathbf W$元素$w_{ki}$的导数， $h_i$和$w_{ki}, k=1,2…,V$权重相连。
   $$
@@ -282,7 +284,7 @@ $$
   $$
   \frac{\partial E}{\partial u_{c,j}}=y_{c,j}-t_{c,j} :=e_{c,j}   \tag{28}
   $$
-  定义$V$维向量，$\mathbf {EI}=\{EI_1, EI_2,…,EI_V\}$, 为不同上下文单词的总预测误差向量。每个分量$EI_{j}$代表词典中第$j$个单词，作为不同panel位置的上下文单词的预测误差和：
+  定义$V$维向量，$\mathbf {EI}=\\{EI_1, EI_2,…,EI_V\\}$, 为不同上下文单词的总预测误差向量。每个分量$EI_{j}$代表词典中第$j$个单词，作为不同panel位置的上下文单词的预测误差和：
   $$
   EI_j = \sum_{c=1}^C e_{c,j}  \tag{29}
   $$
@@ -327,7 +329,7 @@ $$
 
 显然，对于每一个训练样例都要对所有单词计算上述各值，其成本是昂贵的。特别是对于大型的词汇表，这种计算方式是不切实际的。因此为了解决这个问题，直观的方式是**限制必须要更新的训练样例的输出向量的数目**。一种有效的实现方式就是：hierarchical softmax（分层softmax），另一种实现通过负采样(negative sampling)的方式解决。
 
-实际上，这种复杂性主要原因是我们采用多分类建模的形式，共$V$个类。即认为要预测的单词是所有单词上多项式分布，那么肯定就要拟合所有单词的概率值。1种优化思路就是将多分类改成**多个二分类，同时要能够很好、很快的计算训练样本实例的似然值**，这种优化思路dui有的方法就是hierarchical softmax。另一种优化思路就是能不能每次训练1个样本实例的时候，**不全部优化所有单词的输出向量，而是有代表性的优化某些输出向量**，这种优化思路对应的方法就是negative sampling。
+实际上，这种复杂性主要原因是我们采用多分类建模的形式，共$V$个类。即认为要预测的单词是所有单词上多项式分布，那么肯定就要拟合所有单词的概率值。1种优化思路就是将多分类改成**多个二分类，同时要能够很好、很快的计算训练样本实例的似然值**，这种优化思路对应的方法就是hierarchical softmax。另一种优化思路就是能不能每次训练1个样本实例的时候，**不全部优化所有单词的输出向量，而是有代表性的优化某些输出向量**，这种优化思路对应的方法就是negative sampling。
 
 这两种方法都是通过**只优化【输出向量更新】**的计算过程来实现的。在我们的公式推导过程中，我们关心的有三个值：（1）$E$，新目标函数；（2）$\frac{\partial E}{\partial \mathbf v_{w_j}^{\prime}}$，输出向量的更新公式；（3）$\frac{\partial E}{\mathbf h}$，输入向量的更新公式。
 
@@ -542,7 +544,7 @@ $$
 ## 参考
 
 [word2vec Parameter Learning Explained](https://arxiv.org/abs/1411.2738)
-
+[Distributed Representations of Words and Phrases and their Compositionality](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf)
 
 
 
