@@ -370,8 +370,9 @@ $f_{u,j}-f_{u,i} + 1< 0$, 对于满足该式的损失为0，否则损失为$f_{u
 
 优化的时候，作者提出了一种采样的方法来估计$rank(u,i)$。即对每对$(u,i)$, 一直采样，直到有一个样本$j$不满足$f_{u,i}-f_{u,j}>1$， 记采样次数为$N$, $J$为所有物品的个数。则$rank(u,i) \approx \lfloor {\frac{J}{N}} \rfloor$。这个可以直观理解，采样次数$N$越小，说明很容易采到$j$,  即$i$的排名不是很高（$rank(u,i)$值大），因此对其进行惩罚，让模型关注该正样本$i$, 使得优化后该样本排名能高一些。
 
-
 ## 基于分解机的推荐算法
+
+基于分解机的推荐算法在工业界用的比较多，且该方法通常用于排序阶段训练排序模型。上述提到的多种多样的推荐算法通常会用于召回阶段进行多种多样的推荐，然后在排序阶段对召回结果进一步进行排序，并展示给用户。排序阶段通常会用到物品和用户各种各样的特征以及分类模型。分解机是其中一个很重要的模型之一。我个人理解，这里头的训练数据来源于每次推荐的结果以及最终收集的用户点击/购买/浏览/收藏等反馈行为，根据用户的反馈，可以对推荐的结果打标签，进而可以利用分类模型进行训练。排序模型的好处就在于能够综合不同模型的推荐结果，避免不同模型输出量纲不同等影响，也可以避免穷举计算所有物品和用户偏好匹配度的耗时过程（虽然这部分有很多先进的技术，如近似近邻搜索中的location-sensitive hashing([LSH](https://github.com/spotify/annoy)), 最大点积搜索[MIPS](http://wan.poly.edu/KDD2012/docs/p931.pdf)）。
 
 ### FM
 
@@ -389,6 +390,18 @@ y(\mathbf{x}) = w_0+ \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n \langle 
 $$
 这里的关键是每个特征都能学习到一个隐向量。这样$w_{ij}=⟨v_i,v_j⟩$不仅仅可以通过$x_i,x_j$进行学习，凡是和$x_i$相关联的特征$h$, 都对学习$x_i$的隐向量$v_i$有所帮助，同理和$x_j$关联的其他特征对学习$x_j$的隐向量$v_j$有所帮助。这样$w_{ij}=⟨v_i,v_j⟩$就有足够多的样本进行学习。
 
+乍看上述式子的时间复杂度为$O(n^2)$，$n$是特征的数量，但是重写上述方程，可以得到：
+$$
+\begin{aligned}
+\sum_{i=1}^{n-1}\sum_{j=i+1}^n(\boldsymbol{v}_i^T \boldsymbol{v}_j)x_ix_j 
+&= \frac{1}{2}\left(\sum_{i=1}^n\sum_{j=1}^n(\boldsymbol{v}_i^T \boldsymbol{v}_j)x_ix_j-\sum_{i=1}^n(\boldsymbol{v}_i^T \boldsymbol{v}_i)x_ix_i\right)\\
+&=\frac{1}{2}\left(\sum_{i=1}^n\sum_{j=1}^n\sum_{l=1}^kv_{il}v_{jl}x_ix_j-\sum_{i=1}^n\sum_{l=1}^k v_{il}^2x_i^2\right)\\\
+&=\frac{1}{2}\sum_{l=1}^k\left(\sum_{i=1}^n(v_{il}x_i)\sum_{j=1}^n(v_{jl}x_j)-\sum_{i=1}^nv_{il}^2x_i^2\right)\\
+&=\frac{1}{2}\sum_{l=1}^k\left(\left(\sum_{i=1}^n(v_{il}x_i)\right)^2-\sum_{i=1}^n (v_{il}x_i)^2\right)\\
+\end{aligned}
+$$
+可以看出上述的时间复杂度为$O(kn)$。
+
 另外，FM是一种比较灵活的模型，通过合适的特征变换方式，FM可以模拟二阶多项式核的SVM模型、MF模型、SVD++模型等，可以说单纯基于评分矩阵的矩阵分解推荐算法是FM模型的特例。
 
 例如，相比MF矩阵分解中的BiasSVD而言，我们把BiasSVD中每一项的rating分改写为$r_{ui} \sim \beta_u + \gamma_i + x_u^T y_i$，从公式(2)中可以看出，这相当于只有两类特征 $u$ 和 $i$ 的FM模型。对于FM而言，我们可以加任意多的特征，比如user的历史购买平均值，item的历史购买平均值等，但是MF只能局限在两类特征。SVD++与BiasSVD类似，在特征的扩展性上都不如FM。
@@ -399,7 +412,7 @@ FFM（Field-aware Factorization Machine）最初的概念来自Yu-Chin Juan（�
 
 FM中每个新特征学习到一个隐向量。而FFM中每个新特征会学习field数量个隐向量。假设样本的 n 个特征属于$ f$ 个field，那么FFM的二次项有 $nf$个隐向量。而在FM模型中，每一维特征的隐向量只有一个。FM可以看作FFM的特例，是把所有特征都归属到一个field时的FFM模型。根据FFM的field敏感特性，可以导出其模型方程。
 $$
-y(\mathbf{x}) = w_0 + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n \langle \mathbf{v}_{i, f_j}, \mathbf{v}_{j, f_i} \rangle x_i x_j 
+y(\mathbf{x}) = w_0 + \sum_{i=1}^n w_i x_i + \sum_{i=1}^n \sum_{j=i+1}^n \langle \mathbf{v}_{i, f_j}, \mathbf{v}_{j, f_i} \rangle x_i x_j
 $$
 也就是和不同field的特征计算参数$w_{ij}$时，使用不同的隐向量$v_{i,f_j}$。
 
@@ -409,19 +422,19 @@ $$
 
 ## 基于Metric Learning的推荐算法
 
-Metric Learning的好处在于学习到的度量符合三角不等式，这样可以传递未知的相似关系，即基于已知的相似关系，传播未知的相似关系。这部分的研究也是目前的推荐系统领域的热门。有时间细写。
+Metric Learning的好处在于学习到的度量符合三角不等式，这样可以传递未知的相似关系，即基于已知的相似关系，传播未知的相似关系。这部分的研究也是目前的推荐系统领域的热门，且大部分会借鉴知识图谱中Knowledge Graph Embeddings，引入Translation Space概念，解决Metric Learning中会将相似点都学习成同一个点的问题。有时间细写。
 
 - 17年WWW文章：[Collaborative Metric Learning](http://www.cs.cornell.edu/~ylongqi/paper/HsiehYCLBE17.pdf) (CML)非常有借鉴意义，融合了LMNN度量学习+BPR+WARP+MLP，开源代码优雅简洁。
-- 17年RecSys文章：[Translation-based Recommendation](https://arxiv.org/pdf/1707.02410.pdf) (TransRec)引入了Translation Space的概念，能够建模用户-物品，物品-物品，用户-物品-物品多种交互关系，同样很有借鉴意义。CIKM18的文章 “Recommendation Through Mixtures of Heterogeneous Item Relationships“在此基础上进行改进。
+- 17年RecSys文章：[Translation-based Recommendation](https://arxiv.org/pdf/1707.02410.pdf) (TransRec)引入了知识图谱中Translation Space的概念，能够建模用户-物品，物品-物品，用户-物品-物品多种交互关系，同样很有借鉴意义。CIKM18的文章 “Recommendation Through Mixtures of Heterogeneous Item Relationships“在此基础上进行改进。
 - 18年WWW文章: [Latent Relational Metric Learning via Memory-based Attention for Collaborative Ranking](http://delivery.acm.org/10.1145/3190000/3186154/p729-tay.pdf?ip=124.16.137.194&id=3186154&acc=OPEN&key=33E289E220520BFB%2EB04AF4E1D4A7D93E%2E4D4702B0C3E38B35%2E6D218144511F3437&__acm__=1544013587_091fd8f91eea3077b47bc0ce46250854) 在CML和TransRec基础上，添加Attention机制。
 
-## 基于Graph/Network的推荐算法
+## 基于Graph/Network Embedding的推荐算法
 
 目前很多工作把用户，物品交互数据表示成图结构或网络，然后使用基于图或网络的表示学习方法来学习节点或边的语义表达，再将学习到的节点或边的低维表示应用到各自任务中。具体而言，在网络中随机挑选节点，并进行随机游走，采集节点序列，将该节点序列类别word2vec中的语句，初始挑选的节点是target word, 随机游走到的节点是context word，使用SkipGram算法进行学习。最终学习到的节点低维稠密表达，可以用于计算物品之间的相似性，用户和物品之间的相似性等，并应用于推荐系统第一步的召回阶段。学习到的特征表示还可以进一步用于排序阶段，和各种side information一起，作为深度学习模型的输入，进一步学习一个排序模型。代表性的几个工作：
 
 - 14年KDD文章：[DeepWalk: Online Learning of Social Representations](http://www.perozzi.net/publications/14_kdd_deepwalk.pdf) ，应该是第一个利用NLP 中embedding技术学习网络节点地维表达的工作。
 
-- 15年WWW文章：[LINE: Large-scale Information Network Embedding]()，在14年KDD文章基础上，提出了节点之间的一阶相似性(First-order Proximity) 和二阶相似性(Second-order Proximity)，相当于拓宽了节点相似性的范围，不仅仅局限于相互邻接，并通过模型来建模这种多阶相似性。
+- 15年WWW文章：[LINE: Large-scale Information Network Embedding](http://www.www2015.it/documents/proceedings/proceedings/p1067.pdf)，在14年KDD文章基础上，提出了节点之间的一阶相似性(First-order Proximity) 和二阶相似性(Second-order Proximity)，相当于拓宽了节点相似性的范围，不仅仅局限于相互邻接，并通过模型来建模这种多阶相似性。
 
 - 16年KDD文章：[node2vec: Scalable Feature Learning for Networks](https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf)，在14年KDD文章上改进了随机游走策略，支持BFS、DFS、回溯等游走策略。是一种带偏置的随机游走。同样能够建模多阶相似性。
 
@@ -493,9 +506,9 @@ $f (·)$是多层感知网络，$\theta$是网络的参数。这个模型的核�
 
 如上图，左侧为宽度组件，使用单层感知器，直接和输出相连接。右侧为深度组件，使用多层感知器。
 
-wide learning 形式化为：$y=W_{wide}^T \{x, \phi(x)\} + b$, $\{x, \phi(x)\}$是concatenated起来的特征，其中$x$是原始特征，$\phi(x)$是手动精心设计的、变换后的特征，例如使用叉乘来提取特征间的关联。这个特征需要精心设计，取决于你希望模型记住哪些重要信息。deep learning形式化为：$a^{l+1} = W^T_{deep} a^{l} + b^{l}$.  二者结合起来，sigmoid激活后：
+wide learning 形式化为：$y=W_{wide}^T \\{x, \phi(x)\\} + b$, $\\{x, \phi(x)\\}$是concatenated起来的特征，其中$x$是原始特征，$\phi(x)$是手动精心设计的、变换后的特征，例如使用叉乘来提取特征间的关联。这个特征需要精心设计，取决于你希望模型记住哪些重要信息。deep learning形式化为：$a^{l+1} = W^T_{deep} a^{l} + b^{l}$.  二者结合起来，sigmoid激活后：
 $$
-P(\hat{r}_{ui}=1|x) = \sigma(W^T_{wide}\{x,\phi(x)\} + W^T_{deep}a^{(l_f)}+bias)
+P(\hat{r}_{ui}=1|x) = \sigma(W^T_{wide}\\{x,\phi(x)\\} + W^T_{deep}a^{(l_f)}+bias)
 $$
 上述模型针对的是0/1二值评分的情况。上述手工设计的特征在很大程度上影响模型的性能。一种改进办法是下面改进的端到端模型Deep Factorization Machine(DeepFM).
 
@@ -505,7 +518,7 @@ $$
 
 ![DeepFM](/picture/machine-learning/DeepFM.png)
 
-DeepFM不需要特征工程，它将Wide-Deep Learning中的Wide组件使用FM替换。DeepFM的输入是一个m-fields的数据，每条数据由$(u,i)$数据对组成，$u、i$分别指的是用户和商品特征。最终预测的结果是：
+DeepFM不需要特征工程，它将Wide-Deep Learning中的Wide组件使用FM替换。DeepFM的输入是一个m-fields的数据，每条数据由$(u,i)​$数据对组成，$u、i​$分别指的是用户和商品特征。最终预测的结果是：
 $$
 \hat{r}_{ui} = \sigma(y_{FM}(x) + y_{MLP}(x))
 $$

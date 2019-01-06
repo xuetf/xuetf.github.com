@@ -438,7 +438,10 @@ plot_embedding(X_tsne,
 ![practice][32]
 　　可以发现，在该数据集上，非线性变换的结果比线性变换的结果更理想。
 
-# 目标函数选择
+# 损失函数选择
+
+下面列出常用的一些**分类**损失函数。$y$的取值为1或-1。下图中，横轴是$yf(x)$，纵轴是损失值$L(y,f(x))=L(yf(x))$，分类损失是关于$yf(x)$的单调函数（而不是关于$f(x)$）。
+
 ```python
 # adapted from http://scikit-learn.org/stable/auto_examples/linear_model/plot_sgd_loss_functions.html
 def modified_huber_loss(y_true, y_pred):
@@ -466,19 +469,28 @@ plt.plot(xx, modified_huber_loss(xx, 1), color='darkorchid', lw=lw,
          linestyle='--', label="Modified Huber loss")
 plt.ylim((0, 8))
 plt.legend(loc="upper right")
-plt.xlabel(r"Decision function $f(x)$")
-plt.ylabel("$L(y, f(x))$")
+plt.xlabel(r"Decision function(multiplied by y) $y \cdot f(x)$")
+plt.ylabel("$L(y \cdot f(x))$")
 plt.show()
 ```
 ![practice][33]
 　　不同的代价函数有不同的优点：
-- 0-1 loss:在分类问题中使用。这是ERM用的代价函数，然而是非凸的，因此必须使用其他代价函数来近似替代。
-- hinge loss:在SVM中使用，体现最大间隔思想，不容易受离群点影响，有很好的鲁棒性，然后不能提供较好的概率解释。
-- log loss:在逻辑回归使用，能提供较好的概率解释，然而容易受离群点影响。
-- Exponential loss: 指数代价，在Boost中使用，容易受离群点影响，在AdaBoost中能够实现简单有效的算法。
-- perceptron loss:在感知机算法中使用。类似hinge loss，左移了一下。不同于hinge loss,percptron loss不对离超平面近的点进行惩罚。
-- squared hinge loss: 对hinge loss进行改进，平方损失。
-- modified huber loss: 对squared hinge loss进一步改进，是一种平滑损失，能够容忍离群点的影响。
+
+- 0-1 loss: $\frac{1}{2}(1-\text{sign}(yf(x)))$，在分类问题中使用。这是ERM用的代价函数，然而是非凸的，因此必须使用其他代价函pr来近似替代。
+
+- hinge loss: $\max(0, 1-yf(x))$ 在SVM中使用，体现最大间隔思想，不容易受离群点影响，有很好的鲁棒性，然而不能提供较好的概率解释，又称为L1-Loss。
+
+- log loss: $\log(1+\exp(-yf(x)))$ ，实际上就是Sigmoid函数取负对数。在逻辑回归(和二分类交叉熵损失实际上是等价的，只不过那里y取1或0，这里y取1或-1)使用，能提供较好的概率解释，然而容易受离群点影响；
+
+- Exponential loss: $\exp(-yf(x))$，指数代价，在Boost中使用，容易受离群点影响，在AdaBoost中能够实现简单有效的算法。
+
+- perceptron loss: $\max(0, -yf(x))$，在感知机算法中使用。类似hinge loss，左移了一下。不同于hinge loss, percptron loss不对离超平面近的点进行惩罚。
+
+- squared hinge loss: $\max(0, 1-yf(x))^2$，对hinge loss进行改进，又称为L2-Loss，可微分，处处可导，(因为(1,0)处左右两边都可导，且导数都为0)。
+
+- modified huber loss: $\max(0, 1-yf(x))^2,  \text{for} \\ yf(x)\geq -1;  -4 yf(x), \text{otherwise}$，对squared hinge loss进一步改进，是一种平滑损失，能够容忍离群点的影响(离群点损失的影响降低, 平方级损失变为线性的)
+
+  可以进一步参考：[机器学习中的常见问题——损失函数](https://blog.csdn.net/google19890102/article/details/50522945)
 
 
 # 参考
@@ -488,13 +500,13 @@ plt.show()
 
 [1]: /2017/04/01/ml-advice/
 [2]: https://see.stanford.edu/materials/aimlcs229/ML-advice.pdf
-[3]: /picture/machine-learning/practice-advice1.jpg 
-[4]: /picture/machine-learning/practice-advice2.png 
+[3]: /picture/machine-learning/practice-advice1.jpg
+[4]: /picture/machine-learning/practice-advice2.png
 [5]: /picture/machine-learning/practice-advice3.png
 [6]: /picture/machine-learning/machine-learning-method.png
 [7]: /2017/03/28/SVM支持向量机/#软间隔分类器
 [8]: /picture/machine-learning/practice-advice4.png
-[9]: /picture/machine-learning/advice1.jpg 
+[9]: /picture/machine-learning/advice1.jpg
 [10]: /picture/machine-learning/practice-advice5.png
 [11]: /picture/machine-learning/practice-advice6.png
 [12]: /picture/machine-learning/practice-advice7.png
