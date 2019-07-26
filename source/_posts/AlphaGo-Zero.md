@@ -2,7 +2,7 @@
 title: AlphaGo Zero论文解析
 date: 2018-02-12 12:18:10
 tags: [深度学习,强化学习,人工智能,Paper]
-categories: 深度学习
+categories: 强化学习
 comments: true
 ---
 
@@ -109,6 +109,7 @@ Q-learning还是什么？这几种训练方法又有何差异？需要研究下�
     $$
     \ell(\theta) = (z-v)^2-\pi^T log \textbf{p} + c||\theta||^2            \ \ \ \ \ \ \ \ \ \ \ \ \ \ (Equation \ 1)
     $$
+
 
 
 ​      上述描述的是连续训练的版本，即每次都使用最新轮次的神经网络进行自我对弈和产生训练数据，实际自我对弈和训练过程中，部分细节和上述不大一样：

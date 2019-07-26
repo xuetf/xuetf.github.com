@@ -2,7 +2,7 @@
 title: Alpha Go论文解析
 date: 2018-02-10 09:18:10
 tags: [深度学习,强化学习,人工智能,Paper]
-categories: [深度学习]
+categories: [强化学习]
 ---
 
 ## 摘要

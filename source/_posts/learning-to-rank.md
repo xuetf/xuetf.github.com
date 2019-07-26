@@ -542,6 +542,7 @@ $$
 
 
 
+
 2) 至于排序分布$p(\pi|\boldsymbol{s})$，作者举了上述LambdaLoss框架中，使用高斯分布作为排序分布时，等价于我们熟知的[SoftRank](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.469.3608&rep=rep1&type=pdf)方法，而使用Plackett-Luce作为排序分布时，等价于我们熟知的[ListNet](https://www.microsoft.com/en-us/research/publication/learning-to-rank-from-pairwise-approach-to-listwise-approach/?from=http%3A%2F%2Fresearch.microsoft.com%2Fapps%2Fpubs%2Fdefault.aspx%3Fid%3D70428)算法。
 
 使用EM算法优化上述损失：
@@ -615,7 +616,7 @@ $$
 $$
 \text{NDCG}_{\text{cost}}=\sum_{i=1}^n G_i - \sum_{i=1}^n \frac{G_i}{D_i} =\sum_{i=1}^n \frac{G_i}{D_i}(D_i-1)=\sum_{i=1}^n G_i(1-\frac{1}{D_i})
 $$
-其中，$G_i$是Normalized Gain，对于给定的文档集合，第一项是个常数；第二项其实就是NDCG（$\text{NDCG}=\sum_{i=1}^n \frac{G_i}{D_i}$），这么定义是因为下文推导方便。
+其中，$G_i=\frac{2^{y_i}-1}{max_\text{DCG}}$，对于给定的文档列表，$G_i$是个常数 (和排序无关，$G_i$公式中分子只和标签$y_i$有关, 分母是最优的DCG值，是个常数。所以可以直接加到损失函数中)；第二项其实就是NDCG（$D_i=log_2(1+i)$, $\text{NDCG}=\sum_{i=1}^n \frac{G_i}{D_i}$），这么定义是因为下文推导方便。
 
 因为：$D_i − 1 = \log_2 (1 + i) − 1 ≤ i − 1$，有：
 $$

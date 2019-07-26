@@ -2,7 +2,7 @@
 title: AlphaZero问题研究和算法设计与实现
 date: 2018-02-24 10:11:26
 tags: [深度学习,强化学习,人工智能]
-categories: [深度学习]
+categories: [强化学习]
 ---
 本文对$AlphaZero$论文中的几个问题进行研究，对$AlphaZero$算法进行设计，并使用$Pytorch$实现$AlphaZero$五子棋应用。
 <!--more-->
@@ -428,7 +428,7 @@ UML设计图如下，核心类包括如下几大类：
 代码参见我的github仓库：[AlphaZero Gobang](https://github.com/xuetf/AlphaZero_Gobang)
 
 其中一局人机对决参见：[人机对决](https://github.com/xuetf/AlphaZero_Gobang/blob/master/data/game.gif)
-![game](https://github.com/xuetf/AlphaZero_Gobang/blob/master/data/game.gif?raw=true)
+![game](https://github.com/xuetf/AlphaZero_Gobang/blob/master/pic/game.png?raw=true)
 
 
 
