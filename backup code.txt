@@ -13,8 +13,9 @@ npm install hexo-cli -g
 npm install
 npm install hexo-deployer-git
 
-替换node_modules/marked/lib/marked.js
-替换node_modules/hexo-generator-index/lib/generator.js
+替换node_modules/marked/lib/marked.js  # mathjax书写
+替换node_modules/hexo-generator-index/lib/generator.js  # 置顶功能
+替换themes/next/layout/partial/footer.swig   # mathjax的js引用
 
 修改文件后：
 1）静态文件上传：

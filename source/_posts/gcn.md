@@ -1,10 +1,10 @@
 ---
 title: Graph Convolutional Networks
 date: 2019-02-24 15:20:50
-tags: [推荐系统,Paper,机器学习,Graph Embedding,Convolution]
+tags: [推荐系统,Paper,机器学习,Graph Embedding,深度学习,Representation Learning]
 comments: true
 categories: 推荐系统
-top: 13
+top: 15
 ---
 
 Graph Convolutional Networks图卷积网络涉及到两个重要的概念，Graph和Convolution。传统的卷积主要应用于Euclidean Structure的数据上（排列很整齐、Grid形式的），如图像、语句等，主要是因为欧式结构数据能够保证卷积的性质，即平移不变性，而Non-Euclidean无法保证平移不变性，通俗理解就是在拓扑图中每个顶点的相邻顶点数目都可能不同，那么当然无法用一个同样尺寸的卷积核来进行卷积运算。为了能够将卷积推广到Graph等Non-Euclidean数据上，GCN应运而生。那么GCN是如何将卷积推广到Graph上的呢？
