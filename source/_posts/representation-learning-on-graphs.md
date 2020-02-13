@@ -336,7 +336,7 @@ ICLR 2018的文章，在GraphSAGE基础上，引入了self-attention机制对agg
 
 - 先对$i$和$j$的node feature分别做一个线性变换 (即multi-head attention的特例，1-head attention)，$\boldsymbol{W} \boldsymbol{h}_i$
 
-- 再把变换后的表示送到attention网络并进行softmax得到注意力值，$\alpha_{ij} = \text{softmax}(a(\boldsymbol{W} \boldsymbol{h}_i, \boldsymbol{W} \boldsymbol{h}_i))$，这个attention网络a就可以随便设计和尝试了。作者使用的是：
+- 再把变换后的表示送到attention网络并进行softmax得到注意力值，$\alpha_{ij} = \text{softmax}(\text{attention}(\boldsymbol{W} \boldsymbol{h}_i, \boldsymbol{W} \boldsymbol{h}_j))=\text{softmax}(e_{ij})$，这个attention网络就可以随便设计和尝试了。作者使用的是：
   $$
   e_{ij}=\text{LeakyReLU}(\boldsymbol{a}[\boldsymbol{W}\boldsymbol{h}_i ,\boldsymbol{W}\boldsymbol{h_j}])
   $$
