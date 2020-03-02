@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------
 
 # Put your favicon.ico into `hexo-site/source/` directory.
-favicon: /favicon.ico
+favicon: /picture/logo.ico
 
 # Set default keywords (Use a comma to separate)
 keywords: "蘑菇先生学习记"
