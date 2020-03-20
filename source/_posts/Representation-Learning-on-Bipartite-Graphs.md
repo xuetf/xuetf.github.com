@@ -1,5 +1,5 @@
 ---
-title: Representation Learning on Bipartite Graphs
+title: 推荐系统中二分图表示学习调研
 date: 2020-02-13 12:13:53
 tags: [Paper,Graph Embedding,GCN,推荐系统,深度学习,Representation Learning,二分图]
 comments: true
@@ -40,7 +40,7 @@ top: 17
 $$
 \mu_{j \rightarrow i, r}= \frac{1}{c_{ij}} W_r x_j^v \tag{1}
 $$
-其中，$c_{ij}$是归一化常数因子，如$|\mathcal{N}(u_i)|$或$\sqrt{|\mathcal{N}(u_i) \mathcal{N}(v_j)}$。$W_r$是 edge-type specific parameter matrix。$x_j^v$是item $j$初始的特征，作者采用的是unique one-hot vector作为特征。相当于把$x_j^v$这一信息传递到了用户结点$i$上。这样针对每种类型的边，可以把所有$i$的邻域节点传递过来的信息做个累加操作，$\sum_{j \in \mathcal{N}_r(u_i)}{\mu_{j \rightarrow i, r}}$， $\text{for } r = 1,2,...,R$.
+其中，$c_{ij}$是归一化常数因子，如$|\mathcal{N}(u_i)|$或$\sqrt{|\mathcal{N}(u_i) \mathcal{N}(v_j)|}$。$W_r$是 edge-type specific parameter matrix。$x_j^v$是item $j$初始的特征，作者采用的是unique one-hot vector作为特征。相当于把$x_j^v$这一信息传递到了用户结点$i$上。这样针对每种类型的边，可以把所有$i$的邻域节点传递过来的信息做个累加操作，$\sum_{j \in \mathcal{N}_r(u_i)}{\mu_{j \rightarrow i, r}}$， $\text{for } r = 1,2,...,R$.
 
 接着需要将不同edge-type采集到的信息进行一个汇聚，
 $$
@@ -55,6 +55,25 @@ $$
 z_{i}^u = \sigma(W h_i^u) \tag{3}
 $$
 物品$v_i$的embedding和用户$u_i$的求解是对称的，只不过使用的是两套参数。
+
+作为拓展，值得一提的是，很多人忽略了归一化因子$c_{ij}$的重要性。一种观点是随着GCN层数的叠加，$c_{ij}$起着embedding平滑的作用（Embedding Smoothness）。我们以二层GCN为例，从协同过滤角度来阐述这一归一化因子的重要性（源自另一篇文章的观点[LightGCN](https://arxiv.org/abs/2002.02126)）。此处忽略多视图$r$以及非线性$\sigma$。令，$c_{ij}=\sqrt{|\mathcal{N}(u_i) \mathcal{N}(v_j)|}$为例，记$\boldsymbol{e}_j^{(1)}=W x_j^v$，当$x_j$为id one-hot vector时，可以认为就是item的嵌入；user同理。根据式子2，neighbor aggregation操作。我们观察用户$u, v$是如何产生协同过滤效果的。
+$$
+\begin{aligned}
+\boldsymbol{e}_u^{(2)} &= \sum_{j \in \mathcal{N}_u} \frac{1}{\sqrt{|\mathcal{N}_u| \cdot  |\mathcal{N}_j}|} \boldsymbol{e}_j^{(1)}= \sum_{j \in \mathcal{N}_u} \frac{1}{\sqrt{|\mathcal{N}_u| \cdot |\mathcal{N}_j}|} (\sum_{v \in \mathcal{N}_j} \frac{1}{\sqrt{|\mathcal{N}_j| \cdot |\mathcal{N}_v|}}\boldsymbol{e}_v^{(0)}) \\
+&=\sum_{j \in \mathcal{N_u}} \frac{1}{|\mathcal{N}_j|} \sum_{v \in \mathcal{N}_j} \frac{1}{\sqrt{|\mathcal{N}_u| \cdot |\mathcal{N}_v|}} \boldsymbol{e}_v^{(0)}
+\end{aligned}
+$$
+可以看出如果$u$和$v$存在共同交互过的item $j$ (从公式看，$j$是$u$的邻居，$v$是$j$的邻居，故$j$ 是$u, v$的co-interacted item)，则$v$对$u$的平滑强度可以使用下述系数来表示 (the smoothness strength of v on u is measured by the coefficient)，
+$$
+c_{v \rightarrow u} = \frac{1}{\sqrt{|\mathcal{N}_u| \cdot |\mathcal{N}_v|}} \sum_{j \in \mathcal{N}_u \cap \mathcal{N}_v} \frac{1}{|\mathcal{N}_j|}
+$$
+非co-interacted items对上式不起作用，故可以直接去掉，重新整理得到该系数。这个系数具备很强的可解释性，可以从协同过滤角度来阐述second-order的近邻$v$对$u$嵌入表示的影响。
+
+- co-interacted items**越多**，则$v$对$u$的**协同影响**越大，对应系数中的求和项。co-interacted items沟通了$u,v$，显然越多，协同影响的越大。
+- co-interacted items本身**越不流行**，则$v$对$u$的影响越大，对应$1/|\mathcal{N}_j|$项。越不流行的items富含的信息量越大。一个item很不流行，而$u,v$却都交互过，那这个item产生的协同影响效果显然越大越好。
+- $v$的交互行为**越稀少**，则$v$对$u$的影响越大，对应求和前的$1/\sqrt{|\mathcal{N}_v|}$。越不活跃的users提供的协同信号越重要。$u$和一个很不活跃的用户$v$共同交互过某个item，显然这个是很少见的情况，$v$能提供更多的协同信号。
+
+上述系数从衡量user similarity的协同过滤角度提供了完美的可解释性。
 
 #### Bilinear decoder
 
@@ -250,7 +269,7 @@ $$
   作者说，$\boldsymbol{\mathcal{L}}$表示user-item interaction graph的拉普拉斯矩阵，$\boldsymbol{\mathcal{L}}=\boldsymbol{D}^{-1/2} \boldsymbol{A} \boldsymbol{D}^{-1/2}$，其中，$\boldsymbol{A} \in \mathbb{R}^{(N+M) \times (N+M)}$是邻接矩阵，是user-item 交互矩阵和item-user交互矩阵构成的，即：$\boldsymbol{A} = \left[ \begin{array}{ccc}
    \boldsymbol{0} & \boldsymbol{R} \\
    \boldsymbol{R}^T & \boldsymbol{0} \\
-  \end{array} \right]  $。(但是我个人记得拉普拉斯矩阵三种方式都不是长这个样子的，有可能这些定义之间差异很小，可能特征根是一样的，故也叫拉普拉斯矩阵吧，虽然和标准的拉普拉斯矩阵之间有一丝差异。)
+  \end{array} \right]  $。(但是我个人记得拉普拉斯矩阵三种方式都不是长这个样子的，有可能这些定义之间差异很小，可能特征根是一样的，故也叫拉普拉斯矩阵吧，虽然和标准的拉普拉斯矩阵之间有一丝差异。本质都是一种graph operator。可参考[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)，讲的非常到位！)
 
   这个矩阵表示形式很好理解，主要点在于，和$\boldsymbol{\mathcal{L}}$的**乘法**就对应于公式(5)中$\sum_{i \in \mathcal{N}_u} \boldsymbol{m}^{(l)}_{u \leftarrow i}$对邻域节点的汇聚**求和操作**，其它的一目了然。
 
@@ -429,9 +448,20 @@ $$
 
 作者没有讨论参数复杂度。这里面有非常多的参数。尤其是针对每个user和item的modal-specific参数，即带$m$下标的参数，尤其是user侧，如$\boldsymbol{u}_m^{0}$，全局的$\boldsymbol{u}_{id}$ 。我个人对此保持疑惑，因为在大规模的推荐系统中，user的数量非常多，而交互数据又非常稀疏。给每个user都分配如此多的参数，很多参数估计都得不到很好的学习，同时训练速度也很慢。可能user侧也需要引入profile信息比较好。另外，不是所有的items都有丰富的模态特征，大部分items可能缺乏模态特征，即，不同子图的拓扑结构可能会因为结点缺失相应的特征而导致不相同，这种情况下如何处理呢？
 
+## Extensions
+
+除了上述三个工作，关于二分图表示学习的最新工作还包括：
+
+- [LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126)，将non-linear和feature transformation去掉，只增加一组权重系数来weighted aggregate不同gcn层输出的嵌入为最终的嵌入，大大简化了模型，反而在推荐性能上有提升。这个工作虽然简单，但挺有意思的，有很多intuition和Interpretability的观点，对于理解GCN如何更好的应用于推荐系统挺有帮助的。
+- [AAAI2020, Revisiting Graph based Collaborative Filtering: A Linear Residual Graph Convolutional Network Approach](https://arxiv.org/pdf/2001.10167.pdf)，同样讨论了去掉non-linear的好处，使用多层的gcn时，通过代入迭代式，可以将不同层的多个feature transformation matrices约减为1个feature transformation matirx，大大减少了参数量。同时讨论了残差方法，传统的方法一般只使用最后一层GCN层输出的user 和 item embedding进行点乘预测评分。而使用残差方法，预测评分的时候，所有的gcn层都一起预测评分，下一个gcn层去预测前一个层剩余的评分残差。这种方式等价于将所有层输出的embedding concat在一起作为final embedding后，再进行点乘预测，也就是NGCF中的预测方法满足了残差预测。直觉来源在于，一方面，叠加gcn layer等价于使用拉普拉斯平滑 (graph operator)，故传统方法叠加太多的层的时候，会导致over smoothness问题，故不宜叠加太多，一般1~2层最优。另一方面，0层的时候等价于BPR方法(使用BPR Loss时)，也能够得到非常好的预测结果，所以层数低已经具备非常强的能力了。因此可以让后面的gcn层只去预测前面层的残差，这样可以使得层数更深时效果不减。通过观察发现使用残差预测时，深层输出的embedding不会过于平滑，因此预测效果更好。
+
+这两个工作主要借鉴了[ICML2019: Simplifying Graph Convolutional Networks](https://arxiv.org/pdf/1902.07153.pdf)，讨论了如何简化GCN，使得更好的应用在推荐系统中二分图的表示学习。
+
 ## Summary
 
 关于图二分图的挖掘，是推荐系统中的核心问题之一。传统的图表示学习直接对二部图进行挖掘是有问题的。个人认为传统的graph embedding在建模时实际上很依赖于graph的手动构造，连边权重的合理设置，且没有把二分图中的collaborative signals直接建模到结点的embedding表示中，而只是通过目标函数来间接引导。而二分图的构建是基于原始数据的，没有连边权重，且数据过于稀疏，蕴含在二分图中的协同信息是非常隐晦的和难以挖掘的，故传统的图表示学习方法很难处理。本篇文章中介绍的三个工作基于message passing范式的GNN来挖掘二分图，将collaborative signals直接建模到embedding中，这是非常值得借鉴的。另外，这几篇文章的github都有源码，值得学习和实践。
+
+
 
 ## References
 
@@ -445,3 +475,11 @@ Personalized Recommendation of Micro-video](https://liqiangnie.github.io/paper/M
 [Github, NGCF, Source Code](https://github.com/xiangwang1223/neural_graph_collaborative_filtering)
 
 [Github, MMGCN, Source Code](https://github.com/weiyinwei/MMGCN/)
+
+[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)
+
+[LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126)
+
+[AAAI2020, Revisiting Graph based Collaborative Filtering: A Linear Residual Graph Convolutional Network Approach](https://arxiv.org/pdf/2001.10167.pdf)
+
+[ICML2019: Simplifying Graph Convolutional Networks](https://arxiv.org/pdf/1902.07153.pdf)

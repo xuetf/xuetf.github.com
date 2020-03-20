@@ -1,9 +1,9 @@
 ---
-title: Graph Convolutional Networks
+title: 图卷积神经网络理论基础
 date: 2019-02-24 15:20:50
 tags: [推荐系统,Paper,机器学习,Graph Embedding,深度学习,Representation Learning]
 comments: true
-categories: 推荐系统
+categories: GNN
 top: 15
 ---
 
@@ -414,7 +414,6 @@ $$
 $$
 \begin{aligned}
 \boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} &\approx \theta_0^{\prime} \boldsymbol{x} + \theta_1^{\prime}(\boldsymbol{L}- \boldsymbol{I}_n) \boldsymbol{x} \\
-&= \theta_0^{\prime} \boldsymbol{x} + \theta_1^{\prime}(\boldsymbol{L}- \boldsymbol{I}_n) \boldsymbol{x} \\
 &= \theta_0^{\prime} \boldsymbol{x} - \theta_1^{\prime}(\boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}) \boldsymbol{x} 
 \end{aligned}
 $$
@@ -426,7 +425,7 @@ $$
 \boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} = \theta(\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}) \boldsymbol{x}
 $$
 
-$\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}$谱半径$[0,2]$太大，使用renormalization trick，
+$\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}$谱半径$[0,2]$太大，使用renormalization trick（关于这个trick，参考[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)，讲的非常好！），
 $$
 \boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2} \rightarrow \tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}
 $$
@@ -487,3 +486,6 @@ $$
 [Semi-Supervised Classification with Graph Convolutional Networks阅读笔记](https://zhuanlan.zhihu.com/p/31067515)
 
 [Graph Neural Network Review](https://zhuanlan.zhihu.com/p/43972372)
+
+[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)
+
