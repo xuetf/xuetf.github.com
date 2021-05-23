@@ -1,0 +1,1143 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="paper,survey,graph,gnn," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本系列首先会介绍王翔老师[1]和何向南老师[2]在WSDM 2020/CIKM 2019上的Tutorial[3]：Learning and Reasoning on Graph for Recommendation中所涉及的“基于信息传递框架的图自编码范式”，即：基于信息传递框架来做结点的图表征。这个范式能够将GNN各组件拆解开来，并各自迭代和优化，对于模型优化迭代和编程实践有非常好的启发。 后">
+<meta name="keywords" content="paper,survey,graph,gnn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于信息传递框架的图自编码范式">
+<meta property="og:url" content="xtf615.com/2020/12/06/message-passing-graph/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本系列首先会介绍王翔老师[1]和何向南老师[2]在WSDM 2020/CIKM 2019上的Tutorial[3]：Learning and Reasoning on Graph for Recommendation中所涉及的“基于信息传递框架的图自编码范式”，即：基于信息传递框架来做结点的图表征。这个范式能够将GNN各组件拆解开来，并各自迭代和优化，对于模型优化迭代和编程实践有非常好的启发。 后">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/information_construction.png">
+<meta property="og:image" content="/picture/machine-learning/neighbor_aggregation.png">
+<meta property="og:image" content="/picture/machine-learning/representation_update.png">
+<meta property="og:image" content="/picture/machine-learning/graphsage_demo.png">
+<meta property="og:image" content="/picture/machine-learning/GATs_demo.png">
+<meta property="og:image" content="/picture/qrcode_wechat.jpg">
+<meta property="og:updated_time" content="2021-05-23T14:52:32.298Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于信息传递框架的图自编码范式">
+<meta name="twitter:description" content="本系列首先会介绍王翔老师[1]和何向南老师[2]在WSDM 2020/CIKM 2019上的Tutorial[3]：Learning and Reasoning on Graph for Recommendation中所涉及的“基于信息传递框架的图自编码范式”，即：基于信息传递框架来做结点的图表征。这个范式能够将GNN各组件拆解开来，并各自迭代和优化，对于模型优化迭代和编程实践有非常好的启发。 后">
+<meta name="twitter:image" content="/picture/machine-learning/information_construction.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2020/12/06/message-passing-graph/"/>
+
+
+
+
+
+  <title> 基于信息传递框架的图自编码范式 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2020/12/06/message-passing-graph/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                基于信息传递框架的图自编码范式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-12-06T21:56:47+08:00">
+                2020-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GNN/" itemprop="url" rel="index">
+                    <span itemprop="name">GNN</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本系列首先会介绍王翔老师<sup>[1]</sup>和何向南老师<sup>[2]</sup>在WSDM 2020/CIKM 2019上的Tutorial<sup>[3]</sup>：<strong>Learning and Reasoning on Graph for Recommendation</strong>中所涉及的“基于<strong>信息传递框架</strong>的图自编码范式”，即：基于信息传递框架来做结点的图表征。这个范式能够将GNN各组件拆解开来，并各自迭代和优化，对于模型优化迭代和编程实践有非常好的启发。</p>
+<p>后续我会基于这样的范式，重新梳理图表示学习在推荐系统中常见的用户-物品交互数据上的建模方法。我们可以将用户-物品的交互数据看做是关于user-item的二分图(Bipartite Graph)，这样可以基于GNN的方法进行user和item嵌入的学习。我将重点探讨如何基于<strong>信息传递框架</strong>来拆解目前主流的二分图表示学习方法，不同的方法是如何针对不同的组件做改进和迭代，我会对8篇顶会文章的改进脉络做一个系统性地梳理。</p>
+<p>本篇文章将主要介绍基于信息传递框架的图自编码范式。</p>
+<a id="more"></a>
+<h2 id="1-Message-Passing信息传递框架"><a href="#1-Message-Passing信息传递框架" class="headerlink" title="1. Message-Passing信息传递框架"></a>1. Message-Passing信息传递框架</h2><p>在之前的文章中<a href="https://mp.weixin.qq.com/s/w6Hk_eaq3iQimnDJ1NP-rAMessage-Passing" target="_blank" rel="noopener">图表示学习Encoder-Decoder框架</a>中，我们介绍了一种应用于图表示学习的Encoder-Decoder框架。该框架是对所有<strong>图表示学习的方法</strong>的<strong>所有过程</strong>的抽象，即：编码，解码，相似性度量和损失函数。而其中最重要的步骤是<strong>Encoder</strong>，实际上，<strong>大部分方法主要的差异只体现在Encoder上</strong>，其它三种都大同小异，比如GraphSAGE和GATs。因此，如何对Encoder进一步做抽象就显得很重要了。</p>
+<p>信息传递框架就是为Encoder的进一步抽象所服务的，也是近年来大部分GNN工作所采用的设计范式。信息传递框架最早是在ICML 2017，Neural Message Passing for Quantum Chemistry<sup>[8]</sup>中被提出来，作者在这篇论文将现有神经网络模型抽象出其共性并提出一种信息传递神经网络框架(Message Passing Neural Networks, MPNN)，同时利用 MPNN 框架在分子分类预测中取得了一个不错的成绩。MPNN包括了两个阶段：<strong>信息传递阶段(Message Passing)</strong> 和 <strong>读出阶段(Readout)</strong>。其中，信息传递阶段可以细分为信息构建、信息汇聚和信息更新，得到每个结点的表征。读出阶段是指系统更新多次达到某个状态后，从图中的所有结点状态映射得到Graph-Level的表征(原文是做分子分类预测，因此需要得到Graph表征)。</p>
+<p>我们这里讨论的是Node-Level的表征，因此可以借鉴<strong>信息传递阶段</strong>。图神经网络GNN在设计Encoder的时候，会做基于邻域汇聚的卷积操作，涉及到的卷积操作会有很多步骤，可以采用Message-Passing信息传递框架来组织和提炼其中的核心步骤，并封装成各个组件，每个组件都能够<strong>单独进行设计和改进</strong>。这些组件包括：<strong>信息构建组件</strong>，<strong>邻域汇聚组件</strong>和<strong>表征更新组件</strong>。</p>
+<ul>
+<li><p>信息构建组件：负责构建从邻域结点到目标结点<strong>要传递</strong>的信息；</p>
+</li>
+<li><p>邻域汇聚组件：负责<strong>汇聚</strong>从邻域结点集合传递到目标结点的信息；</p>
+</li>
+<li>表征更新组件：负责将从邻域结点集合中收集到的信息和本身的信息做一个<strong>融合和更新</strong>。</li>
+</ul>
+<p>上述3个步骤构成了一个完整的迭代步。第一步迭代结束后，每个结点都融合了一阶的邻域结点的信息；依次类推，多次迭代，就能够融合多阶的邻域结点信息。值得一提的是，著名的图学习框架DGL<sup>[7]</sup>就是基于消息传递框架来组织和设计代码，下面依次介绍各个组件。</p>
+<h3 id="1-1-信息构建组件"><a href="#1-1-信息构建组件" class="headerlink" title="1.1 信息构建组件"></a>1.1 信息构建组件</h3><p><strong>Information Construction</strong> 信息构建组件：构建从<strong>1个邻域结点</strong>到<strong>目标结点</strong>要<strong>传递的信息</strong>。</p>
+<p>如下图所示，信息构建组件使用<strong>信息构建网络</strong>，<strong>输入数据</strong>是前一层的目标结点和邻域结点的表征，还有个decay系数/正则化项，表示信息传递过程中的<strong>衰减系数</strong>，<strong>输出数据</strong>是从邻域结点$v$到目标结点$u$要传递的信息。总结起来，这里头核心的组成元素包括：</p>
+<ul>
+<li><strong>输入数据</strong>：前一层的目标结点和邻域结点的表征。</li>
+<li><strong>输出数据</strong>：从1个邻域结点$v$到目标结点$u$要传递的信息。</li>
+<li><strong>decay系数/正则化项</strong>：信息传递过程中的衰减系数。这个系数在基于二分图的推荐系统中非常重要，例如可以用结点的度的倒数来表示物品的流行度衰减因子或者用户的活跃度衰减因子。</li>
+<li><strong>信息构建网络</strong>：基于输入数据和decay系数，来构建要传递的信息。最简单，信息构建网络为$f_1^{(k-1)}=h_v^{(k-1)}$，即：传递的信息为邻域结点表征，衰减系数为1。</li>
+</ul>
+<p><img src="/picture/machine-learning/information_construction.png" alt="信息构建组件"></p>
+<h3 id="1-2-邻域汇聚组件"><a href="#1-2-邻域汇聚组件" class="headerlink" title="1.2 邻域汇聚组件"></a>1.2 邻域汇聚组件</h3><p><strong>Neighborhood Aggregation</strong> 邻域汇聚组件：基于上述构建好的每个邻域结点要传递的信息，来<strong>汇聚所有</strong>的邻域结点的信息。</p>
+<p>如下图所示，邻域汇聚使用<strong>汇聚函数</strong>，其输入是上述构建好的信息；输出是<strong>汇聚好的所有邻域的信息</strong>。总结下核心的组成元素：</p>
+<ul>
+<li><strong>输入数据</strong>：目标结点的邻域集合中的结点从1.1信息构建组件中构建好的信息。</li>
+<li><strong>输出数据</strong>：汇聚好的邻域信息，或者说从邻域结点集合传递到目标结点的信息。</li>
+<li><strong>汇聚函数</strong>：汇聚函数实际上也可以用汇聚网络来表示，即：既可以设计简单的汇聚函数，如mean pooling，sum pooling，attention等，也可以设计复杂的汇聚网络，如attention网络。</li>
+</ul>
+<p><img src="/picture/machine-learning/neighbor_aggregation.png" alt="neighbor_aggregation"></p>
+<h3 id="1-3-表征更新组件"><a href="#1-3-表征更新组件" class="headerlink" title="1.3 表征更新组件"></a>1.3 表征更新组件</h3><p>Representation Update<strong>：表征更新组件：融合从邻域集合汇聚到的信息</strong>和<strong>自己本身的信息</strong>，来做自我表征的更新。</p>
+<p>如下图所示，表征更新使用融合函数，输入是步骤1.2中汇聚到的邻域信息以及结点$u$本身的信息，输出是结点新的表征。比如：融合函数可以使用sum操作或者concat+非线性变换操作。总结下核心组成元素：</p>
+<ul>
+<li><strong>输入数据</strong>：步骤1.2中汇聚到的邻域集合信息，结点$u$本身的信息，</li>
+<li><strong>输出数据</strong>：目标结点更新后的表征，此时表征所代表的阶数提高了一阶。</li>
+<li><strong>融合函数</strong>：融合函数既可以使用简单的sum操作或者concat+非线性变换操作，也可以使用复杂的融合网络来融合。</li>
+</ul>
+<p><img src="/picture/machine-learning/representation_update.png" alt="表征更新组件"></p>
+<h2 id="2-信息传递框架范式案例"><a href="#2-信息传递框架范式案例" class="headerlink" title="2. 信息传递框架范式案例"></a>2. 信息传递框架范式案例</h2><p>下面以GraphSAGE[4]和GATs[5]为例，来介绍这两个主流的GNN模型中Encoder结构拆解示例。</p>
+<h3 id="2-1-GraphSAGE"><a href="#2-1-GraphSAGE" class="headerlink" title="2.1 GraphSAGE"></a>2.1 GraphSAGE</h3><h4 id="2-1-1-信息构建组件"><a href="#2-1-1-信息构建组件" class="headerlink" title="2.1.1 信息构建组件"></a>2.1.1 信息构建组件</h4><p>$$<br>\boldsymbol{m}_{v \rightarrow u}^{(k-1)}=f_1^{(k-1)}=h_v^{(k-1)}<br>$$</p>
+<p>即：传递的信息为邻域结点表征。</p>
+<h4 id="2-1-2-邻域汇聚组件"><a href="#2-1-2-邻域汇聚组件" class="headerlink" title="2.1.2 邻域汇聚组件"></a>2.1.2 邻域汇聚组件</h4><p>$$<br>\boldsymbol{h}_{\mathcal{N}_u}^{(k-1)}=\text{Agg}({\boldsymbol{h}_v^{k-1} , \forall v \in \mathcal{N}_u })<br>$$</p>
+<p>其中Agg汇聚函数在GraphSAGE中有多种形式。</p>
+<ul>
+<li><strong>Mean Aggregator</strong>: $\text{MEAN}(\boldsymbol{h}_v^{k-1},  \forall v \in \mathcal{N}(u))=\sum_{v \in \mathcal{N}_u}\frac{\boldsymbol{h}_v^{k-1}}{|\mathcal{N}_u|}$， 即：element-wise mean of the vectors.</li>
+<li><p><strong>GCN Aggregator</strong>: 这个是GCN中矩阵形式乘法的等价形式。细节推导可参见：<a href="https://mp.weixin.qq.com/s/w6Hk_eaq3iQimnDJ1NP-rAMessage-Passing" target="_blank" rel="noopener">图表示学习Encoder-Decoder框架</a>中的GraphSAGE一节。</p>
+</li>
+<li><p><strong>LSTM aggregator</strong>: 直接对邻域节点随机扰动permutation，然后将扰动后的序列使用LSTM来聚合。感觉有点简单粗暴了。</p>
+</li>
+<li><p><strong>Pooling aggregator</strong>：<br>$$<br>\boldsymbol{h}_{\mathcal{N}_u}^{(k-1)}=\max({\sigma(\boldsymbol{W}_{pool}\boldsymbol{h}_{v}^{(k-1)} + \boldsymbol{b}), \forall v \in \mathcal{N}(u)})<br>$$<br>即：每个邻居节点的表示先经过一个MLP，然后进行sigmoid激活；最后应用element-wise max pooling策略，此处的max pooling，作者提到用mean pooling也是可以的。内部的MLP也可以改成多层的MLP。</p>
+</li>
+</ul>
+<h4 id="2-1-3-表征更新组件"><a href="#2-1-3-表征更新组件" class="headerlink" title="2.1.3 表征更新组件"></a>2.1.3 表征更新组件</h4><p>$$<br>\boldsymbol{h}_u^{(k)}=\sigma(\boldsymbol{W}_1^{(k)} \cdot \boldsymbol{h}_{\mathcal{N}_u}^{(k-1)} || \boldsymbol{W}_2^{(k)} \boldsymbol{h}_u^{(k-1)})<br>$$</p>
+<p>即：2.1.2邻域汇聚得到的信息做一个线性变换；目标结点$u$在前一层的表征$\boldsymbol{h}_u^{(k-1)}$做一个线性变换；二者拼接起来，过一个激活函数，得到更新后的第$k$阶表征。</p>
+<p>上述核心的邻域汇聚组件和表征更新组件总结下来如下图所示：</p>
+<p><img src="/picture/machine-learning/graphsage_demo.png" alt="GraphSAGE信息传递框架示例"></p>
+<h3 id="2-2-GATs"><a href="#2-2-GATs" class="headerlink" title="2.2 GATs"></a>2.2 GATs</h3><h4 id="2-2-1-信息构建组件"><a href="#2-2-1-信息构建组件" class="headerlink" title="2.2.1 信息构建组件"></a>2.2.1 信息构建组件</h4><p>$$<br>\boldsymbol{m}_{v \rightarrow u}^{(k-1)}=f_1^{(k-1)}=h_v^{(k-1)}<br>$$</p>
+<p>同GraphSAGE。即：传递的信息为邻域结点表征。</p>
+<h4 id="2-2-2-邻域汇聚组件"><a href="#2-2-2-邻域汇聚组件" class="headerlink" title="2.2.2 邻域汇聚组件"></a>2.2.2 邻域汇聚组件</h4><p>$$<br>\boldsymbol{h}_{\mathcal{N}_u}^{(k-1)}=\text{Agg}({\boldsymbol{h}_v^{k-1} , \forall v \in \mathcal{N}_u })<br>$$</p>
+<p>基于注意力框架的邻域汇聚组件。引入了self-attention机制，每个节点attend到自身的邻域节点上。不同于GraphSAGE采用Mean/Pooling Aggregator，GATs采用了基于self-attention机制的Aggregator。也就是说，把目标节点的表示和邻域节点的表示通过一个注意力网络，计算注意力值，再依据该注意力值来汇聚邻域节点。对于节点$u$及其邻域节点$v$。我们要计算$u$节点attend到$v$的注意力值，attention score计算如下：</p>
+<ul>
+<li><p>先对$u$和$v$的前一层的表征$\boldsymbol{h}_u^{(k-1)}, \boldsymbol{h}_v^{(k-1)}$做一个线性变换 (即multi-head attention的特例，1-head attention)，$\boldsymbol{W} \boldsymbol{h}_u^{(k-1)}, \boldsymbol{W} \boldsymbol{h}_v^{(k-1)}$。 </p>
+</li>
+<li><p>再把变换后的表示送到attention网络并进行softmax得到注意力值，<br>$$<br>\alpha_{uv} = \text{softmax}(\text{attention}(\boldsymbol{W} \boldsymbol{h}_u^{(k-1)} , \boldsymbol{W} \boldsymbol{h}_v^{(k-1)}))<br>$$<br>这个attention网络结构如下：<br>$$<br>\text{attention}(\boldsymbol{W} \boldsymbol{h}_u^{(k-1)} , \boldsymbol{W} \boldsymbol{h}_v^{(k-1)})=\text{LeakyReLU}(\boldsymbol{a}[\boldsymbol{W} \boldsymbol{h}_u^{(k-1)} || \boldsymbol{W} \boldsymbol{h}_v^{(k-1)}])<br>$$<br>即：二者拼接到一起后，经过一个线性变换$\boldsymbol{a}$ (attention网络的参数)，再LeakyReLU激活。</p>
+</li>
+</ul>
+<p>则Aggregator直接依注意力值对线性变换后的向量加权并激活即可：<br>$$<br>\boldsymbol{h}^{(k-1)}_{\mathcal{N}_u} = \sum_{v \in \mathcal{N}_u}\alpha_{uv} \boldsymbol{W} \boldsymbol{h}_v^{(k-1)}<br>$$</p>
+<h4 id="2-2-3-邻域汇聚组件"><a href="#2-2-3-邻域汇聚组件" class="headerlink" title="2.2.3 邻域汇聚组件"></a>2.2.3 邻域汇聚组件</h4><p>实际上，GATs中的邻域汇聚组件和表征更新组件是可以合在一起实现的。即：对于节点$u$和自身的attention score，作者提到直接代入$v=u$即可。这样，统一公式：<br>$$<br>\boldsymbol{h}^{(k)}_{u} = \sigma(\sum_{v \in \mathcal{N}_u \cup {u}}\alpha_{uv} \boldsymbol{W} \boldsymbol{h}_v^{(k-1)})<br>$$<br>另外，作者提到，可以采用multi-head attention来拓展，即：2.2.2中attention score计算的第一步中，将node feature变换到不同的语义子空间，再进行attention score计算并汇聚。每个head输出一个$\boldsymbol{h}^{(k)}_{u}$，将所有的输出拼接到一起；或者做mean pooling，作为节点更新后的表征。</p>
+<p>上述核心的邻域汇聚组件和表征更新组件总结下来如下图所示：</p>
+<p><img src="/picture/machine-learning/GATs_demo.png" alt="GATs信息传递框架示例"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文讨论了WSDM 2020/CIKM 2019上王翔老师分享的关于<strong>信息传递框架的图自编码器范式</strong>，并介绍了如何基于这种范式，对GraphSAGE和GATs中的Encoder进行重新提炼和组织。</p>
+<p>后续我会基于这样的范式，重新梳理<strong>图表示学习在推荐系统</strong>中常见的用户-物品交互数据上的建模。我将重点探讨如何基于<strong>信息传递框架</strong>来拆解目前主流的<strong>二分图表示学习</strong>方法，即：不同的方法是如何针对不同的组件做改进和迭代以及不同的方法间有什么区别和联系，我将在以后的文章中分享的8篇顶会工作如下，<strong>敬请期待</strong>。</p>
+<ul>
+<li>KDD 2018 | GC-MC</li>
+<li>SIGIR2019 | NGCF</li>
+<li>MM2019 | MMGCN</li>
+<li>SIGIR 2020 | LightGCN</li>
+<li>AAAI 2020 | LR-GCCF</li>
+<li>SIGIR2020：DGCF</li>
+<li>SIGIR2020：MBGCN</li>
+<li>ICLR 2020：IGMC</li>
+</ul>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>[1] 王翔老师个人主页：<a href="https://xiangwang1223.github.io/" target="_blank" rel="noopener">https://xiangwang1223.github.io/</a></p>
+<p>[2] 何向南老师个人主页：<a href="http://staff.ustc.edu.cn/~hexn/" target="_blank" rel="noopener">http://staff.ustc.edu.cn/~hexn/</a></p>
+<p>[3] WSDM 2020/CIKM2019  Tutorial: Learning and Reasoning on Graph for Recommendation,  <a href="https://dl.acm.org/doi/abs/10.1145/3336191.3371873" target="_blank" rel="noopener">https://dl.acm.org/doi/abs/10.1145/3336191.3371873</a></p>
+<p>[4] NeurIPS 2017，Hamilton et al.,  GraphSAGE: Inductive Representation Learning on Large Graphs.</p>
+<p>[5]  ICLR 2018，Velickovic et al.  Graph Attention Networks.</p>
+<p>[6] WWW2018, Tutorial Jure Leskovec et al. Representation Learning on Networks</p>
+<p>[7] Python package built to ease deep learning on graph, on top of existing DL frameworks: <a href="https://github.com/dmlc/dgl" target="_blank" rel="noopener">https://github.com/dmlc/dgl</a></p>
+<p>[8] ICML 2017，Neural Message Passing for Quantum Chemistry: <a href="https://arxiv.org/pdf/1704.01212.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1704.01212.pdf</a></p>
+<p>最后，欢迎大家关注我的微信公众号，<strong>蘑菇先生学习记</strong>。会定期推送关于算法的前沿进展和学习实践感悟。</p>
+<p><img src="/picture/qrcode_wechat.jpg" alt="公众号"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper/" rel="tag"># paper</a>
+          
+            <a href="/tags/survey/" rel="tag"># survey</a>
+          
+            <a href="/tags/graph/" rel="tag"># graph</a>
+          
+            <a href="/tags/gnn/" rel="tag"># gnn</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/28/Pretrain-Models/" rel="next" title="PTMs| 2020 NLP预训练模型综述">
+                <i class="fa fa-chevron-left"></i> PTMs| 2020 NLP预训练模型综述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/10/can/" rel="prev" title="特征交互新思路| 阿里 Co-action Network论文解读">
+                特征交互新思路| 阿里 Co-action Network论文解读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Message-Passing信息传递框架"><span class="nav-number">1.</span> <span class="nav-text">1. Message-Passing信息传递框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-信息构建组件"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 信息构建组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-邻域汇聚组件"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 邻域汇聚组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-表征更新组件"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 表征更新组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-信息传递框架范式案例"><span class="nav-number">2.</span> <span class="nav-text">2. 信息传递框架范式案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-GraphSAGE"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 GraphSAGE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-1-信息构建组件"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 信息构建组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2-邻域汇聚组件"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 邻域汇聚组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-3-表征更新组件"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 表征更新组件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-GATs"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 GATs</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-信息构建组件"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 信息构建组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-邻域汇聚组件"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 邻域汇聚组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-邻域汇聚组件"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 邻域汇聚组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">4.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

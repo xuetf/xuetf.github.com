@@ -1,0 +1,1225 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Paper,机器学习,推荐系统,深度学习,Graph Embedding,Representation Learning," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Graph Convolutional Networks图卷积网络涉及到两个重要的概念，Graph和Convolution。传统的卷积主要应用于Euclidean Structure的数据上（排列很整齐、Grid形式的），如图像、语句等，主要是因为欧式结构数据能够保证卷积的性质，即平移不变性，而Non-Euclidean无法保证平移不变性，通俗理解就是在拓扑图中每个顶点的相邻顶点数目都可能不同，那">
+<meta name="keywords" content="Paper,机器学习,推荐系统,深度学习,Graph Embedding,Representation Learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图卷积神经网络理论基础">
+<meta property="og:url" content="xtf615.com/2019/02/24/gcn/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="Graph Convolutional Networks图卷积网络涉及到两个重要的概念，Graph和Convolution。传统的卷积主要应用于Euclidean Structure的数据上（排列很整齐、Grid形式的），如图像、语句等，主要是因为欧式结构数据能够保证卷积的性质，即平移不变性，而Non-Euclidean无法保证平移不变性，通俗理解就是在拓扑图中每个顶点的相邻顶点数目都可能不同，那">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/2/2b/Fourier_series_and_transform.gif">
+<meta property="og:image" content="/picture/machine-learning/fourier_series_transform.jpg">
+<meta property="og:image" content="/picture/machine-learning/euler.png">
+<meta property="og:image" content="/picture/machine-learning/iwt.png">
+<meta property="og:image" content="/picture/machine-learning/fourier_transform_jishu.png">
+<meta property="og:updated_time" content="2021-05-23T14:49:26.385Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图卷积神经网络理论基础">
+<meta name="twitter:description" content="Graph Convolutional Networks图卷积网络涉及到两个重要的概念，Graph和Convolution。传统的卷积主要应用于Euclidean Structure的数据上（排列很整齐、Grid形式的），如图像、语句等，主要是因为欧式结构数据能够保证卷积的性质，即平移不变性，而Non-Euclidean无法保证平移不变性，通俗理解就是在拓扑图中每个顶点的相邻顶点数目都可能不同，那">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/2/2b/Fourier_series_and_transform.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2019/02/24/gcn/"/>
+
+
+
+
+
+  <title> 图卷积神经网络理论基础 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2019/02/24/gcn/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                图卷积神经网络理论基础
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-24T15:20:50+08:00">
+                2019-02-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GNN/" itemprop="url" rel="index">
+                    <span itemprop="name">GNN</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Graph Convolutional Networks图卷积网络涉及到两个重要的概念，Graph和Convolution。传统的卷积主要应用于Euclidean Structure的数据上（排列很整齐、Grid形式的），如图像、语句等，主要是因为欧式结构数据能够保证卷积的性质，即平移不变性，而Non-Euclidean无法保证平移不变性，通俗理解就是在拓扑图中每个顶点的相邻顶点数目都可能不同，那么当然无法用一个同样尺寸的卷积核来进行卷积运算。为了能够将卷积推广到Graph等Non-Euclidean数据上，GCN应运而生。那么GCN是如何将卷积推广到Graph上的呢？<br><a id="more"></a></p>
+<ul>
+<li><p>卷积和傅里叶变换有着密不可分的关系。在数学上，两个函数的卷积等于各自求傅里叶变换转成频域后乘积的逆傅里叶变换。即：Convolution —— Fourier</p>
+</li>
+<li><p>傅里叶变换又可以通过谱图理论推广到Graph上进行变换。Fourier —— Spectral Graph</p>
+<p>因此自然而然，Convolution —— Fourier —— Spectral Graph，Convolution通过傅里叶变换和Graph发生了联系。</p>
+</li>
+</ul>
+<p>从整个的研究进程来看，首先是研究GSP（<a href="https://arxiv.org/pdf/1211.0053.pdf" target="_blank" rel="noopener">Graph Signal Processing</a>）的学者提出了Graph上的Fourier Transformation，进而定义了Graph的Convolution，最后与深度学习结合起来，发展出来GCN。</p>
+<p>下文主要先介绍数学中的傅里叶变换，再介绍Graph上的傅里叶变换。最后介绍卷积如何应用在Graph上。</p>
+<h2 id="傅里叶变换"><a href="#傅里叶变换" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h2><p>傅里叶变换可以从多种角度进行表述。</p>
+<p>从数学角度，傅立叶变换就是将<strong>周期函数</strong>转化为一组<strong>正交基</strong>下的<strong>坐标表示</strong>，这个<strong>坐标表示</strong>就是傅立叶变换的结果。换句话说，周期函数是这些正交基的<strong>线性组合</strong>(向量的叠加), 线性组合<strong>系数构成的向量</strong>就是傅立叶变换的结果。</p>
+<p>从信号处理领域角度，傅里叶变换将一个周期函数从<strong>时域</strong>（时间与振幅的关系）转化为<strong>频域</strong>（频率与振幅的关系）。做个类比，正交基选择的是正弦函数，每个正弦函数有个<strong>频率</strong>参数值，而每个正弦函数的<strong>振幅</strong>参数就是该基下对应的坐标值。所有正弦函数的<strong>振幅构成的向量</strong>就是傅立叶变换的结果。</p>
+<p>下面以信号处理领域为例，来进一步理解傅里叶变换。</p>
+<h3 id="时域和频域"><a href="#时域和频域" class="headerlink" title="时域和频域"></a>时域和频域</h3><p>理解傅里叶变换，需要理解两个核心概念：</p>
+<ul>
+<li>时域：时间和振幅的关系图，横坐标是时间，纵坐标是振幅。</li>
+<li>频域：频率和振幅的关系图，横坐标是频率，纵坐标是振幅。</li>
+</ul>
+<h3 id="傅里叶级数"><a href="#傅里叶级数" class="headerlink" title="傅里叶级数"></a>傅里叶级数</h3><p>任何<strong>周期(T)</strong>函数，都可以使用<strong>傅立叶级数展开法</strong>将它们分解为有限或无限个不同<strong>频率</strong>不同<strong>振幅</strong>的正弦函数的叠加。傅里叶级数展开公式如下：<br>$$<br>f(x)=\sum_{n=1}^{\infty} \left(a_n \cos (\frac{2\pi n}{T}x) + b_n \sin (\frac{2\pi n}{T}x)\right) + C, C \in \mathbb{R}<br>$$<br>振幅$a_n, b_n$有具体的计算公式。$\frac{2\pi n}{T}$是频率。求和叠加就是线性组合。如果把函数$f$看成离散点构成的向量，那么就是这些正弦函数<strong>基向量</strong>的线性组合。</p>
+<h4 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h4><p>举例：分解动图如下：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Fourier_series_and_transform.gif" alt="fourier"></p>
+<p>某个周期函数$s_6(x)$, 可以分解为一系列正弦函数的和：<br>$$<br>f(t) = A_0 + A_1 \sin wt + A_2 \sin 2wt + … + A_{\infty} \sin(\infty) wt<br>$$<br>其中各个分量的<strong>振幅</strong>$A_i$（有正有负）的确定有专门的公式，此处不详述。而各个分量的<strong>频率</strong>$aw$（$w$是角频率，$f=\frac{w}{2\pi}$）恰好是原来函数频率的整数倍(公式中$2\pi n/T$为整数)，是确定的。</p>
+<p>经过分解后的公式完全可以用另一幅图来表示，横坐标为各个分量的<strong>频率</strong>（不断递增的整数），纵坐标为对应<strong>振幅</strong>。即图中，侧面观看到的$S(f)$。也就是说，频域图中每个点<strong>(频率，振幅)</strong> 对应的就是一个正弦函数中的<strong>频率和振幅</strong>参数。所有正弦函数的频率和振幅参数点组成整幅频域图。</p>
+<p>故，周期函数可以通过<strong>傅立叶级数</strong>画出频域图。</p>
+<p>进一步欣赏下列图：</p>
+<p><img src="/picture/machine-learning/fourier_series_transform.jpg" alt="fourier_series_transform"></p>
+<h4 id="傅里叶级数是向量"><a href="#傅里叶级数是向量" class="headerlink" title="傅里叶级数是向量"></a>傅里叶级数是向量</h4><p>首先，我们一般描述向量的时候，都有对应的基，即在某组基下的坐标表示构成了向量。默认是单位基时，则不显示提到。</p>
+<p>我们发现，给定周期函数$T$, 频域图中的横坐标频率值实际上可以确定了，即$\frac{2\pi n}{T}$。进一步，横坐标频率代表的正弦函数实际上就是傅里叶级数的基，即：$[1, cos(\frac{2\pi n}{T}), sin(\frac{2 \pi n}{T})]$，可以证明这些基相互正交。而系数$(C, a_n, b_n)$构成的<strong>向量就是傅里叶级数</strong>。因此，傅里叶级数是向量。</p>
+<p>也就是说，频域下，<strong>某个曲线</strong>是表示成了关于<strong>正弦函数正交基下</strong>的傅里叶级数向量。而在时域下，某个曲线是表示成了关于<strong>时间</strong>的周期函数。不管时域还是频域，其实反映的都是同一个曲线，只是一个是用函数的观点，一个是用向量的观点。</p>
+<h3 id="欧拉公式"><a href="#欧拉公式" class="headerlink" title="欧拉公式"></a>欧拉公式</h3><p>首先介绍欧拉公式。我们知道，根据欧拉公式有：(参考<a href="https://www.matongxue.com/madocs/8.html" target="_blank" rel="noopener">如何通俗地解释欧拉公式</a> )<br>$$<br>e^{i\theta} = \cos \theta + i \sin \theta<br>$$<br>欧拉公式可以根据泰勒展开推出。通常的理解，我们可以把$e^{i\theta}$看做是<strong>单位圆的圆周运动</strong>来<strong>描述单位圆上的点，</strong>$\cos \theta + i \sin \theta$通过<strong>复平面的坐标</strong>来<strong>描述单位圆上的点</strong>，是同一个点不同的描述方式，所以有$e^{i\theta} = \cos \theta + i \sin \theta$.</p>
+<p><img src="/picture/machine-learning/euler.png" alt="euler"></p>
+<p>接着，根据欧拉公式，重新表示$\sin(t)$</p>
+<p>在我们的例子中，$\theta \rightarrow t$,  $e^{i\theta} \rightarrow e^{i \boldsymbol{t}}$。有：<br>$$<br>e^{it} = \cos t + i \sin t<br>$$<br>随着时间流逝，t从0开始增长，$e^{it}$这个向量就会旋转起来，$2\pi$会转1周，也就是$T=2\pi$。随着圆周的运动，我们把$e^{it}$向量的<strong>虚部</strong>记录下来（也就是纵坐标），得到的就是$\sin t$；在时间轴$t$上，把$e^{i2t}$的虚部记录下来就是$\sin 2t$。以此类推。</p>
+<p>同理，在时间轴t上，把$e^{it}$的<strong>实部</strong>记录下来，就是$\cos t$。</p>
+<p>更一般的我们认为，我们具有两种看待$\sin (x), \cos(x)$的角度：<br>$$<br>e ^{i w t} \Leftrightarrow<br>\begin{cases}<br>sin (wt)  \\<br>cos (wt)<br>\end{cases}<br>$$</p>
+<p>可以用下图来形象化刻画：</p>
+<p><img src="/picture/machine-learning/iwt.png" alt="iwt"></p>
+<p>这两种角度，一个可以观察到旋转的频率($w$)，所以称为<strong>频域</strong>；一个可以看到流逝的时间($t$)，所以称为<strong>时域</strong>。</p>
+<h3 id="傅里叶变换-1"><a href="#傅里叶变换-1" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h3><p>实际上，周期越大，画出的频域图越密集，当$T \rightarrow \infty$时，傅里叶级数就为傅里叶变换，此时频域图是<strong>连续的曲线</strong>。如下图：</p>
+<p><img src="/picture/machine-learning/fourier_transform_jishu.png" alt="fourier_transform_jishu"></p>
+<hr>
+<p>傅里叶级数展开公式中有正弦波，也有余弦波，画频域图也不方便，通过欧拉公式，可以修改为复数形式：<br>$$<br>f(x) = \sum_{n = -\infty}^{\infty} c_n \cdot e^{i \frac{2\pi n}{T}x}<br>$$<br>复数形式也可以理解为向量，$e^{i \frac{2\pi n}{T} x}$是基，$c_n$是该基下的坐标。不过$c_n$也是复数，不太好画频域图。</p>
+<p>当周期$T$无穷大时，<br>$$<br>f(x) = \int_{-\infty}^{\infty} F(w) e^{i w x} dw = \sum_w F(w) e^{iwx}<br>$$<br>上面简化了一下，用$w$代表频率。这个公式也叫做<strong>逆傅里叶变换</strong>。</p>
+<p>从数学角度，$f(x)$是函数$f$在$x$处的取值，所有基都对该处取值有贡献，即把每个$F(w)$投影到$e^{iwx}$基方向上分量累加起来，得到的就是该点处的函数值。</p>
+<p>其中可以计算，<br>$$<br>F(w) = \frac{1}{2\pi}\int_{-\infty}^{\infty} f(x) e^{-i wx} dx<br>$$<br>$F(w)$就是<strong>傅里叶变换</strong>，得到的就是<strong>频域曲线</strong>。每个频率$w$下都有对应的振幅$F(w)$。</p>
+<p>从数学角度，$F(w)$就是每个基下对应的坐标值，所有的$x$对该基都有贡献，即把每个$f(x)$投影到$e^{-iwx}$基方向上的分量全部累加起来，得到的就是该基方向的坐标值。</p>
+<p>下面两者称为傅立叶变换对，可以相互转换：<br>$$<br>f(x) \Leftrightarrow F(w)<br>$$<br>正如之前说的，这是看待同一个数学对象的两种形式，一个是函数，一个是<strong>向量</strong>（频域曲线纵坐标构成的向量，基为频域曲线横坐标对应的的基函数）。</p>
+<h2 id="Graph傅里叶变换"><a href="#Graph傅里叶变换" class="headerlink" title="Graph傅里叶变换"></a>Graph傅里叶变换</h2><p>图上的傅里叶变换是通过下述联系实施的：</p>
+<ul>
+<li>图拉普拉斯算子， Laplacian  Operator—— Graph Laplacian Matrix。</li>
+<li>图拉普拉斯的谱分解，Graph Laplacian Matrix —— Spectral Decomposition。</li>
+<li>Graph上Dirichlet Energy最小的基， Dirichlet Energy—— Orthonormal Basis —— Spectral Decomposition —— Eigenvectors</li>
+<li>傅里叶变换，Fourier —— Fourier Basis —— Laplacian eigenfunctions</li>
+</ul>
+<p>根据4，可以证明，Fourier basis = Laplacian eigenfunctions，即Fourier的基(和频率一一对应)是拉普拉斯算子的特征函数 (满足特征方程)。根据1，在Graph上，拉普拉斯算子为拉普拉斯矩阵。根据2，拉普拉斯矩阵的谱分解得到的特征向量(和特征值一一对应)类比特征函数。因此，传统傅里叶变换在Graph的拓展就是将<strong>正弦函数</strong>基替换换成Graph拉普拉斯矩阵的<strong>特征向量</strong>，正弦函数与频率一一对应，特征向量与特征值一一对应。而根据3，这一的替换的根源意义在于，Graph拉普拉斯矩阵的<strong>特征向量</strong>作为一组基的话，这组基是Graph上Dirichlet Energy最小的基。</p>
+<p>因此，可以通过这一系列类比/桥接，实现在图上的傅里叶变换。</p>
+<h3 id="图拉普拉斯算子"><a href="#图拉普拉斯算子" class="headerlink" title="图拉普拉斯算子"></a>图拉普拉斯算子</h3><p>首先是标准的拉普拉斯算子定义：<br>$$<br>\Delta f = \sum_i \frac{\partial f}{\partial x^2}<br>$$<br>即，非混合二阶偏导数的和。$f$是拉普拉斯算子作用的<strong>函数</strong>，求函数各向二阶导数再求和，定义为$f$上的拉普拉斯算子。注意这个是其严谨的数学定义，所有的xxx拉普拉斯算子都是其一个特例，或是某种情况下(比如离散情况下)的一种近似。由于拉普拉斯算子和二阶偏导数密切相关，而二阶偏导数能够衡量函数的smoothness（不变化或缓慢变化时二阶导为0；突变或噪声，则数值不为0。因此容易检测出突变点）。</p>
+<p>接着看图像上的处理。图像是一种离散数据（看做是函数的一种特殊形式），那么其拉普拉斯算子必然要进行离散化。</p>
+<p>从一阶导数定义说起：(一阶差分近似)<br>$$<br>f^{\prime}(x) = \frac{\partial f(x)}{\partial x} \approx f(x+1) - f(x)<br>$$<br>则二阶导数近似等于其二阶差分。<br>$$<br>\begin{aligned}<br>f^{\prime \prime}(x) = \frac{\partial^2 f(x)}{\partial x^2} &amp;= f^{\prime}(x)-f^{\prime}(x-1) \\<br>&amp;= f(x+1) - f(x) - (f(x) - f(x-1)) \\<br>&amp;= f(x+1) + f(x-1) - 2f(x) \\<br>&amp;= [f(x+1) - f(x)] + [f(x-1) - f(x)]<br>\end{aligned}<br>$$<br><strong>某个二阶导数等于其在所有自由度上微扰之后获得的增益。</strong>一维函数其自由度可以理解为2，分别是+1方向和-1方向，增益分别为：$f(x+1) - f(x)$ 和 $f(x-1) - f(x)$。总增益为所有方向增益的和。</p>
+<p>同理对于图像而言，<br>$$<br>\begin{aligned}<br>(\Delta f)_{x,y} &amp;= \frac{\partial f(x,y)}{\partial x^2} + \frac{\partial f(x,y)}{\partial y^2} \\<br>&amp;\approx f(x+1,y) + f(x-1,y) - 2f(x,y) + f(x, y+1)+f(x,y-1)-2f(x,y)  \\<br>&amp; = f(x+1,y) + f(x-1,y) + f(x, y+1)+f(x,y-1)-4f(x,y) \\<br>&amp;= [f(x+1,y) - f(x,y)]+[f(x-1,y) - f(x,y)]+[f(x,y+1) - f(x,y)]+[f(x,y-1) - f(x,y)]<br>\end{aligned}<br>$$<br>上下左右共4个自由度$(1, 0), (-1,0), (0, 1), (0, -1)$（当然还可以任意的定义自由度，比如对角线也算的话，就是8个自由度。在卷积时，使用的拉普拉斯模板就对应着1种方式的自由度定义）。在图像上某一点$(x,y)$，其拉普拉斯算子的值$(\Delta f)_{x,y}$，<strong>即为对其进行扰动，使其变化到相邻像素后得到的增益。</strong> </p>
+<p>这给我们一种形象的结论：<strong>拉普拉斯算子就是在所有自由度上进行微小变化后获得的增益 (另一种说明，Informally, the Laplacian measures how different the value of f at p is from the average value of the neighbors)。</strong></p>
+<p>那么推广到Graph, 对于有$N$个节点的Graph, 其邻接矩阵为$W$。这个Graph的自由度为$N$。<strong>因为如果该图是一个完全图，即任意两个节点之间都有一条边，那么对一个节点进行微扰，它可能变成任意一个节点。</strong></p>
+<p>那么上面的函数$f$就理所当然是一个$N$维的向量，即：<br>$$<br>\boldsymbol{f} = (f_1, …, f_N)<br>$$<br>其中，$f_i$表示函数在节点$i$的值（<strong>跟节点相关的信息，如节点属性等，可以是标量或向量，最基本的向量信息就是节点编号one-hot向量，这里先用标量</strong>），类比$f(x,y)$在$(x,y)$的值。$\boldsymbol{f}$可以表示Graph (权重还没考虑)。</p>
+<p>对于任意节点$i$，对$i$节点进行微扰，它可能变为任意一个与他相邻的节点$j \in N_i$。</p>
+<p>前面提到，拉普拉斯算子就是在所有自由度上进行微小变化后获得的增益。对于图而言，从节点$i$变化到节点$j$增益是$f_j-f_i$。不过通常这里头写作取负数的形式（无非就是L=D-W还是W-D的问题），即$f_i-f_j$。<strong>再考虑边的权重</strong>，可以认为增益是：$w_{ij} (f_i - f_j)$。那么对于节点$i$，总的增益即为拉普拉斯算子在节点$i$的值：<br>$$<br>\begin{aligned}<br>(\Delta \boldsymbol{f})_i &amp;= \sum_{j} \frac{\partial f_i}{\partial j^2} \\<br>&amp; \approx  \sum_{j \in N_i} w_{ij} (f_i - f_j) \\<br>&amp;=  \sum_{j} w_{ij} (f_i - f_j) \\<br>&amp;= (\sum_{j} w_{ij}) f_i - \sum_j w_{ij} f_j \\<br>&amp;=(\boldsymbol{D} \boldsymbol{f})_i - (\boldsymbol{W} \boldsymbol{f})_i \\<br>&amp;= [(\boldsymbol{D} - \boldsymbol{W}) \boldsymbol{f}]_i<br>\end{aligned}<br>$$<br>上述$j \in N_i$去掉是因为非邻接点$w_{ij}=0$。粗体代表矩阵或向量。</p>
+<p>对于任意的$i$, 都有上述的结论。故：<br>$$<br>\Delta \boldsymbol{f} = (\boldsymbol{D}- \boldsymbol{W}) \boldsymbol{f}<br>$$<br>这个公式全称：图拉普拉斯算子作用在由图节点信息构成的向量上$\boldsymbol{f}$得到的结果等于图拉普拉斯矩阵和向量$\boldsymbol{f}$的点积。</p>
+<p>左式$\Delta \boldsymbol{f} $要看成一个整体(而不是乘法)，即，图拉普拉斯算子作用在由图节点信息构成的向量上$\boldsymbol{f}$得到的结果。右边是矩阵乘法，即$\boldsymbol{L}=\boldsymbol{D}- \boldsymbol{W}$ 拉普拉斯矩阵和向量$\boldsymbol{f}$乘法（当节点的信息为向量时，$\boldsymbol{f}$为矩阵）。通常，$\boldsymbol{L}=\boldsymbol{D}- \boldsymbol{W}$ 图拉普拉斯矩阵也直接称作图拉普拉斯算子，即$\Delta= \boldsymbol{L}=\boldsymbol{D}-\boldsymbol{W}$，此时就可以认为，$\Delta \boldsymbol{f}$ 是乘法，只不过实际上<strong>这种写法是等式右边的式子</strong>，而不是左边的式子。</p>
+<p>我们可以发现，图拉普拉斯算子作用在<strong>节点信息</strong>$f_i$上，并不会改变$f_i$的形状。当$f_i \in \mathbb{R}^{h}$, 则$(\Delta f)_i \in \mathbb{R}^{h}$ 。只不过上述讨论都是基于$f_i$为标量展开的。</p>
+<h3 id="拉普拉斯矩阵的谱分解"><a href="#拉普拉斯矩阵的谱分解" class="headerlink" title="拉普拉斯矩阵的谱分解"></a>拉普拉斯矩阵的谱分解</h3><p>拉普拉斯矩阵的谱分解就是特征分解。由于拉普拉斯矩阵时<strong>半正定对称矩阵</strong>的，因此拥有诸多优秀性质：</p>
+<ul>
+<li><strong>对称矩阵一定n个线性无关的特征向量</strong>（n是Graph节点数）</li>
+<li><strong>半正定矩阵的特征值一定非负</strong></li>
+<li><strong>对阵矩阵的特征向量相互正交，即所有特征向量构成的矩阵为正交矩阵。</strong></li>
+</ul>
+<p>谱分解：<br>$$<br>\boldsymbol{L} \boldsymbol{\phi}_k = \lambda_k \boldsymbol{\phi_k}, k=1,2…,n<br>$$<br>由于半正定对称矩阵，故有：<br>$$<br>\boldsymbol{L} = \boldsymbol{\Phi} \boldsymbol{\Lambda} \boldsymbol{\Phi}^T<br>$$<br>$\boldsymbol{\Phi}=(\boldsymbol{\phi_1}, \boldsymbol{\phi_2},…,\boldsymbol{\phi_n}) \in \mathbb{R}^{n \times n}$ 是<strong>列向量</strong>为单位特征向量构成的正交矩阵。$\boldsymbol{\Lambda}=diag(\lambda_1,…,\lambda_n)$是由对应特征值构成对角阵。</p>
+<h3 id="Dirichlet-Energy"><a href="#Dirichlet-Energy" class="headerlink" title="Dirichlet Energy"></a>Dirichlet Energy</h3><p>Dirichlet Energy衡量了函数的平滑性Smoothness。Dirichlet Energy定义为：<br>$$<br>E_{Dir}(\boldsymbol{f})= \boldsymbol{f}^T \boldsymbol{\Delta} \boldsymbol{f}<br>$$<br>$\boldsymbol{f}$是函数，$\boldsymbol{\Delta}$是拉普拉斯算子。</p>
+<p>我们的目标是寻找<strong>Graph</strong>上Dirichlet Energy最小一组<strong>单位正交基</strong>（每个基都可以看出函数）。</p>
+<p>巧合的是，这样的正交基正好就是对拉普拉斯矩阵$\boldsymbol{L}$进行谱分解得到的特征向量${\boldsymbol{\phi_1}, …, \boldsymbol{\phi_n}}$。</p>
+<p>因此，这也是下文从传统傅里叶变换推广到Graph上傅里叶变换时，进行类比和替换的<strong>理论解释</strong>。</p>
+<h3 id="Graph傅里叶变换-1"><a href="#Graph傅里叶变换-1" class="headerlink" title="Graph傅里叶变换"></a>Graph傅里叶变换</h3><p>回顾下传统的傅里叶变换，<br>$$<br>F(k) = \frac{1}{2\pi}\int_{-\infty}^{\infty} f(x) e^{-i kx} dx \approx \langle f,e^{-ikx} \rangle<br>$$<br>$F(k)$是傅里叶系数（即频率为$k$时的振幅值）。约等号去掉了常数系数，同时$x$为离散变量时，离散积分等于内积。</p>
+<p>$e^{-ikx}$为Fourier Basis。可以证明$e^{-ikx}$是<strong>拉普拉斯算子的特征函数</strong>（满足特征方程$AV=\lambda V$），证明：<br>$$<br>\Delta e^{-ikx} = \frac{\partial e^{-ikx}}{\partial x^2} = - k^2 e^{-ikx} \\<br>$$<br>在Graph上作类比，$\boldsymbol{\phi}_k$是图拉普拉斯算子$\boldsymbol{L}$的<strong>特征向量</strong>（满足$\boldsymbol{L} \boldsymbol{\phi_k} = \lambda_k \boldsymbol{\phi_k}$）。即，在Graph中，$\Delta=\boldsymbol{L},  e^{-ikx}= \boldsymbol{\phi_k}$，而$k$和特征值$\lambda_k$有关。</p>
+<p>因此，为了在Graph上进行傅里叶变换，可以把传统傅里叶变换中的$e^{-ikx}$换成$\boldsymbol{\phi_k}$。（换了种<strong>基</strong>）</p>
+<table>
+<thead>
+<tr>
+<th>传统傅里叶变换</th>
+<th>图傅里叶变换</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>频率（$k$）</td>
+<td>特征值（$\lambda_k$）</td>
+</tr>
+<tr>
+<td>正弦函数（$e^{-ikx}$）</td>
+<td>特征向量（$\boldsymbol{\phi}_k$）</td>
+</tr>
+<tr>
+<td>振幅（$F(k)$）</td>
+<td>振幅（$F(\lambda_k)$）</td>
+</tr>
+</tbody>
+</table>
+<p>则，图上的傅里叶变换写作：<br>$$<br>F(\lambda_k) =\hat{f}_k= \left&lt; \boldsymbol{f}, \boldsymbol{\phi_k}\right&gt;<br>$$<br>$\boldsymbol{f}=(f_1,…,f_n)$是由节点信息构成的n维向量。做个类似的解释，即特征值$\lambda_k$(频率)下，$\boldsymbol{f}$的Graph傅里叶变换（振幅）等于$\boldsymbol{f}$与$\lambda_k$对应的特征向量$\boldsymbol{\phi_k}$的内积。</p>
+<p>推广到矩阵形式，<strong>图傅里叶变换</strong>：<br>$$<br>\hat{\boldsymbol{f}} = \boldsymbol{\Phi}^T \boldsymbol{f}<br>$$<br>其中，$\hat{\boldsymbol{f}}=(\hat{f}_1, \hat{f}_2,…, \hat{f}_n)$，即图傅里叶变换，即不同特征值(频率)下对应的振幅构成的向量。$\boldsymbol{f}=(f_1,..,f_n)$是由节点信息构成的n维向量。</p>
+<p>类似的，传统<strong>逆傅里叶变换</strong>：（n个正弦波的叠加）<br>$$<br>\mathcal{F}^{-1}[F(k)] = f(x) = \sum_k F(k) e^{ikx} = \sum_k \underbrace{\frac{1}{2\pi}\int_{-\infty}^{\infty} f(x^{\prime}) e^{-i kx^{\prime}} dx^{\prime}}_{\text{Fourier Coefficient}}  e^{ikx}<br>$$<br><strong>迁移到Graph上的逆傅里叶变换</strong>：$e^{ikx} e^{-ikx}=1$，两个基正交，类比于$(\boldsymbol{\phi}_{k}^T \boldsymbol{\phi}_{k})_i=1$。<br>$$<br>f_i= \sum_{k=1}^n \hat{f}_k (\boldsymbol{\phi_{k}}^T )_i<br>$$<br>推广到矩阵形式，<br>$$<br>\boldsymbol{f} = \boldsymbol{\Phi} \boldsymbol{\hat{f}}<br>$$</p>
+<p>个人理解，<strong>Graph傅里叶变换是为了将Graph从Spatial Domain转换到Spectural Domain，使得Graph在Spectural Domain有向量化表示，卷积更方便。这就类比于，传统傅里叶变换为了将Function从Time Domain转换到Frequency Domain，使得Function在Frequency Domain有向量化表示。</strong></p>
+<h2 id="Graph-Convolution"><a href="#Graph-Convolution" class="headerlink" title="Graph Convolution"></a>Graph Convolution</h2><p><strong>卷积定理：函数卷积的傅里叶变换是函数傅立叶变换的乘积，即对于函数$f$与$h$两者的卷积是其函数傅立叶变换乘积的逆变换。</strong><br>$$<br>\boldsymbol{f} * \boldsymbol{h} = \mathcal{F}^{-1}[\hat{\boldsymbol{f}} \circ \hat{\boldsymbol{h}}]= \sum_k (\hat{f}(k) \cdot \hat{h}(k)) e^{ikx}<br>$$<br><strong>类比到Graph上并把傅里叶变换的定义带入</strong>，$\boldsymbol{f}=(f_1…,f_n)$为Graph节点信息向量，$h$为卷积核，则$f$和$h$<strong>在Graph上的卷积可按下列步骤求出：</strong></p>
+<ul>
+<li>$\boldsymbol{f}$的Graph傅里叶变换：$\hat{\boldsymbol{f}} = \boldsymbol{\Phi}^T \boldsymbol{f}$</li>
+<li><p>卷积核$\boldsymbol{h}$的Graph傅里叶变换为：$\hat{\boldsymbol{h}}=(\hat{h}_1,…,\hat{h}_n)$，其中，$\hat{h}_k=\langle h, \phi_k \rangle, k=1,2…,n$。实际上，$\hat{\boldsymbol{h}}=\boldsymbol{\Phi}^T \boldsymbol{h}$.</p>
+</li>
+<li><p>求图傅里叶变换向量$\hat{\boldsymbol{f}} \in \mathbb{R}^{N \times 1}$和$\hat{\boldsymbol{h}} \in \mathbb{R}^{N \times 1}$ 的element-wise乘积，等价于将$\hat{\boldsymbol{h}}$组织成对角矩阵的形式，即$diag[\hat{h}(\lambda_k)] \in \mathbb{R}^{N \times N}$，再求$diag[\hat{h}(\lambda_k)] $和$\hat{\boldsymbol{f}}$矩阵乘法（稍微想一下就可以知道）。</p>
+</li>
+<li>求上述结果的逆傅里叶变换，即左乘$\boldsymbol{\Phi}$。</li>
+</ul>
+<p>则：图上的卷积定义为：<br>$$<br>(\boldsymbol{f} * \boldsymbol{h})_\mathcal{G}=\boldsymbol{\Phi}  \text{diag}[\hat{h}(\lambda_1),…,\hat{h}(\lambda_n)] \boldsymbol{\Phi}^T \boldsymbol{f} \tag{1}<br>$$</p>
+<h2 id="Deep-Learning中的Graph-Convolution"><a href="#Deep-Learning中的Graph-Convolution" class="headerlink" title="Deep Learning中的Graph Convolution"></a>Deep Learning中的Graph Convolution</h2><p>Deep Learning中的<strong>Convolution就是要设计含有trainable</strong>共享参数的kernel。<strong>从公式1看很直观：graph convolution</strong>的参数就是$\text{diag}[\hat{h}(\lambda_1),…,\hat{h}(\lambda_n)]$，也就是说，简单粗暴的将其变成了卷积核 $diag [\theta_1,…,\theta_n]$。这也是为什么我们前面不把卷积核$\boldsymbol{h}$的Graph傅里叶变换表示为$\hat{\boldsymbol{h}}=\boldsymbol{\Phi}^T \boldsymbol{h}$的原因，我们要把$\boldsymbol{h}$变换后的结果$\boldsymbol{\hat{h}}$直接作为参数向量$\boldsymbol{\theta} \rightarrow \boldsymbol{\hat{h}}$进行学习。</p>
+<p>可以得到第一代的GCN，(<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1312.6203" target="_blank" rel="noopener">Spectral Networks and Locally Connected Networks on Graphs</a>)：<br>$$<br>\boldsymbol{y}_{output} = \sigma(\boldsymbol{\Phi}  \boldsymbol{g}_{\theta} \boldsymbol{\Phi}^T \boldsymbol{x})=\sigma(\boldsymbol{\Phi}  \text{diag}[\theta_1,…,\theta_n] \boldsymbol{\Phi}^T \boldsymbol{x})<br>$$<br><strong>$\boldsymbol{x}$就是graph上对应于每个顶点的feature构成的向量$\boldsymbol{x}=(x_1,x_2,…,x_n)$，目前仍然是每个节点信息是标量（即单通道），后续推广到向量很方便（多通道）。</strong> $\boldsymbol{y}_{output}$是该节点卷积后的输出。所有的节点都要经过该操作，得到各自的输出。再$\sigma$激活后，传入下一层。$\boldsymbol{g}_{\boldsymbol{\theta}}=\text{diag}[\theta_1,…,\theta_n]$。相当于拿这个卷积核每个节点卷一遍。</p>
+<p>这个问题在于，</p>
+<ul>
+<li><p>复杂度太高，需要对拉普拉斯矩阵进行谱分解求$\boldsymbol{\Phi}$，Graph很大时复杂度较高。每次前向传播都要计算矩阵乘积，复杂度$O(n^2)$， $n$为Graph节点数。</p>
+</li>
+<li><p>卷积核的参数为$n$，当Graph很大时，$n$非常大。</p>
+</li>
+<li>卷积核的spatial localization不好。（相对于下一代GCN而言）</li>
+</ul>
+<p>第二代的GCN，<a href="http://papers.nips.cc/paper/6081-convolutional-neural-networks-on-graphs-with-fast-localized-spectral-filtering" target="_blank" rel="noopener">Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering</a></p>
+<p>为了解决上述问题，首先回顾一下，<strong>图傅里叶变换</strong>是关于特征值(频率)的函数$F(\lambda_1), …,F(\lambda_n)$, 即，$F(\boldsymbol{\Lambda})$，因此可以将上述卷积核$\boldsymbol{g}_{\theta}$写作$\boldsymbol{g}_{\boldsymbol{\theta}}(\boldsymbol{\Lambda})$。接着，将$\boldsymbol{g}_{\boldsymbol{\theta}}(\boldsymbol{\Lambda})$定义成如下<strong>k阶多项式</strong>形式：<br>$$<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}}(\boldsymbol{\Lambda}) \approx \sum_{k=0}^K \theta_k^{\prime} \boldsymbol{\Lambda}^k<br>$$<br>代入可以得到：<br>$$<br>\begin{aligned}<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} &amp;\approx \boldsymbol{\Phi} \sum_{k=0}^K \theta_k^{\prime} \boldsymbol{\Lambda}^k \boldsymbol{\Phi}^T \boldsymbol{x} \\<br>&amp;= \sum_{k=0}^K \theta_k^{\prime} (\boldsymbol{\Phi}  \boldsymbol{\Lambda}^k \boldsymbol{\Phi}^T) \boldsymbol{x} \\<br>&amp;= \sum_{k=0}^K \theta_k^{\prime} (\boldsymbol{\Phi}  \boldsymbol{\Lambda}\boldsymbol{\Phi}^T)^k \boldsymbol{x} \\<br>&amp; = \sum_{k=0}^K \theta_k^{\prime} \boldsymbol{L}^k \boldsymbol{x}<br>\end{aligned}<br>$$<br>上述推导第三步应用了特征分解的性质。</p>
+<p>上式为第二代的GCN。不需要做特征分解了，直接对拉普拉斯矩阵进行变换。可以事先把$\boldsymbol{L}^{k}$计算出来，这样前向传播的时候，就只需要计算矩阵和相邻的乘法。复杂度为$O(Kn^2)$。如果使用稀疏矩阵（$L$比较稀疏）算法，复杂度为$O(k|E|)$.</p>
+<p>那么上式是如何体现localization呢？我们知道，矩阵的$k$次方可以用于求连通性，即1个节点经过$k$步能否到达另一个顶点，矩阵$k$次方结果中对应元素非0的话可达，为0不可达。因此$L$矩阵的$k$次方的含义就是代表$\text{k-hop}$之内的节点。进一步，根据拉普拉斯算子的性质。可以证明，如果两个节点的最短路径大于$K$的话，那么$L^{K}$在相应位置的元素值为0。因此，实际上只利用到了节点的K-Localized信息。</p>
+<p>另外，作者提到，可以引入切比雪夫展开式来近似$\boldsymbol{L}^k$，因为<strong>任何k次多项式都可以使用切比雪夫展开式来近似</strong>。(类比泰勒展开式对函数进行近似）。</p>
+<p>引入切比雪夫多项式（Chebyshev polynomial) $T_k(x)$的$K$阶截断获得对$\boldsymbol{L}^k$的近似，进而获得对$\boldsymbol{g}_{\theta}(\boldsymbol{\Lambda})$的近似，来降低时间复杂度。<br>$$<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}}(\boldsymbol{\Lambda}) \approx \sum_{k=0}^K \theta_k^{\prime} T_k(\tilde{\boldsymbol{\Lambda}})<br>$$<br>其中，$\tilde{\boldsymbol{\Lambda}}=\frac{2}{\lambda_{max}}\boldsymbol{\Lambda}-\boldsymbol{I}_n$为经图拉普拉斯矩阵$L$的最大特征值（即谱半径）缩放后的特征向量矩阵（防止连乘爆炸）。$\boldsymbol{\theta}^{\prime} \in \mathbb{R}^{K}$表示一个<strong>切比雪夫向量</strong>，$\theta_k^{\prime}$是第$k$维分量。切比雪夫多项式$T_k(x)$使用递归的方式进行定义：$T_k(x)=2xT_{k-1}(x)-T_{k-2}(x)$，其中$T_0(x)=1,T_1(x)=x$。</p>
+<p>此时，可以使用近似的$\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}}$替换原来的$\boldsymbol{g}_{\theta}$，可以得到：<br>$$<br>\begin{aligned}<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} &amp;\approx \boldsymbol{\Phi} \sum_{k=0}^K \theta_k^{\prime} T_k(\tilde{\boldsymbol{\Lambda}}) \boldsymbol{\Phi}^T \boldsymbol{x} \ <br>&amp;\approx \sum_{k=0}^K \theta_k^{\prime} (\boldsymbol{\Phi}  T_k(\tilde{\boldsymbol{\Lambda}}) \boldsymbol{\Phi}^T) \boldsymbol{x} \\<br>&amp;=\sum_{k=0}^K \theta_k^{\prime} T_k(\tilde{\boldsymbol{L}}) \boldsymbol{x}<br>\end{aligned}<br>$$<br>其中，$\tilde{\boldsymbol{L}}=\frac{2}{\lambda_{max}} \boldsymbol{L}- \boldsymbol{I}_n$。</p>
+<p>因此有，<br>$$<br>\boldsymbol{y}_{output} = \sigma(\sum_{k=0}^K \theta_k^{\prime} T_k(\tilde{\boldsymbol{L}}) \boldsymbol{x})<br>$$<br>参数向量$\boldsymbol{\theta}^{\prime} \in \mathbb{R}^{k}$，需要通过反向传播学习。时间复杂度也是$O(K|E|)$。</p>
+<p>第三代的GCN对上式进一步简化，<a href="https://arxiv.org/abs/1609.02907" target="_blank" rel="noopener">Semi-Supervised Classification with Graph Convolutional Networks</a></p>
+<ul>
+<li><p>取$K=1$，此时模型是1阶的first-order proximity。即每层卷积层只考虑了直接邻域，类似CNN中3*3的卷积核。</p>
+</li>
+<li><p>深度加深，宽度减小。即，若要建立多阶 proximity，只需要使用多个卷积层。</p>
+</li>
+<li><p>并加了参数的一些约束，如: $\lambda_{max}\approx2$，引入renormalization trick，大大简化了模型。</p>
+<p>具体推导，首先$K=1,\lambda_{max}=2$代入，</p>
+</li>
+</ul>
+<p>$$<br>\begin{aligned}<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} &amp;\approx \theta_0^{\prime} \boldsymbol{x} + \theta_1^{\prime}(\boldsymbol{L}- \boldsymbol{I}_n) \boldsymbol{x} \\<br>&amp;= \theta_0^{\prime} \boldsymbol{x} - \theta_1^{\prime}(\boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}) \boldsymbol{x}<br>\end{aligned}<br>$$</p>
+<p>上述推导利用了归一化拉普拉斯矩阵$\boldsymbol{L}=\boldsymbol{D}^{-1/2}(\boldsymbol{D}-\boldsymbol{W})\boldsymbol{D}^{-1/2}=\boldsymbol{I_n}-\boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}$。此时只有两个参数，即每个卷积核只有2个参数，$\boldsymbol{W}$是邻接矩阵。</p>
+<p>进一步简化，假设$\theta_0^{\prime}=-\theta_1^{\prime}$，则此时单个通道的单个卷积核参数只有1个$\theta$：<br>$$<br>\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x} = \theta(\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}) \boldsymbol{x}<br>$$</p>
+<p>$\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2}$谱半径$[0,2]$太大，使用renormalization trick（关于这个trick，参考<a href="https://zhuanlan.zhihu.com/p/60014316" target="_blank" rel="noopener">从 Graph Convolution Networks (GCN) 谈起</a>，讲的非常好！），<br>$$<br>\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2} \rightarrow \tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}<br>$$<br>其中，$\tilde{\boldsymbol{W}}=\boldsymbol{W}+\boldsymbol{I}_n$(相当于加了<strong>self-connection</strong>，本来$\boldsymbol{W}$对角元素为0) , $\tilde{\boldsymbol{D}}_{i,i}=\sum_{j} \boldsymbol{\tilde{W}}_{ij}$。</p>
+<p>则：<br>$$<br>\underbrace{\boldsymbol{g}_{\boldsymbol{\theta^{\prime}}} * \boldsymbol{x}}_{\mathbb{R}^{n \times 1}} = \theta(\underbrace{\tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}}_{\mathbb{R}^{n \times n}}) \underbrace{\boldsymbol{x}}_{\mathbb{R}^{n \times 1}}<br>$$</p>
+<p>推广到<strong>多通道</strong>(单个节点的信息是向量，对比图像上3个通道RGB的值构成3维向量)和<strong>多卷积核</strong>(每个卷积核只有1个参数)，即，<br>$$<br>\boldsymbol{x} \in \mathbb{R}^{N \times 1} \rightarrow \boldsymbol{X} \in \mathbb{R}^{N \times C}<br>$$<br>其中，$N$是节点的<strong>数量</strong>，$C$是通道数，或者称作表示节点的<strong>信息维度数。</strong> $\boldsymbol{X}$是节点的feature矩阵。</p>
+<p>相应的卷积核参数变化：<br>$$<br>\theta \in \mathbb{R} \rightarrow \boldsymbol{\Theta} \in \mathbb{R}^{C \times F}<br>$$<br>其中，$F$为卷积核数量。</p>
+<p>则卷积结果写作矩阵形式如下：<br>$$<br>\underbrace{\boldsymbol{Z}}_{\mathbb{R}^{N \times F}} = \underbrace{\tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}}_{\mathbb{R}^{N \times N}} \underbrace{\boldsymbol{X}}_{\mathbb{R}^{N \times C}} \ \ \underbrace{\boldsymbol{\Theta}}_{\mathbb{R}^{C \times F}}<br>$$<br>最终得到的卷积结果$\boldsymbol{Z} \in \mathbb{R}^{N \times F}$。即，每个节点的卷积结果的维数等于卷积核数量。</p>
+<p>上述操作可以叠加多层，对$\boldsymbol{Z}$激活一下，然后将激活后的$Z$作为下一层的节点的feature矩阵。</p>
+<p>第三代GCN特点总结：</p>
+<ul>
+<li>复杂度为$O(E)$ (稀疏矩阵优化的话)</li>
+<li>只考虑1-hop，若要建模多hop，通过叠加层数，获得更大的感受野。（联想NLP中使用卷积操作语句序列时，也是通过叠加多层来达到获取长依赖的目的）。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.matongxue.com/madocs/712/" target="_blank" rel="noopener">马同学: 从傅立叶级数到傅立叶变换</a></p>
+<p><a href="https://www.zhihu.com/question/21040374/answer/37911622" target="_blank" rel="noopener">信号频域和时域的关系？ - 言东的回答 - 知乎</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzU0ODk1MTcwNA==&amp;mid=2247484257&amp;idx=1&amp;sn=70ceb8cad8a091dd1c93aaca84b77d21&amp;chksm=fbb60096ccc18980ce324f5476d663d411f712765822635a20cb4c4f1ed209972ae5cbb54c6d&amp;token=350853886&amp;lang=zh_CN#rd" target="_blank" rel="noopener">图拉普拉斯算子为何定义为D-W</a></p>
+<p><a href="https://www.zhihu.com/question/54504471/answer/360026284" target="_blank" rel="noopener">如何理解 Graph Convolutional Network（GCN）？ - Becca的回答 - 知乎</a></p>
+<p><a href="https://arxiv.org/pdf/1211.0053.pdf" target="_blank" rel="noopener">The Emerging Field of Signal Processing on Graphs</a></p>
+<p><a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1312.6203" target="_blank" rel="noopener">Spectral Networks and Locally Connected Networks on Graphs</a></p>
+<p><a href="http://papers.nips.cc/paper/6081-convolutional-neural-networks-on-graphs-with-fast-localized-spectral-filtering" target="_blank" rel="noopener">Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering</a></p>
+<p><a href="https://arxiv.org/abs/1609.02907" target="_blank" rel="noopener">Semi-Supervised Classification with Graph Convolutional Networks</a></p>
+<p><a href="https://www.zhihu.com/question/54504471/answer/332657604" target="_blank" rel="noopener">如何理解 Graph Convolutional Network（GCN）？ - superbrother的回答 - 知乎</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/31067515" target="_blank" rel="noopener">Semi-Supervised Classification with Graph Convolutional Networks阅读笔记</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/43972372" target="_blank" rel="noopener">Graph Neural Network Review</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/60014316" target="_blank" rel="noopener">从 Graph Convolution Networks (GCN) 谈起</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/推荐系统/" rel="tag"># 推荐系统</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/Graph-Embedding/" rel="tag"># Graph Embedding</a>
+          
+            <a href="/tags/Representation-Learning/" rel="tag"># Representation Learning</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/06/attention/" rel="next" title="Attention in Deep Learning">
+                <i class="fa fa-chevron-left"></i> Attention in Deep Learning
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/04/GAN/" rel="prev" title="生成对抗网络">
+                生成对抗网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#傅里叶变换"><span class="nav-number">1.</span> <span class="nav-text">傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时域和频域"><span class="nav-number">1.1.</span> <span class="nav-text">时域和频域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#傅里叶级数"><span class="nav-number">1.2.</span> <span class="nav-text">傅里叶级数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#举例"><span class="nav-number">1.2.1.</span> <span class="nav-text">举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#傅里叶级数是向量"><span class="nav-number">1.2.2.</span> <span class="nav-text">傅里叶级数是向量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#欧拉公式"><span class="nav-number">1.3.</span> <span class="nav-text">欧拉公式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#傅里叶变换-1"><span class="nav-number">1.4.</span> <span class="nav-text">傅里叶变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Graph傅里叶变换"><span class="nav-number">2.</span> <span class="nav-text">Graph傅里叶变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#图拉普拉斯算子"><span class="nav-number">2.1.</span> <span class="nav-text">图拉普拉斯算子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拉普拉斯矩阵的谱分解"><span class="nav-number">2.2.</span> <span class="nav-text">拉普拉斯矩阵的谱分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dirichlet-Energy"><span class="nav-number">2.3.</span> <span class="nav-text">Dirichlet Energy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Graph傅里叶变换-1"><span class="nav-number">2.4.</span> <span class="nav-text">Graph傅里叶变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Graph-Convolution"><span class="nav-number">3.</span> <span class="nav-text">Graph Convolution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deep-Learning中的Graph-Convolution"><span class="nav-number">4.</span> <span class="nav-text">Deep Learning中的Graph Convolution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,1236 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="标签挖掘,paper,特征交互,腾讯," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近在调研内容理解相关的工作，发现了KDD 2019上，腾讯和阿尔伯塔大学刘邦大佬[2]合作的工作 A User-Centered Concept Mining System for Query and Document Understanding at Tencent [1]，以用户为中心的概念挖掘系统在查询和文档理解中的应用。这篇文章信息量非常大，是一篇非常偏实践性的文章，值得深读。网上关于这">
+<meta name="keywords" content="标签挖掘,paper,特征交互,腾讯">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDD&#39;19|ConcepT 腾讯概念标签体系">
+<meta property="og:url" content="xtf615.com/2021/05/20/ConcepT/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="最近在调研内容理解相关的工作，发现了KDD 2019上，腾讯和阿尔伯塔大学刘邦大佬[2]合作的工作 A User-Centered Concept Mining System for Query and Document Understanding at Tencent [1]，以用户为中心的概念挖掘系统在查询和文档理解中的应用。这篇文章信息量非常大，是一篇非常偏实践性的文章，值得深读。网上关于这">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/qr_sr_code.png">
+<meta property="og:image" content="/picture/machine-learning/concept_demo.png">
+<meta property="og:image" content="/picture/machine-learning/concept_mining.png">
+<meta property="og:image" content="/picture/machine-learning/crf_feat.png">
+<meta property="og:image" content="/picture/machine-learning/quality_control.png">
+<meta property="og:image" content="/picture/machine-learning/tagging_demo.png">
+<meta property="og:image" content="/picture/machine-learning/document_tagging.png">
+<meta property="og:image" content="/picture/machine-learning/gbrank_feat.png">
+<meta property="og:image" content="/picture/machine-learning/taxonomy.png">
+<meta property="og:image" content="/picture/machine-learning/topic_classify.png">
+<meta property="og:image" content="/picture/machine-learning/uccm.png">
+<meta property="og:image" content="/picture/machine-learning/comp_concept_mining.png">
+<meta property="og:image" content="xtf615.com/2021/05/20/ConcepT/d/picture/machine-learning/oc_tagging_data.png">
+<meta property="og:image" content="/picture/machine-learning/eval_concept_instance_relation.png">
+<meta property="og:image" content="/picture/machine-learning/feeds_rec.png">
+<meta property="og:image" content="/picture/machine-learning/online_ab.png">
+<meta property="og:updated_time" content="2021-05-23T14:59:42.213Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KDD&#39;19|ConcepT 腾讯概念标签体系">
+<meta name="twitter:description" content="最近在调研内容理解相关的工作，发现了KDD 2019上，腾讯和阿尔伯塔大学刘邦大佬[2]合作的工作 A User-Centered Concept Mining System for Query and Document Understanding at Tencent [1]，以用户为中心的概念挖掘系统在查询和文档理解中的应用。这篇文章信息量非常大，是一篇非常偏实践性的文章，值得深读。网上关于这">
+<meta name="twitter:image" content="/picture/qr_sr_code.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2021/05/20/ConcepT/"/>
+
+
+
+
+
+  <title> KDD'19|ConcepT 腾讯概念标签体系 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2021/05/20/ConcepT/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                KDD'19|ConcepT 腾讯概念标签体系
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-05-20T20:46:03+08:00">
+                2021-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在调研内容理解相关的工作，发现了KDD 2019上，腾讯和阿尔伯塔大学刘邦大佬<sup>[2]</sup>合作的工作 <strong>A User-Centered Concept Mining System for Query and Document Understanding at Tencent</strong> <sup>[1]</sup>，<strong>以用户为中心的概念挖掘系统</strong>在查询和文档理解中的应用。这篇文章信息量非常大，是一篇非常偏实践性的文章，值得深读。网上关于这篇文章的介绍主要是参考文献<sup>[3,4]</sup>，其关于背景和技术的介绍比较到位，但是对整个工作脉络以及关键技术细节的梳理不太够。故借此机会，主要按照原文的行文思路，重新梳理下整个工作流程以及一些在内容理解中可能会用到的关键技术。<br><a id="more"></a></p>
+<p>欢迎关注我的公众号”蘑菇先生学习记”，更快更及时地获取关于推荐系统的前沿进展！</p>
+<p><img src="/picture/qr_sr_code.png" alt="qr_sr_code"></p>
+<h1 id="1-Motivation"><a href="#1-Motivation" class="headerlink" title="1.Motivation"></a>1.Motivation</h1><p>概念(Concept)蕴含着<strong>世界知识</strong>，指导着人类认知的发展。从海量的web文档中<strong>挖掘概念</strong>并构建相应的<strong>标签体系</strong>在文本理解领域是非常重要的研究问题。但是目前为止，大部分工作都是从<strong>百科或者网页文章中提取通用、浅层、粗粒度的概念</strong>，和用户<strong>认知视角</strong>以及<strong>用户兴趣</strong>并不一致。举个例子：”丰田4Runner”是一款”丰田SUV”(浅层概念)，但用户可能更感兴趣的点在于：”底盘高的汽车”或者”越野型汽车”。为此，这篇文章提出了<strong>ConcepT</strong>概念挖掘系统，通过海量的用户查询和搜索点击日志，能够挖掘以用户为中心、符合用户兴趣的概念。进一步，作者提出了一种<strong>文档概念标签打标</strong>的方法并构建了<strong>topic-concept-instance</strong>的三级标签体系，应用于腾讯QQ浏览器的搜索引擎和新闻feeds推荐系统中，能够有效提高feeds的分发效率和搜索引擎的用户体验。</p>
+<h1 id="2-Contribution"><a href="#2-Contribution" class="headerlink" title="2. Contribution"></a>2. Contribution</h1><p>核心的工作包括如下几个部分：</p>
+<ul>
+<li><p><strong>候选概念挖掘</strong>。从海量的<strong>query日志</strong>中挖掘候选的概念。包括了两种无监督策略和一种监督策略。</p>
+<ul>
+<li><p>无监督策略，(1) <strong>基于模式匹配的自助法</strong>。通过预定义的pattern来找到新的概念；同样，通过新的概念来反向补充和丰富pattern池；进一步，通过新发现的pattern，继续去找新的概念。周而复始，可以发现很多概念。(2) <strong>查询词-标题对齐法</strong>。核心假设在于是<strong>query中重要的概念</strong>一定会在用户点击的<strong>文档标题</strong>中反复出现。这样可以从标题中挖掘出用户意图导向的概念。</p>
+</li>
+<li><p>监督策略，基于无监督方法挖掘出来的种子概念集构造监督训练集，训练一个<strong>CRF序列标注模型</strong>和<strong>质量判别模型</strong>。质量判别模型用于控制CRF抽取的concept的质量。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>文档概念打标</strong>。包括了两种方法。 (1) <strong>基于匹配的方法</strong>。挖掘文档的关键实例(key instances)，然后基于key instances和concept之间的匹配，前提是key instances和concept之间是isA关系，且出现在已经构建好的标签体系中。(2) <strong>基于概率推断的方法</strong>。基于key instances的上下文词相关的concept，来给文档打标，主要解决concept未出现在文档中的情况。比如：一篇文档中的关键词包括：芹菜，全麦面包，番茄，那么可能可以推断出”减肥饮食”的概念标签。</p>
+</li>
+<li><p><strong>标签体系构建</strong>。 三层标签体系。topic-concept-instance，主题-概念-实例。三者之间的关系是isA。</p>
+</li>
+<li><p>在QQ浏览器的<strong>搜索推荐场景</strong>上都取得了好的离线和线上效果。</p>
+<ul>
+<li>搜索：query概念化，基于抽取的concepts和分类体系来进行query理解。在实验中”用户体验调研”部分有显著提升。</li>
+<li>推荐：feeds流推荐，提高了曝光的效率和时长。在实验中”线上AB test”部分有显著提升。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-Solution"><a href="#3-Solution" class="headerlink" title="3. Solution"></a>3. Solution</h1><p>总体上对方法做个梳理。</p>
+<ul>
+<li><strong>首先从query和doc的title中挖掘出concepts</strong>。挖掘的方法包括无监督的模式匹配以及有监督的序列标注模型CRF。在3.1节进行详细介绍。</li>
+<li><strong>其次，concept质量控制</strong>。用质量控制模型对候选concepts做个清洗。最终得到高质量的concepts池。在3.2节进行详细介绍。</li>
+<li><strong>接着，要给doc打上挖掘好的concept标签</strong>。打标的方法是：先基于GBRank+基于词向量的TextRank方法，抽取doc的key instances (即关键词)；然后计算key instances和concept之间的关联性，选择关联性高的concept作为doc的标签。计算关联性的时候用到了两种，强isA关系的<strong>匹配法</strong>(基于规则挖掘的concept和instance的isA关系池)，以及<strong>概率推断方法</strong>(基于instance上下文词和concept之间的关联性来推断)。在3.3节进行详细介绍。</li>
+<li><strong>最后构造topic-concept-instance三级标签体系</strong>。其中topic是人工预定义的<strong>31种标签</strong>，用多分类模型来给doc打上topic，而第二步中已经给doc打上了concept，即：doc作为topic和concept之间的桥梁，从而可以得到topic和concept的关系。concept和instance的关系通过规则匹配或者语义匹配分类器的方法得到。在3.4节进行详细介绍。</li>
+</ul>
+<h2 id="3-1-概念挖掘：Concept-Mining"><a href="#3-1-概念挖掘：Concept-Mining" class="headerlink" title="3.1 概念挖掘：Concept Mining"></a>3.1 概念挖掘：Concept Mining</h2><p>先直观感受下从query中挖掘出来的概念。</p>
+<p><img src="/picture/machine-learning/concept_demo.png" alt="概念举例"></p>
+<p>再总体一览下三种挖掘概念的方法：从query以及title中挖掘概念。根据右侧图例来对照看。</p>
+<p><img src="/picture/machine-learning/concept_mining.png" alt="概念挖掘流程"></p>
+<h3 id="3-1-1-模式匹配自助法"><a href="#3-1-1-模式匹配自助法" class="headerlink" title="3.1.1 模式匹配自助法"></a>3.1.1 模式匹配自助法</h3><p>英文是：<strong>Bootstrapping by Pattern-Concept Duality</strong>。目标是从query中抽取出符合模式的概念。如图1所示，最上面的一行。包括如下步骤：</p>
+<ul>
+<li><strong>基于预定义patterns抽取concepts</strong>。比如：XXX <strong>排行榜</strong>，<strong>Top 10</strong> XXX，<strong>十大</strong> XXX，可以通过这个模式槽位抽取出一些概念，比如 “<strong>十大</strong>省油的汽车”中”省油的汽车”，”游戏手机<strong>排行榜</strong>“中”游戏手机”。</li>
+<li><strong>基于挖掘到的concepts发现新patterns。</strong> 基于挖掘到的概念”省油的汽车”和”游戏手机”，来观察语料中<strong>包含这些概念的其它query长什么样</strong>，能不能总结出一些新的patterns。比如：”省油的汽车 好不好” 总结出 “XXX <strong>好不好</strong>“的pattern；”哪款 游戏手机 性能好” 总结出 “<strong>哪款</strong> XXX <strong>性能好</strong>“的pattern。</li>
+<li><strong>清洗并保留高质量的patterns。</strong> 新的patterns中可能包含很多噪声。比如：”XXX 好不好” 的pattern，包括”省油的汽车 好不好”，”每天跑步 好不好”等，显然”每天跑步”不是一个好的concept。一个好的pattern，一方面能够更多的命中已经挖掘好的种子concept；另一方面又能发现新的concept，但是不能过度泛化，命中很多<strong>无意义的词</strong>。解决方法是，对于某个轮次，给定一个新的pattern $\boldsymbol{p}$，令$n_s$是通过$\boldsymbol{p}$命中已挖掘的seed concept池中的concept的个数。$n_e$是通过$\boldsymbol{p}$挖掘的新concept的个数。$\boldsymbol{p}$会被保留当且仅当满足$\alpha &lt; \frac{n_s}{n_e} &lt; \beta$ 且 $n_s &gt; \delta$。作者此处取$\alpha=0.6,\beta=0.8, \delta=2$。</li>
+<li><strong>基于新的patterns继续抽取concepts</strong>。基于新发现的patterns继续抽取concepts，周而复始。不断产生新的概念。</li>
+</ul>
+<p>附录中还提到了，作者随机从1个月的搜索日志中抽取了15000条query，然后用模式匹配自助法抽取了一批concept，再经过腾讯的产品经理人工校验了一下。最终形成了一批<strong>种子concept集合</strong>，每个concept也记录了<strong>其来源的query</strong>，因此实际上也隐含着有一批<strong>种子query集合</strong>。</p>
+<h3 id="3-1-2-查询-标题对齐法"><a href="#3-1-2-查询-标题对齐法" class="headerlink" title="3.1.2 查询-标题对齐法"></a>3.1.2 查询-标题对齐法</h3><p>英文名是：<strong>Concept mining by query-title alignment</strong>。上述Boostraping法抽取能力太有限，精度很高，但召回率很低。查询-标题对齐法的目标是从query和top点击的titles中抽取出概念，即：利用了query和用户的<strong>点击行为</strong>中蕴含的doc标题信息。直觉来源在于，用户搜索的query中的concept通常是和用户点击的doc的title强相关。比如：用户的query是”好看的香港僵尸电影”，出来的doc的标题可能是”香港最后一部僵尸电影”或者”香港搞笑僵尸电影”。即：title能够更好地<strong>传达出</strong>query本身的语义信息和用户感兴趣的点。这个例子中，抽取到的concept为”香港僵尸电影”。那怎么抽取出这样的concept呢？</p>
+<ul>
+<li><p>对每个query $q$，通过统计所有用户点击数据，获取top个点击的doc的title集合$T^q$。具体而言，作者统计了1个月内点击次数超过5次的title加入top title集合。</p>
+</li>
+<li><p>对每个query $q$和title $t \in T^q$，<strong>遍历序列</strong>获取所有的N-grams(存疑，字粒度还是词语粒度？推测是<strong>词语粒度</strong>)。</p>
+</li>
+<li><p>遍历query和title的所有子串，比较query的n-gram子串和title的m-gram子串，将title的子串<strong>选作候选的concept</strong>当且仅当 (1)title子串包含所有query子串中的词，<strong>且词之间相对的序都相同</strong>；(2) query子串和title子串各自的<strong>头部词相同</strong>，<strong>尾部词也相同</strong>。 比如：</p>
+<ul>
+<li><p>query：”好看的香港僵尸电影”的子串”香港僵尸电影”；</p>
+</li>
+<li><p>title：”香港最后一部僵尸电影”的子串”香港最后一部僵尸电影”。</p>
+<p>条件(1)满足，title子串包含了query子串所有词”香港僵尸电影”；条件(2)满足头部词”香港”相同，尾部词”电影”相同。因此，”<strong>香港最后一部僵尸电影</strong>“可以选作候选概念。当然这个候选概念粒度太细，后续质量控制会被过滤掉。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>可以推测，上述query也是有一定的选取规则来把控质量的。比如从1.1中选出来的种子query集合对应的top titles中抽取。</p>
+<h3 id="3-1-3-监督序列标注法"><a href="#3-1-3-监督序列标注法" class="headerlink" title="3.1.3 监督序列标注法"></a>3.1.3 监督序列标注法</h3><p>英文名是：<strong>Supervised Sequence Labeling</strong>。训练一个CRF模型来标注带概念词的序列，包括query和title。监督标注数据的来源是前面两种方法，即boostrapping和query-title对齐法中挖掘到的<strong>概念</strong>。按照我的理解，<strong>序列标注监督数据是这么构造的</strong>：</p>
+<ul>
+<li><p>boostraping方法的<strong>query序列</strong>：根据挖掘到的concept，就可以给原始query打上标注，concept词序列的起始词用B，中间词用I，其它词用O。比如：”十大游戏手机”中挖掘到concept为：”游戏手机”。那么”十大游戏手机”的标注为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">十 大 游 戏 手 机</span><br><span class="line">O  O B  I  I  I</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>query-title对齐方法的<strong>title序列</strong>。比如，query：”好看的香港僵尸电影”，title：”十大香港僵尸电影”，抽取到的concept为：香港僵尸电影。显然用上述方法，可以对query和title都打上标注。</p>
+</li>
+</ul>
+<p>有了序列标注数据，那么就可以训练CRF模型了。训练的时候，会提取序列中每个token的特征，比如词性、实体标签、上下文特征(e.g., 前后序词的词性pair)等。如下：</p>
+<p><img src="/picture/machine-learning/crf_feat.png" alt="CRF模型特征"></p>
+<p>作者用CRF++ v0.58来训练，80%训练集，10%验证集，10%测试集。CRF对于那些有明显非概念词作为边界的短文本挖掘很有效，比如”<strong>省油的汽车</strong>有哪些?”中的概念”省油的汽车”。对于那些概念分散在多处的效果则一般，比如：”<strong>父母</strong>过<strong>生日</strong>准备什么<strong>礼物</strong>?” 的概念”<strong>父母生日礼物</strong>“。后者使用query-title对齐方法更好。（btw, 个人不认为这个例子query-title对齐方法能抽取出来<strong>父母生日礼物</strong>，query-title是基于n-gram匹配的，这个例子中”父母生日礼物”这个n-gram不符合3.1.2中的条件，即：title子串包含所有query子串中的词)。</p>
+<h2 id="3-2-Concept质量控制"><a href="#3-2-Concept质量控制" class="headerlink" title="3.2 Concept质量控制"></a>3.2 Concept质量控制</h2><p>英文名是：<strong>A Discriminator for quality control</strong>。上述方法挖掘出来的concept并不都是高质量的，有的粒度太粗，有的太细。比如：香港最后一部僵尸电影，粒度过细，很少有用户这么搜。因此，本部分主要为了训练一个质量判别分类器，用于判断抽取出来的候选概念短文本是否是<strong>合适且恰当</strong>的concept。</p>
+<p>作者做了一个<strong>简单的分类器GBDT/LR</strong>，统计了每个候选concept的一些特征，比如：是否出现在某个query中，被搜索多少次，文本词袋向量，query对应的用户点击文档的主题分布等。具体的特征如下表所示：</p>
+<p><img src="/picture/machine-learning/quality_control.png" alt="质量判别器特征"></p>
+<p>上述数据的标签是人工标注的。作者说只需要300个样本就能够训练一个好的分类器。这有点不可思议。说明存在超强特征，比如被搜索的次数等。但个人仍然存疑。</p>
+<h2 id="3-3-文档打标：Document-Tagging"><a href="#3-3-文档打标：Document-Tagging" class="headerlink" title="3.3 文档打标：Document Tagging"></a>3.3 文档打标：Document Tagging</h2><p>先直观感受下打标的例子。如下图所示，第二条新闻打上了<strong>油耗低的车</strong>这以concept。</p>
+<p><img src="/picture/machine-learning/tagging_demo.png" alt="文档打标举例"></p>
+<p>下图是整个文档打标的流程图。包括了keyword instances抽取，再基于<strong>key intances和concept</strong>二者之间的关联来打标，打标的方法包括：基于匹配的打标和基于概率推断的打标。</p>
+<p><img src="/picture/machine-learning/document_tagging.png" alt="文档打标流程"></p>
+<h3 id="3-3-1-文档Key-Instance-抽取"><a href="#3-3-1-文档Key-Instance-抽取" class="headerlink" title="3.3.1 文档Key Instance 抽取"></a>3.3.1 文档Key Instance 抽取</h3><p>上图3左下角部分对应key instance的抽取过程。</p>
+<ul>
+<li><p>先基于监督方法GBRank<sup>[4]</sup>对文档的words进行排序，GBRank是一种pair-wise的排序学习方法，主要是基于doc - key instance pairs数据来训练，输入的特征包括词频、词性、实体等信息。这部分重点是doc-key instance pairs怎么来？文中没仔细说明。下表是输入特征。</p>
+<p><img src="/picture/machine-learning/gbrank_feat.png" alt="gbrank排序模型特征"></p>
+</li>
+<li><p>对TopK(原文取10)排序好的词进行词向量表征，用到方法<sup>[5]</sup>。这部分用word2vec，GloVe，BERT等词向量个人认为也是可行的。</p>
+</li>
+<li><p>对TopK的词，基于词向量之间的cosine相似性构造带权无向图。</p>
+</li>
+<li><p>使用TextRank<sup>[6]</sup>无监督方法来做重排序并打分。</p>
+</li>
+<li><p>保留分数大于$\delta_{w}$(原文取0.5)的关键词，作为抽取到的doc的key intances。</p>
+</li>
+</ul>
+<p>作者的经验是，采用GBrank和基于词向量的TextRank能够很好地抽取出和doc主题一致的关键词。</p>
+<h3 id="3-3-2-概率推断打标法"><a href="#3-3-2-概率推断打标法" class="headerlink" title="3.3.2 概率推断打标法"></a>3.3.2 概率推断打标法</h3><p>基于概率推断的打标法，核心问题在于估计$p(c|d)$，其中$c$是待打的concept，$d$是待打的doc。作者做了两步的链式法则拆解：</p>
+<p>第一步：用key intances来表示$d$；第二步，用key instances的上下文词来代表key instances。</p>
+<p>首先是第一步，用key intances来表示$d$，则可以根据链式法则拆解$p(c|d)$为：<br>$$<br>p(c|d)=\sum_{i=1}^{|E^d|} p(c|e_i^d) p(e_i^d|d)<br>$$<br>其中，$E^d$是doc $d$的所有key instance集合。$p(c|e_i^d)$衡量了key instance $e_i^d$和concept $c$之间的关联性；$p(e_i^d|d)$则衡量了doc $d$和key instance $e_i^d$之间的关联性，可以用$e_i^d \in E^d$在$d$中<strong>词频分布</strong>来表示。因此<strong>核心问题转成了</strong>：如何表示 $p(c|e_i^d)$。</p>
+<p>第二步，作者进一步用链式法则，用key instance $e_i^d$的上下文词和$c$的关联性来表示，<br>$$<br>p(c|e_i^d) = \sum_{j=1}^{|X_{E_d}|} p(c|x_j) p(x_j | e_i^d)<br>$$<br>$X_{E_d}$是key instance $e_{i}^d$的上下文词的集合，$p(x_j|e_i^d)$正比于上下文词$x_j$和$e_i^d$之间的<strong>共现概率</strong>。如果两个词出现在1个句子中，则共现。因此，可以求$x_j$和$e_i^d$同时出现在一句话中的次数，除以$e_i^d$出现总次数，来求$p(x_j|e_i^d)$。</p>
+<p>因此，<strong>问题转成了求</strong> $p(c|x_j)$，即：concept $c$和上下文词$x_j$的关联性。这个关联性作者用<strong>字符串的匹配程度</strong>来表示，即：如果<strong>上下文词</strong>$x_j$包含在$c$的某个子串中，则存在关联。比如concept为”省油的汽车”，上下文词为”省油”，则”省油的汽车”包含”省油”。为了估计$p(c|x_j)$，就去看包含$x_j$子串的concept集合$C^{x_j}$大小，这个集合中的concept平分这个概率，不包含$x_j$的concept则概率为0。<br>$$<br>p(c|x_j) = \frac{1}{|C^{x_j}|}, x_j为c的子串<br>$$</p>
+<h3 id="3-3-3-基于匹配打标法"><a href="#3-3-3-基于匹配打标法" class="headerlink" title="3.3.3 基于匹配打标法"></a>3.3.3 基于匹配打标法</h3><p>这种方式在key instances和concept存在isA关系时使用。首先定义<strong>isA的关系</strong>。concept和instance之间的isA关系。根据concept的修饰词和query(或title)中的修饰词的对齐来抽取。比如：某个concept是”省油的汽车”，抽取包含”省油的”修饰词的query(或者title)，比如”省油的丰田RAV4”，从中抽取到instance “丰田RAV4”，这样instance”丰田RAV4”和concept”省油的汽车”之间就是isA关系。concept和instance的<strong>isA关系</strong>可以提前算好。当然，通过这种规则后，可能还需要人工检查或者进一步做语义匹配建模。</p>
+<p>有了isA关系后，接着介绍基于匹配打标法。给定：doc文档title，doc文档的候选key instance集合，以及每个key instance对应的isA的concept集合，目标是去给doc打上某个concept标签。</p>
+<ul>
+<li><p>根据key instance获取isA对应的concept：比如：某个doc的key instance为”白雪公主”，对应的isA的concept为”睡前故事”，”童话故事”。</p>
+</li>
+<li><p>丰富concept的表示：对每个候选的concept，作者用top 5用户点击的链接的title(应该是concept的来源title)来丰富其表示，即：concept和top5 title拼接在一起，比如： concept：”睡前故事”；top的title：”儿童睡前故事”，”白雪公主和七个小矮人”。二者拼接在一起，睡前故事, 儿童睡前故事, 白雪公主和七个小矮人,…。并用TF-IDF向量来表示，即：所有词典上每个词的tf-idf值构成的向量，维度为词典大小。”童话故事”也同理。可以获得<strong>每个concept</strong>的<strong>tf-idf向量</strong>。</p>
+</li>
+<li>文档标题<strong>document title</strong>也获取tf-idf向量表示。</li>
+<li>计算丰富后的concept的表示和document title表示的cosine相似性，大于某个阈值$\delta_u$(作者取0.58)则打上该<strong>concept</strong>标注。</li>
+</ul>
+<p>这种方法和3.2的区别在于，3.2中找不到key instance和concept之间的isA强关联关系，退而求其次，用key instance的上下文词和concept之间关联关系来间接表示。3.3中，因为key instance和concept之间存在isA强关联关系，因此要合理利用。即：先找到key instance的isA关系的concepts，如果key instance抽取得更好，理论上可以直接打上该concept标签。但是作者做了进一步的校验，用title-enriched的concept的tf-idf向量和doc的title的tf-idf向量相似性来做限定，核心假设在于key instance如果够好，应该传达的主题和title是近似的，因此用instance的isA关系的concept和title做了相似性校验。</p>
+<h2 id="3-4-标签体系构建"><a href="#3-4-标签体系构建" class="headerlink" title="3.4 标签体系构建"></a>3.4 标签体系构建</h2><p>作者构造了3级标签体系，即：主题-概念-实例，topic-concept-instance。其中，</p>
+<ul>
+<li>topic：31种，预定义的分类主题，如娱乐，技术，社会等。</li>
+<li>concept：20W，前文挖掘到的用户为中心的概念。其中，4W concept至少包含1种instance，说明有16W不包含任何instance。</li>
+<li>instance：60W，前文提取的doc的关键实例。其中，20W instance至少与1个concept存在isA关系，说明40W不存在isA关系。</li>
+</ul>
+<p><img src="/picture/machine-learning/taxonomy.png" alt="标签体系示例图"></p>
+<p>进一步细看图4中的三级分类体系，是一个有向无环图，有向边意味着isA关系。concept和instance之间的isA关系前文已经提到。剩下就是topic和concept之间的关系。作者采用的方法如图6所示，先用词向量+max pooling的方式表征doc(标题，作者，doc内容)，再通过DNN模型来做主题的多分类任务，输出doc的分类。作者提到在一个35,000个新闻文章标注数据上可以达到95%的准确率。</p>
+<p><img src="/picture/machine-learning/topic_classify.png" alt="doc主题分类模型示意图"></p>
+<p>但现在的目标是求topic和concept的关系。怎么做呢？通过doc来做桥梁。</p>
+<p>给定一个concept $c$和topic $p$，假设有$n_c$个doc包含了该concept标签，其中有$n_p^c$个文档属于主题$p$，那么可以估计$P(p|c)=n_{p}^c / n^c$，这个大于某个阈值$\delta_t$(作者取0.3)则认为该doc和该topic存在isA关系。</p>
+<h1 id="4-Evaluation"><a href="#4-Evaluation" class="headerlink" title="4.Evaluation"></a>4.Evaluation</h1><h2 id="4-1数据"><a href="#4-1数据" class="headerlink" title="4.1数据"></a>4.1数据</h2><p>搞了一个开源的小数据集来做评估。User-Centered Concept Mining Dataset (UCCM)，是从QQ浏览器的query日志中抽样的。数据开源在github <sup>[8]</sup>，数据示意图如下：</p>
+<p><img src="/picture/machine-learning/uccm.png" alt="UCCM数据集"></p>
+<h2 id="4-2-concept挖掘对比实验"><a href="#4-2-concept挖掘对比实验" class="headerlink" title="4.2 concept挖掘对比实验"></a>4.2 concept挖掘对比实验</h2><p>针对concept的挖掘，对比了如下几种keyword抽取的方法，</p>
+<ul>
+<li>基于图的无监督方法: TextRank<sup>[6]</sup></li>
+<li>刘知远老师的工作，基于翻译模型: THUCKE <sup>[9]</sup></li>
+<li>AutoPhrase[10] 著名的方法。基于通用知识库、并借助词性分词信息来做短语抽取。</li>
+<li>Q-Pattern，基于query规则模式匹配的方法。即：前文boostrapping方法中介绍的。</li>
+<li>T-Pattern，基于title的规则匹配方法。也是boostrapping方法，只不过从title抽。</li>
+<li>Q-CRF，从query中用CRF序列标注方法来抽取关键词。</li>
+<li>T-CRF，从title中用CRF序列标注方法来抽取关键词。</li>
+<li>QT-Align，Query-Title 对齐方法，上文介绍的对齐方法。</li>
+</ul>
+<p>对于TextRank，THUCKE，AutoPhrase，输入：<strong>用户query</strong>和<strong>点击的title</strong>的拼接，输出top 5关键词或短语，选出和query词重叠最多的关键词或短语作为最终结果。</p>
+<p>指标：完全匹配Exact Match(EM)和F1。EM就是看挖掘出的词和人工打标的词的完全匹配占比；F1看挖掘的词和人工打标的词之间的重叠tokens的比例。</p>
+<p><img src="/picture/machine-learning/comp_concept_mining.png" alt="概念挖掘对比实验"></p>
+<p>从表中结果可以看出差距很大。但是个人对对比方法的结果存在质疑。比如：AutoPhrase的结果这么差，是不是作者用的不恰当？作者解释是说这些方法适合从长文本中去提取，而本文的方法是适用于query/title的短文本中去提取。那么为什么不去对比适用于短文本抽取的方法呢？</p>
+<h2 id="4-3-文档打标签和类目体系评估"><a href="#4-3-文档打标签和类目体系评估" class="headerlink" title="4.3 文档打标签和类目体系评估"></a>4.3 文档打标签和类目体系评估</h2><p>作者人工标注了一份doc和concept的数据，参见github <sup>[8]</sup>中的concept_tagging_data.txt。打标的精确率可以达到96%。</p>
+<p><img src="d/picture/machine-learning/oc_tagging_data.png" alt="文档打标标注数据示例"></p>
+<p>对于类目体系的评估，作者从这个体系中随机抽取了1000个concepts。作者只针对concept和instance之间的isA关系做评估，因为这二者的关系对于查询理解非常重要。此处的评估主要靠人工判断，判断是否是isA关系。准确率为96.59%。</p>
+<p><img src="/picture/machine-learning/eval_concept_instance_relation.png" alt="评估概念和实例之间的isA关系"></p>
+<h2 id="4-4-推荐场景：在线A-B测试"><a href="#4-4-推荐场景：在线A-B测试" class="headerlink" title="4.4 推荐场景：在线A/B测试"></a>4.4 推荐场景：在线A/B测试</h2><p>框架如下图所示，用户和文档都会打上topic,concepts和instances的画像信息。召回的时候，根据二者画像的匹配来做；然后用ctr模型来排序并推荐。</p>
+<p><img src="/picture/machine-learning/feeds_rec.png" alt="feeds推荐框架示意图"></p>
+<p>AB实验方法，将用户分桶，每个桶包括80W用户，观察每个桶的的多种指标：</p>
+<ul>
+<li>IPV：Impression Page View，曝光结果数。</li>
+<li>IUV：Impression User View，曝光用户数。</li>
+<li>CPV：Click Page View，点击结果数。</li>
+<li>CUV：Click User View，点击用户数。</li>
+<li>UCR：User Conversion Rate，用户转化率，$CUV/IUV$。</li>
+<li>AUC：Average User Consumption，人均点击数，$CPV / CUV$。</li>
+<li>UD：User Duration：人均在页面的停留时长，衡量了每个人每天花费了多少时间在app上。</li>
+<li>IE：Impression Efficiency，曝光效率，$CPV/IUV$，点击结果数除以曝光用户数，衡量了每个人每天读了多少内容。</li>
+</ul>
+<p>从中选出两个上述指标最相近的桶，排除其他干扰因素，然后用这个两个桶做对比实验。1个桶用concept的文档标注做召回推荐，1个桶不用。跑了3天的线上实验，重点关注UD和IE。</p>
+<p><img src="/picture/machine-learning/online_ab.png" alt="在线AB测试指标"></p>
+<p>可以看出每个指标都涨了，尤其是IE。</p>
+<h2 id="4-5-搜索场景：离线用户体验调研"><a href="#4-5-搜索场景：离线用户体验调研" class="headerlink" title="4.5 搜索场景：离线用户体验调研"></a>4.5 搜索场景：离线用户体验调研</h2><p>基于query改写来做离线的用户体验调研。挑了108个query，对每个query $q$，通过ConcepT系统分析出concept，然后取出该concept对应的isA关系的instances。对每个instance $e$，分别将原始query做改写，形如$q \ e$。然后用<strong>百度搜索</strong>来测试用户体验：</p>
+<ul>
+<li>基准结果：原始query $q$返回top10个结果。</li>
+<li>对比结果：所有改写的query $q \ e$ 返回top 10个结果，即：如果有K个instances，则每个改写的query返回$K/10$个结果，最后整合在一起。</li>
+</ul>
+<p>作者找了3个人来判断query和结果的相关性。结论是经过改写，相关性从73.1%提高到了85.1%。原因是，concept能够辅助理解用户意图。</p>
+<h1 id="5-Summarization"><a href="#5-Summarization" class="headerlink" title="5. Summarization"></a>5. Summarization</h1><p>这篇文章很偏工程化，比较适合落地实践。全文技术上的亮点很少，主要是成熟的技术、规则来结合具体的业务场景做定制和实践。但是，对于实践而言，这篇文章的信息量很丰富，很多行之有效的简单方法值得在内容理解，查询理解上应用。但是也不得不提，要想很好得借鉴和落地，需要非常强的领域知识，尤其是pattern的设计，因此仍然需要大量底层的工作，而无法直接借用文中开源的一些seed patterns。总而言之，是一篇真实应用落地的好文，但是离<strong>一把梭</strong>距离比较远，可以借鉴其中的一些思路做尝试。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><p>[1] A User-Centered Concept Mining System for Query and Document Understanding at Tencent：<a href="https://arxiv.org/abs/1905.08487" target="_blank" rel="noopener">https://arxiv.org/abs/1905.08487</a></p>
+</li>
+<li><p>[2] KDD | 用户视角看世界：腾讯提出ConcepT概念挖掘系统，助力推荐搜索，<a href="https://cloud.tencent.com/developer/article/1458043" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1458043</a></p>
+</li>
+<li><p>[3] 腾讯提出概念挖掘系统ConcepT-学习笔记，<a href="https://zhuanlan.zhihu.com/p/85494010" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/85494010</a></p>
+</li>
+<li>[4] Zhaohui Zheng, Keke Chen, Gordon Sun, and Hongyuan Zha. 2007. A regression framework for learning ranking functions using relative relevance judgments. In SIGIR. ACM, 287–294.</li>
+<li>[5] Yan Song, Shuming Shi, Jing Li, and Haisong Zhang. 2018. Directional SkipGram: Explicitly Distinguishing Left and Right Context for Word Embeddings. In Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 2 (Short Papers). ACL, 175–180. <a href="https://doi.org/10.18653/v1/N18-2028" target="_blank" rel="noopener">https://doi.org/10.18653/v1/N18-2028</a></li>
+<li>[6] Rada Mihalcea and Paul Tarau. 2004. Textrank: Bringing order into text. In EMNLP.</li>
+<li>[7] 基于TextRank算法的文本摘要：<a href="https://www.jiqizhixin.com/articles/2018-12-28-18" target="_blank" rel="noopener">https://www.jiqizhixin.com/articles/2018-12-28-18</a></li>
+<li>[8] <a href="https://github.com/BangLiu/ConcepT" target="_blank" rel="noopener">https://github.com/BangLiu/ConcepT</a></li>
+<li>[9] Zhiyuan Liu, Xinxiong Chen, Yabin Zheng, and Maosong Sun. 2011. Automatic keyphrase extraction by bridging vocabulary gap. In Proceedings of the Fifteenth Conference on Computational Natural Language Learning. ACL, 135–144.</li>
+<li>[10] Jingbo Shang, Jialu Liu, Meng Jiang, Xiang Ren, Clare R Voss, and Jiawei Han.Automated phrase mining from massive text corpora. IEEE Transactions on Knowledge and Data Engineering 30, 10 (2018), 1825–1837.</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/标签挖掘/" rel="tag"># 标签挖掘</a>
+          
+            <a href="/tags/paper/" rel="tag"># paper</a>
+          
+            <a href="/tags/特征交互/" rel="tag"># 特征交互</a>
+          
+            <a href="/tags/腾讯/" rel="tag"># 腾讯</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/10/can/" rel="next" title="特征交互新思路| 阿里 Co-action Network论文解读">
+                <i class="fa fa-chevron-left"></i> 特征交互新思路| 阿里 Co-action Network论文解读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Motivation"><span class="nav-number">1.</span> <span class="nav-text">1.Motivation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Contribution"><span class="nav-number">2.</span> <span class="nav-text">2. Contribution</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Solution"><span class="nav-number">3.</span> <span class="nav-text">3. Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-概念挖掘：Concept-Mining"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 概念挖掘：Concept Mining</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-模式匹配自助法"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1 模式匹配自助法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-查询-标题对齐法"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2 查询-标题对齐法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3-监督序列标注法"><span class="nav-number">3.1.3.</span> <span class="nav-text">3.1.3 监督序列标注法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Concept质量控制"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 Concept质量控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-文档打标：Document-Tagging"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 文档打标：Document Tagging</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-文档Key-Instance-抽取"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.3.1 文档Key Instance 抽取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-概率推断打标法"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.3.2 概率推断打标法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-基于匹配打标法"><span class="nav-number">3.3.3.</span> <span class="nav-text">3.3.3 基于匹配打标法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-标签体系构建"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 标签体系构建</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Evaluation"><span class="nav-number">4.</span> <span class="nav-text">4.Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1数据"><span class="nav-number">4.1.</span> <span class="nav-text">4.1数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-concept挖掘对比实验"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 concept挖掘对比实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-文档打标签和类目体系评估"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 文档打标签和类目体系评估</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-推荐场景：在线A-B测试"><span class="nav-number">4.4.</span> <span class="nav-text">4.4 推荐场景：在线A/B测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-搜索场景：离线用户体验调研"><span class="nav-number">4.5.</span> <span class="nav-text">4.5 搜索场景：离线用户体验调研</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Summarization"><span class="nav-number">5.</span> <span class="nav-text">5. Summarization</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

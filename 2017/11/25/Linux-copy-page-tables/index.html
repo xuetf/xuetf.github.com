@@ -1,0 +1,1066 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Linux,内存管理,操作系统," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文对Linux内存管理中的copy_page_tables源码进行理解。Linus认为下面copy_page_tables函数是内存管理部分最难的之一。这个函数在父进程创建子进程的过程中使用，父进程要负责设置子进程的代码段、数据段(线性空间)，然后为子进程拥有的线性地址空间创建对应的页目录项和页表，使得子进程能够进行内存寻址。copy_page_tables的工作就是通过复制父进程的页表来创">
+<meta name="keywords" content="Linux,内存管理,操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux内存管理之copy_page_tables源码理解">
+<meta property="og:url" content="xtf615.com/2017/11/25/Linux-copy-page-tables/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本文对Linux内存管理中的copy_page_tables源码进行理解。Linus认为下面copy_page_tables函数是内存管理部分最难的之一。这个函数在父进程创建子进程的过程中使用，父进程要负责设置子进程的代码段、数据段(线性空间)，然后为子进程拥有的线性地址空间创建对应的页目录项和页表，使得子进程能够进行内存寻址。copy_page_tables的工作就是通过复制父进程的页表来创">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-05T07:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux内存管理之copy_page_tables源码理解">
+<meta name="twitter:description" content="本文对Linux内存管理中的copy_page_tables源码进行理解。Linus认为下面copy_page_tables函数是内存管理部分最难的之一。这个函数在父进程创建子进程的过程中使用，父进程要负责设置子进程的代码段、数据段(线性空间)，然后为子进程拥有的线性地址空间创建对应的页目录项和页表，使得子进程能够进行内存寻址。copy_page_tables的工作就是通过复制父进程的页表来创">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/11/25/Linux-copy-page-tables/"/>
+
+
+
+
+
+  <title> Linux内存管理之copy_page_tables源码理解 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/11/25/Linux-copy-page-tables/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Linux内存管理之copy_page_tables源码理解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-25T13:40:12+08:00">
+                2017-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index">
+                    <span itemprop="name">操作系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　本文对Linux内存管理中的copy_page_tables源码进行理解。Linus认为下面copy_page_tables函数是内存管理部分最难的之一。这个函数在父进程创建子进程的过程中使用，父进程要负责设置子进程的代码段、数据段(线性空间)，然后<strong>为子进程拥有的线性地址空间创建对应的页目录项和页表</strong>，使得子进程能够进行内存寻址。copy_page_tables的工作就是通过复制父进程的页表来创建子进程的页表，并设置相应的页目录项。<br><a id="more"></a></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * copy_page_tables()函数只被fork函数调用  </span></span><br><span class="line"><span class="comment"> * 拷贝只是拷贝页表，页表是管理4M地址的，所以按照4M对齐  </span></span><br><span class="line"><span class="comment"> * 不拷贝物理页内容，当发生写时拷贝才会拷贝页表所管理的物理页内容  </span></span><br><span class="line"><span class="comment"> * 对于进程0和1，只拷贝前160页共640Kb，出于效率考虑  </span></span><br><span class="line"><span class="comment"> * 0-1M作为内核驻留地址区域，禁止写覆盖  </span></span><br><span class="line"><span class="comment"> * 参数from，to是0-4G线性地址，size是字节为单位  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">copy_page_tables</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> from,<span class="keyword">unsigned</span> <span class="keyword">long</span> to,<span class="keyword">long</span> size)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> * from_page_table;        <span class="comment">//用于管理源页表      </span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> * to_page_table;          <span class="comment">//用于管理目的页表  </span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> this_page;                <span class="comment">//用于保存页表  </span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> * from_dir, * to_dir;     <span class="comment">//用于管理源页目录项，目的页目录项  </span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> nr;                       <span class="comment">//用于保存页表项个数  </span></span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> ((from&amp;<span class="number">0x3fffff</span>) || (to&amp;<span class="number">0x3fffff</span>))    <span class="comment">//4M对齐检测，否则die  </span></span><br><span class="line">        panic(<span class="string">"copy_page_tables called with wrong alignment"</span>);  </span><br><span class="line">    from_dir = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) ((from&gt;&gt;<span class="number">20</span>) &amp; <span class="number">0xffc</span>); <span class="comment">/* _pg_dir = 0 */</span>  </span><br><span class="line">                                                          <span class="comment">//源页目录项  </span></span><br><span class="line">    to_dir = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) ((to&gt;&gt;<span class="number">20</span>) &amp; <span class="number">0xffc</span>);    <span class="comment">//目的页目录项  </span></span><br><span class="line">    size = ((<span class="keyword">unsigned</span>) (size+<span class="number">0x3fffff</span>)) &gt;&gt; <span class="number">22</span>;        <span class="comment">//页表项个数是字节数除以4M  </span></span><br><span class="line">    <span class="keyword">for</span>( ; size--&gt;<span class="number">0</span> ; from_dir++,to_dir++) &#123;                                  </span><br><span class="line">        <span class="keyword">if</span> (<span class="number">1</span> &amp; *to_dir)    <span class="comment">//最后一位P位，如果目的页目录项已经被使用，die  </span></span><br><span class="line">            panic(<span class="string">"copy_page_tables: already exist"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (!(<span class="number">1</span> &amp; *from_dir)) <span class="comment">//最后一位代表P位，如果源页目录项未使用，跳过，不拷贝       </span></span><br><span class="line">            <span class="keyword">continue</span>;    </span><br><span class="line">        from_page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) (<span class="number">0xfffff000</span> &amp; *from_dir);<span class="comment">//取源页表地址  </span></span><br><span class="line">        <span class="keyword">if</span> (!(to_page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) get_free_page()))      </span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;  <span class="comment">/* Out of memory, see freeing */</span>  <span class="comment">//取空闲物理页为to_page_table赋值                                      </span></span><br><span class="line">                                                          <span class="comment">//如果没有空闲物理页，die  </span></span><br><span class="line">        *to_dir = ((<span class="keyword">unsigned</span> <span class="keyword">long</span>) to_page_table) | <span class="number">7</span>;    <span class="comment">//将页表存进相应页目录项，  </span></span><br><span class="line">                                                          <span class="comment">//7表示可读写  </span></span><br><span class="line">                                                          <span class="comment">//想一下常用的chmod 777 anyfile  </span></span><br><span class="line">        nr = (from==<span class="number">0</span>)?<span class="number">0xA0</span>:<span class="number">1024</span>;    <span class="comment">//如果是0地址，只拷贝160页，否则拷贝1024页  </span></span><br><span class="line">                                     <span class="comment">//一个页目录表管理1024个页目录项  </span></span><br><span class="line">                                     <span class="comment">//一个页表管理1024个页表项  </span></span><br><span class="line">                                     <span class="comment">//一个页表项管理有4K物理地址  </span></span><br><span class="line">                                                                                 </span><br><span class="line">        <span class="keyword">for</span> ( ; nr-- &gt; <span class="number">0</span> ; from_page_table++,to_page_table++) &#123;  </span><br><span class="line">            this_page = *from_page_table;    <span class="comment">//从源页表中取源页表项  </span></span><br><span class="line">            <span class="keyword">if</span> (!(<span class="number">1</span> &amp; this_page))            <span class="comment">//如果源页表项未被使用，跳过  </span></span><br><span class="line">                <span class="keyword">continue</span>;  </span><br><span class="line">            this_page &amp;= ~<span class="number">2</span>;                 <span class="comment">//目的页表项读写位,  </span></span><br><span class="line">                                             <span class="comment">//设置为只读                                 </span></span><br><span class="line">            *to_page_table = this_page;      <span class="comment">//将源页表项存进目的页表项  </span></span><br><span class="line">            <span class="keyword">if</span> (this_page &gt; LOW_MEM) &#123;       <span class="comment">//如果是主内存区  </span></span><br><span class="line">                *from_page_table = this_page;<span class="comment">//源页表项也要设置为只读  </span></span><br><span class="line">                this_page -= LOW_MEM;        <span class="comment">//取相对主内存的偏移地址  </span></span><br><span class="line">                this_page &gt;&gt;= <span class="number">12</span>;            <span class="comment">//取主内存管理数组索引  </span></span><br><span class="line">                mem_map[this_page]++;        <span class="comment">//物理页引用次数加1  </span></span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    invalidate();    <span class="comment">//刷新高速缓存  </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;        <span class="comment">//返回0表示成功  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>  　　函数的参数是从fork-&gt;copy_process-&gt;copy_mem中传递过来的old_data_base，new_data_base，data_limit。</p>
+<ul>
+<li>其中old_data_base是父进程局部描述符表LDT中数据段的基地址（线性地址空间）</li>
+<li>new_data_base为即将创建的子进程在线性地址空间中的基地址，由于整个4G线性空间是等分的，目前支持的是64个进程，则4G/64=64MB，即每个进程分配64MB的线性地址空间，因此对于一个任务号为nr的进程，即对应的线性地址空间起始地址为nr*64MB，</li>
+<li>data_limit为父进程的局部描述符表LDT中数据段描述符中的段限长。</li>
+</ul>
+<h2 id="检查线性地址对齐"><a href="#检查线性地址对齐" class="headerlink" title="检查线性地址对齐"></a>检查线性地址对齐</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((from&amp;<span class="number">0x3fffff</span>) || (to&amp;<span class="number">0x3fffff</span>))    <span class="comment">//4M对齐检测，否则die  </span></span><br><span class="line">        panic(<span class="string">"copy_page_tables called with wrong alignment"</span>);</span><br></pre></td></tr></table></figure>
+<p>　　32位线性地址拆分成3部分来看，<strong>10 | 10 | 12</strong>， 前十位对应页目录项，中间10位对应页表项，最后12位对应页内偏移。0x3fffff：最后12位全为1，相当于4MB，也就是一个页表管辖4MB的地址空间（4MB线性地址空间&lt;-&gt;4MB物理地址空间）。上述代码也就是判断末尾的22位是否全为0，也就是说<strong>任意进程的线性地址空间必须是从0x000000开始的4MB的整数倍的线性地址</strong>。</p>
+<h2 id="通过线性地址得到页目录项的物理地址"><a href="#通过线性地址得到页目录项的物理地址" class="headerlink" title="通过线性地址得到页目录项的物理地址"></a>通过线性地址得到页目录项的物理地址</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from_dir = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) ((from&gt;&gt;<span class="number">20</span>) &amp; <span class="number">0xffc</span>); <span class="comment">// _pg_dir = 0，通过线性地址得到页目录项物理地址</span></span><br></pre></td></tr></table></figure>
+<p>　　这句话的目的是通过线性地址得到<strong>页目录项的物理地址</strong>。页目录表共1K项，因此只要10位进行索引，因此<strong>页目录号索引=from&gt;&gt;22</strong>。又因为1个页目录项占4B，则<strong>页目录项相对物理地址=页目录号&lt;&lt;2</strong>, 例如页目录号为1，则页目录项相对物理地址为4B。又因为页目录的基址为0x000000，因此页目录项相对物理地址=页目录项绝对物理地址。故【(线性地址&gt;&gt;22)&lt;<2】得到的就是页目录项的物理地址。【(线性地址>&gt;22)&lt;<2】这句话实际上就等价于【(线性地址>&gt;20) &amp; 0xffc】, 也就是把最后2位清空。<strong>因此任何一个线性地址(前10位)唯一确定一个页目录项</strong>。</2】这句话实际上就等价于【(线性地址></2】得到的就是页目录项的物理地址。【(线性地址></p>
+<h2 id="计算要复制的页表数"><a href="#计算要复制的页表数" class="headerlink" title="计算要复制的页表数"></a>计算要复制的页表数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">size = ((<span class="keyword">unsigned</span>) (size+<span class="number">0x3fffff</span>)) &gt;&gt; <span class="number">22</span>;     <span class="comment">//计算页表数</span></span><br></pre></td></tr></table></figure>
+<p>　　size的单位是B，是父进程数据段对应的段限长，这个段限长首先限制的是线性地址空间寻址大小，例如进程0的数据段限长为640KB，因此其线性地址空间为0~640KB，同时也间接得限制了物理地址空间的寻址大小，因为任何物理地址都需要有与之相映射的线性地址，对于0进程而言，映射的物理内存是物理内存起始开始的640KB的空间。而对于一般的进程，线性地址空间为64M，对应的最大物理内存空间也是64M，一个页目录项或者说一个页表管辖4MB的物理内存空间，因此一个进程线性地址空间最多可以拥有16个页目录项，也即16个页表。因此，页表数=(size+4M/4M)，相当于求需要多少个页表来管辖，也就是copy_page_tables要复制多少个页表。有多少个页表，则就有多少个对应的页表项。</p>
+<h2 id="根据页目录项物理地址得到页表物理地址"><a href="#根据页目录项物理地址得到页表物理地址" class="headerlink" title="根据页目录项物理地址得到页表物理地址"></a>根据页目录项物理地址得到页表物理地址</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from_page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) (<span class="number">0xfffff000</span> &amp; *from_dir);<span class="comment">//根据页目录项地址得到页表物理地址</span></span><br></pre></td></tr></table></figure>
+<p>　　from_dir是页目录项的地址，取*号，相当于取页目录项的内容，因为页目录项指向页表，也即页目录项的内容就是页表的物理地址。因为get_free_page返回的物理地址=相对物理地址&lt;&lt;12+LOW_MEM（每页大小为2^12=4KB），因此将低12位清零&amp;fffff000得到的就是页面的物理地址，页表也是占用1页面大小，因此这里得到的就是页表的物理地址，同时也是第一项页表项的物理地址，最后12位实际上用于存储页表的属性。至于为什么只用20位存储，因为目前使用的是16M物理内存，16MB/4KB=2^24/2^12=2^12页数，20位足够用了，实际上20位可以索引最多4G的物理空间。</p>
+<h2 id="拷贝页表项"><a href="#拷贝页表项" class="headerlink" title="拷贝页表项"></a>拷贝页表项</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!(to_page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) get_free_page()))      </span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;  <span class="comment">/* Out of memory, see freeing */</span>  <span class="comment">//取空闲物理页为to_page_table赋值       </span></span><br><span class="line">*to_dir = ((<span class="keyword">unsigned</span> <span class="keyword">long</span>) to_page_table) | <span class="number">7</span>;    <span class="comment">//将页表存进相应页目录项，//7表示可读写  </span></span><br><span class="line">nr = (from==<span class="number">0</span>)?<span class="number">0xA0</span>:<span class="number">1024</span>;    <span class="comment">//如果是0地址，只拷贝160页，否则拷贝1024页  </span></span><br><span class="line">							<span class="comment">//一个页目录表管理1024个页目录项  </span></span><br><span class="line">							<span class="comment">//一个页表管理1024个页表项  </span></span><br><span class="line">							<span class="comment">//一个页表项管理有4K物理地址  </span></span><br><span class="line"><span class="keyword">for</span> ( ; nr-- &gt; <span class="number">0</span> ; from_page_table++,to_page_table++) &#123;  </span><br><span class="line">  this_page = *from_page_table;    <span class="comment">//从源页表中取源页表项  </span></span><br><span class="line">  <span class="keyword">if</span> (!(<span class="number">1</span> &amp; this_page))            <span class="comment">//如果源页表项未被使用，跳过  </span></span><br><span class="line">    <span class="keyword">continue</span>;  </span><br><span class="line">  this_page &amp;= ~<span class="number">2</span>;                 <span class="comment">//目的页表项读写位, 设置为只读                                 </span></span><br><span class="line">  *to_page_table = this_page;      <span class="comment">//将源页表项存进目的页表项  </span></span><br><span class="line">  <span class="keyword">if</span> (this_page &gt; LOW_MEM) &#123;       <span class="comment">//如果是主内存区，1MB以内不参与用户分页管理，1MB以上mem_map才管  </span></span><br><span class="line">    *from_page_table = this_page;<span class="comment">//源页表项也要设置为只读  </span></span><br><span class="line">    this_page -= LOW_MEM;        <span class="comment">//取相对主内存的偏移地址  </span></span><br><span class="line">    this_page &gt;&gt;= <span class="number">12</span>;            <span class="comment">//取主内存管理数组索引  </span></span><br><span class="line">    mem_map[this_page]++;        <span class="comment">//物理页引用次数加1  </span></span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　首先为子进程页表(1个页表占4K)存储申请一个页面的物理内存，get_free_page()。<strong>然后执行*to_dir = ((unsigned long) to_page_table) | 7，将子进程页表存到相应的页目录项当中</strong>，页目录项也是前20位代表页表的地址，后12位代表页表对应的页面的属性，因此把最后3位设置成用户权、可读写、存在，相当于设置了页表对应页面的属性。如果是0进程则只拷贝160个页表项，否则全部拷贝1K个页表项，接着for循环拷贝每一个页表项，对于未使用的页表项不进行拷贝。this_page &amp;= ~2其中2=010，~2=101，代表用户，只读，存在。因为此时父子进程共享了物理页，因此需要对物理页的引用次数+1。可以看到这里面索引的计算，索引=(物理地址- LOW_MEM)/4KB。</p>
+<p>　　另外还要强调一点，此时<strong>并没有把页表对应的页面和用户进程的线性地址空间进行映射</strong>。<strong>某一个页面和进程的线性地址空间映射是指，将这个页面的物理地址存入该进程线性地址空间所对应的页表的某个页表项当中，这样进程才有权限对该页面进行访问。</strong>  具体映射函数是put_page(page, address)用来完成物理页面与一个线性地址页面的映射,从而将一个线性地址空间内的页面落实到物理地址空间内，其中page就是某个物理页面的物理地址，address是要映射的进程的线性地址。具体过程是，首先会根据该线性地址前10位得到页目录项，其次页目录项取*号得到的就是页表的物理地址，这个页表也就是这个进程拥有的，然后根据线性地址接下来的10位，得到<strong>相对于这个页表</strong>的位置索引，最后把这个地址存入位置索引对应的页表项。之所以说，并没有把页表对应的页面和用户进程的线性地址空间进行映射，是因为并没有把页表对应的物理地址放入这个页表的某个页表项当中。如果要映射，相当于把页表自己的物理地址放入页表自己的某个页表项当中，只有这样，才能说将页表映射到了进程的线性地址空间，也只有这样，用户进程才有权限访问该页表本身。</p>
+<p>　　总之，<strong>用户进程只能访问其线性地址空间所对应的页表(前10位找到页目录项，页目录项中的内容就是该线性地址所对应的页表的物理地址)，中的页表项所指向的物理内存页面</strong>。而不能访问内核管理进程所使用的页表本身，也就是用户进程读写不了页表的页表项，但可以读写页表项中指向的物理页面。而内核将所有物理内存16MB和自己的16MB线性地址空间全部映射了，也就是将16MB物理内存所有页面的物理地址全部存入16MB线性地址空间所对应的4个内核页表(4M对应一个页表)的页表项当中了，当然也包括内核为进程分配的页表对应的页面的物理地址，因此内核有权限读写管理所有进程的页表，即进程的页表位于内核的线性地址空间。</p>
+<p>　　物理页面和进程线性地址的映射函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// put_page用来完成物理页面与一个线性地址页面的映射</span></span><br><span class="line"><span class="comment">// page为物理地址，address为线性地址</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">put_page</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> page,<span class="keyword">unsigned</span> <span class="keyword">long</span> address)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> tmp, *page_table;</span><br><span class="line">	<span class="comment">/* NOTE !!! This uses the fact that _pg_dir=0 */</span></span><br><span class="line">	<span class="comment">// 要映射的线性地址只能在主内存区，你不能给内存起始1M范围内映射线性地址</span></span><br><span class="line">	<span class="comment">// 因为LOW_MEM内是给内核用的，且不属于分页内存范围。</span></span><br><span class="line">	<span class="keyword">if</span> (page &lt; LOW_MEM || page &gt;= HIGH_MEMORY)</span><br><span class="line">		printk(<span class="string">"Trying to put page %p at %p\n"</span>,page,address);</span><br><span class="line">	<span class="comment">// (page-LOW_MEM)&gt;&gt;12得到page这个物理地址对应的页号</span></span><br><span class="line">	<span class="comment">// mem_map[(page-LOW_MEM)&gt;&gt;12] !=1是检查这个page地址对应的物理内存页面</span></span><br><span class="line">	<span class="comment">// 是不是已经注册过的页面（用get_free_page函数申请，申请时会再mem_map中</span></span><br><span class="line">	<span class="comment">// 注册这个页面，也就是把这个页面对应的mem_map项加1。所以此处==1就代表</span></span><br><span class="line">	<span class="comment">// 这个物理页面是刚申请好备用的，只有这种物理页面才能被映射到一个线性地</span></span><br><span class="line">	<span class="comment">// 址。所以这里！=1就要警告）</span></span><br><span class="line">	<span class="keyword">if</span> (mem_map[(page-LOW_MEM)&gt;&gt;<span class="number">12</span>] != <span class="number">1</span>)</span><br><span class="line">		printk(<span class="string">"mem_map disagrees with %p at %p\n"</span>,page,address);</span><br><span class="line">	<span class="comment">// page_table得到address线性地址页面在页目录表中对应的页目录项的地址，这个</span></span><br><span class="line">	<span class="comment">// 指针用来得到页表基地址，然后寻址就进行到了页表级。再配合address的次10位</span></span><br><span class="line">	<span class="comment">// 就能寻址到address对应的内存页面基地址了。最后12bit用来在页面内寻址。</span></span><br><span class="line">	page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) ((address&gt;&gt;<span class="number">20</span>) &amp; <span class="number">0xffc</span>);</span><br><span class="line">	<span class="comment">// 检验address对应的页目录表项内容，即页表地址是不是存在的，即有没有对应的物理页面存储这个页表</span></span><br><span class="line">    <span class="comment">//若页表存在，则直接把页表地址给page_table；若页表不存在，则调用get_free_page函数在mem_map</span></span><br><span class="line">	<span class="comment">// 数组内申请一个空闲页面，并将这个空闲页面设置为用户级、只读、存在，再将</span></span><br><span class="line">	<span class="comment">// 新申请并处理好的页面地址赋值给page_table</span></span><br><span class="line">	<span class="keyword">if</span> ((*page_table) &amp; <span class="number">1</span>)</span><br><span class="line">		page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) (<span class="number">0xfffff000</span> &amp; *page_table);</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (!(tmp=get_free_page()))</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		*page_table = tmp|<span class="number">7</span>;</span><br><span class="line">		page_table = (<span class="keyword">unsigned</span> <span class="keyword">long</span> *) tmp;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 上面已经得到了一个有效地page_table了，现在就要将page这个物理页面和address</span></span><br><span class="line">    <span class="comment">// 这个线性地址处的页面挂接起来了。挂接的方法就是在page_table中，将address对应</span></span><br><span class="line">    <span class="comment">// 的页表项中的内容（即address这个地址所在的页面基地址）设置为page这个物理地址</span></span><br><span class="line">    <span class="comment">// |7没什么好说的，这里值得关注的是page_table可以当做数组来用，page_table本来就是个指针，</span></span><br><span class="line">    <span class="comment">// 而1024个页表项也和数组结构一样的，用数组的方式来访问也是可行的。（相当于指针加偏移）</span></span><br><span class="line">    <span class="comment">// 再说明下(address&gt;&gt;12)&amp;0x3ff，这个操作实际是取出address中间10位表示在页表内的偏移值(下标索引)。</span></span><br><span class="line">    <span class="comment">// 这样用这个偏移值结合page_table这个页表首地址，就能找到address所在的页面基地址了。</span></span><br><span class="line">    <span class="comment">//相当于*(page_table+4*((address&gt;&gt;12) &amp; 0x3ff))=page|7;每个页表项占4B</span></span><br><span class="line">	page_table[(address&gt;&gt;<span class="number">12</span>) &amp; <span class="number">0x3ff</span>] = page | <span class="number">7</span>;</span><br><span class="line">	<span class="comment">/* no need for invalidate */</span></span><br><span class="line">	<span class="keyword">return</span> page;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　最后还要强调一下如下代码，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (this_page &gt; LOW_MEM) &#123;       <span class="comment">//如果是主内存区，1MB以内不参与用户分页管理，1MB以上mem_map才管  </span></span><br><span class="line">    *from_page_table = this_page;<span class="comment">//源页表项也要设置为只读  </span></span><br><span class="line">    this_page -= LOW_MEM;        <span class="comment">//取相对主内存的偏移地址  </span></span><br><span class="line">    this_page &gt;&gt;= <span class="number">12</span>;            <span class="comment">//取主内存管理数组索引  </span></span><br><span class="line">    mem_map[this_page]++;        <span class="comment">//物理页引用次数加1  </span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>　　对于这段代码的理解：<br>　　对于内核空间，不使用写时复制。一个页面被多个进程共享，每当一个进程产生一次写保护错误，内核将给进程分配一个新的物理页面，将共享页面的内容复制过来，新的页面将设置为<strong>可读写</strong>，而共享页面仍然是<strong>只读</strong>的，只是共享计数减小了。当其他共享进程都产生了一次写保护错误后，共享页面的共享计数减成了1，其实就是被一个进程独占了，但此时该共享页面仍然是只读的，如果独占它的进程对它进行写操作仍然会产生写保护出错。为什么不在共享计数减成了1之后就将共享页面置为可写呢？原因很简单，因为系统并不知道最后是哪个页表项指向这个共享页，如果要把它查找出来会有很大的系统开销，这是中断处理程序应当尽量避免的，所以采用了以逸待劳的办法。如果当初共享的页面不属于主内存块，在共享时就没有作共享计数的处理，就不存在共享计数的问题，直接复制就可以了。<br>　　但是，对于内核空间来说，却是不同的—内核空间不使用写时复制机制！这也是Linus在其内核代码注释中提到的，对于内核空间来说，还是以特殊的进程0和进程1来说。进程0是系统中第一个手工创建的程序，其特殊在其地址空间属于内核空间，也就是说，进程0是内核空间的物理页面。系统通过fork函数产生了进程1，此时进程0和1共享内核物理页面（假设为KM）。但是其特殊就特殊在在fork时，内核针对内核空间是特殊对待的。也就是说，只有对于非内核地址空间的页面，才会将被fork共享的页面所对应的页表项设为只读，从而在最后一次写操作的时候，将源页面释放。而对于内核地址空间的地址共享，只将进程1的页目录的属性设置为只读，而源目录表项（进程0）依然是可读写的。这就导致进程1fork进程0而产生之后，只有进程1对共享的物理页面（内核地址空间）进行写操作的时候才会产生写时复制，为进程1在主内存中申请一页新的物理页面作为独属于进程1的物理页面。而进程0对其共享内存的写操作不会引起写时复制，即KM就好像独属于进程0一样。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>[对Linux0.11 “内核空间不使用写时复制机制” 本质理解][<a href="http://blog.csdn.net/yihaolovem/article/details/37958351" target="_blank" rel="noopener">http://blog.csdn.net/yihaolovem/article/details/37958351</a>]<br>[Linux-0.11内核源码分析系列：内存管理copy_page_tables()函数分析][<a href="http://blog.csdn.net/linpeng12358/article/details/41441993" target="_blank" rel="noopener">http://blog.csdn.net/linpeng12358/article/details/41441993</a>]</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Linux/" rel="tag"># Linux</a>
+          
+            <a href="/tags/内存管理/" rel="tag"># 内存管理</a>
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/20/从开机加电到执行main函数之前的过程/" rel="next" title="从开机加电到执行main函数之前的过程">
+                <i class="fa fa-chevron-left"></i> 从开机加电到执行main函数之前的过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/02/GBM-paper-reading/" rel="prev" title="Gradient Boosting Machine">
+                Gradient Boosting Machine <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数"><span class="nav-number">2.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检查线性地址对齐"><span class="nav-number">3.</span> <span class="nav-text">检查线性地址对齐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过线性地址得到页目录项的物理地址"><span class="nav-number">4.</span> <span class="nav-text">通过线性地址得到页目录项的物理地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算要复制的页表数"><span class="nav-number">5.</span> <span class="nav-text">计算要复制的页表数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#根据页目录项物理地址得到页表物理地址"><span class="nav-number">6.</span> <span class="nav-text">根据页目录项物理地址得到页表物理地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拷贝页表项"><span class="nav-number">7.</span> <span class="nav-text">拷贝页表项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number"></span> <span class="nav-text">参考</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,1118 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Paper,人工智能,深度学习,强化学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="《Playing Atari with Deep Reinforcement Learning》论文阅读笔记。">
+<meta name="keywords" content="Paper,人工智能,深度学习,强化学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deep Q-Networks">
+<meta property="og:url" content="xtf615.com/2018/03/07/DQN/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="《Playing Atari with Deep Reinforcement Learning》论文阅读笔记。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/q-learning.png">
+<meta property="og:image" content="/picture/machine-learning/value_fn.png">
+<meta property="og:image" content="/picture/machine-learning/algorithm.png">
+<meta property="og:updated_time" content="2019-12-05T07:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deep Q-Networks">
+<meta name="twitter:description" content="《Playing Atari with Deep Reinforcement Learning》论文阅读笔记。">
+<meta name="twitter:image" content="/picture/machine-learning/q-learning.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2018/03/07/DQN/"/>
+
+
+
+
+
+  <title> Deep Q-Networks | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2018/03/07/DQN/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Deep Q-Networks
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-07T10:11:26+08:00">
+                2018-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>《Playing Atari with Deep Reinforcement Learning》论文阅读笔记。<br><a id="more"></a></p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>本文描述的算法是著名的DQN。这是第一个使用深度学习模型来学习控制策略，而训练数据则来源于强化学习生成的高维感知数据。DQN使用卷积神经网络架构，使用Q-learning的变种算法进行训练，用神经网络近似Q函数。该网络的输入是纯粹的像素点，输出是不同动作的期望报酬。根据期望报酬的大小，来间接学习策略。</p>
+<p>传统的方法是使用手工设计的特征来拟合一个线性价值函数或策略函数。这种方法的性能严重依赖于特征的质量。而深度学习可以从纯粹的图像像素点中抽取出高层次特征，但是深度学习目前仅广泛用于监督学习和无监督学习。这篇文章则开拓性得将其应用到强化学习领域。</p>
+<p>强化学习领域的挑战主要在于三点：</p>
+<ul>
+<li>1）数据难获取和处理。深度学习依赖于大数据。而强化学习必须从报酬中学习，这个报酬通常只是简单的数值标量，而且相当稀疏、充满噪声，甚至是延迟反馈。尤其是延迟特性，行为和报酬之间存在时间跨度，这个和监督学习中样本和标签直接给定大有不同。</li>
+<li>2）不符合数据独立假设。深度学习其中一个假设，数据是独立抽样的。而强化学习中数据通常是高度相关的，囿于强化学习时间步之间的依赖性。</li>
+<li>3) 不符合同分布假设。深度学习另一个假设，数据满足潜在的同一个分布。然而强化学习数据分布会随着算法学习到新的行为而改变（例如游戏某一行为是往左移动，则下一刻画面受到往左移动这一动作的约束；不同行为导致数据分布可能不同），导致分布不是平稳的。</li>
+</ul>
+<p>为了解决上述难题。这篇文章提出一种Q-learning算法的变种。核心的一个思想是，为了减轻数据相关性和非平稳性问题，引入了<strong>Experience Replay</strong>机制。这一机制能够随机得从前面生成的数据中进行抽样。其中，样本顺序的打破能够减轻数据独立性假设，而随机抽样数据，在过去行为上平滑训练数据分布，能够减轻数据分布的非平稳性。而对于挑战1), 借助游戏模拟器、数据预处理手段来解决。</p>
+<p>本文的目标是构建一个单一的神经网络智能体，能够学习玩各种游戏。这一神经网络不需要特定游戏的先验知识和手动设计的特征，也不需要知道模拟器的内部状态，而仅仅是从游戏画面、模拟器的反馈和游戏结束信号以及合法动作集进行学习。并且对于不同游戏，神经网络的超参数保持一致。</p>
+<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>本文的核心问题是考察智能体如何和环境进行交互。本文以Atari emulator模拟器作为环境，智能体产生一系列合法行为actions, 模拟器则及时反馈一系列画面observations、报酬rewards。具体而言，在每个时间步$t$，智能体需要根据当前局势选择动作$a_t$，然后系统会将智能体的动作传给模拟器，模拟器改变相应的内部状态，智能体无法直接观测这一状态，智能体只能观测到下一时间步$t+1$的屏幕画面$x_t$以及对应的游戏分数变化$r_t$。</p>
+<p>智能体只能观察到当前屏幕的图像，相当于只观察到部分信息，而模拟器的实际状态却不得而知。因此不可能仅从屏幕图像$x_t$中就完全理解当前游戏局势。因此本文考虑构建动作和观测序列，$s_t=x_1,a_1,x_2,…,a_{t-1}, x_t$这一序列作为$t$时刻的游戏局势，也就是说当前局势综合了前面时间步的动作和观测结果。模拟器保证任何一个序列都是有限步的，因此序列满足有限马尔科夫决策过程MDP。</p>
+<p><strong>智能体的目标是和环境交互，选择最佳动作来最大化未来报酬</strong>。一个重要的假设是，未来报酬随时间步进行折扣。也就是说当前时间步的未来报酬$R_t$既和当前立即报酬$r_t$有关，又和未来立即报酬有关，并且距离当前时间步越远，影响越小，故使用折扣因子$\gamma$，依时间步跨度的次幂进行折扣。<br>$$<br>R_t = \sum_{t’=t}^T \gamma^{t’-t} r_{t’}<br>$$</p>
+<h3 id="补充数学：个人理解"><a href="#补充数学：个人理解" class="headerlink" title="补充数学：个人理解"></a>补充数学：个人理解</h3><p>下面是个人的理解，可能存在错误。</p>
+<p>若干数学符号定义：</p>
+<ul>
+<li>策略：$\pi$,  或记做$\pi(s)$， 是状态到动作的映射，或者称作动作的概率分布。给定$s, \pi$, 就能唯一确定下一步的动作。（但是注意：执行完动作后，转移到的新状态$s’$可能不止一种）</li>
+</ul>
+<ul>
+<li><strong>未来报酬</strong>：$R_t= \sum_{t’=t}^T \gamma^{t’-t} r_{t’}$</li>
+<li>某个状态$s$、策略$\pi$下的未来报酬$R_t$的期望定义为<strong>价值函数</strong>：$V^{\pi}(s)=E[R_t|s_t=s,\pi]$</li>
+<li>某个状态$s$、动作$a$、策略$\pi$下的未来报酬$R_t$的期望定义为<strong>动作-价值函数</strong>：$Q^{\pi}(s,a) = E[R_t|s_t=s,a_t=a, \pi]$</li>
+<li>某个状态s、动作a、策略$\pi$下的未来报酬$R_t$期望的最大值定义为<strong>最优动作-价值函数</strong>：$Q^{*}(s,a) = \mathop{max}_{\pi} E[R_t|s_t=s, a_t=a, \pi] $</li>
+</ul>
+<p>上述式子的若干关系：</p>
+<ul>
+<li>价值函数等于动作-价值函数对所有动作求边缘分布。$V^{\pi}(s)=E_{a’} [Q^{\pi}(s, a’)]$</li>
+<li>最优动作-价值函数等于对动作-价值函数求最大值。$Q^{*}(s,a) = \mathop{max}_\pi Q^{\pi}(s,a)$</li>
+</ul>
+<p>注意$Q^{*}$要从所有的策略$\pi$中找到使得Q值最大的。初步推导$Q^{*}$递推式：</p>
+<p>$$<br>Q^{*}(s,a)=  max_{\pi} E[R_t|s_t=s, a_t=a, \pi] \\<br>=\mathop{max}_{\pi} E[r_t+\sum_{t’=t+1}^T \gamma^{t’-t} r_{t’} \ | s_t=s, a_t=a, \pi] \\<br>=\mathop{max}_{\pi} E[r_t+ \gamma \sum_{t’=t+1}^T \gamma^{t’-(t+1)} r_{t’} \ | s_t=s, a_t=a, \pi] \\<br>= \mathop{max}_{\pi} E[r_t + \gamma R_{t+1}|s,a,\pi] \\<br>= r_t+ \gamma \mathop{max}_{\pi} E[R_{t+1}|s,a,\pi]     \\<br>= r_t + \gamma   \mathop{max}_{\pi}  E_{s’,a’} \left[ E[R_{t+1}|s_{t+1}=s’, a_{t+1}=a’, s,a,\pi]  \right] \\<br>= r_t + \gamma \mathop{max}_{\pi} E_{s’,a’} [Q^{\pi}(s’,a’)|s,a,\pi]\\<br>= r_t + \gamma \mathop{max}_{\pi} E_{s’} [\sum_{a’} \pi(a’|s’) Q^{\pi}(s’,a’)|s,a]<br>$$</p>
+<p><img src="/picture/machine-learning/q-learning.png" alt="Q-learning"></p>
+<p>根据推导和上图示意图，给定策略$\pi​$, $\pi(s)​$唯一确定一个动作，如$a​$。这样$s​$可能转移到$s’1,s’2,s’3​$, 需要在这些可能的$s’​$上求$Q^{\pi}(s’,a)​$的期望。 同理可以求得$Q^{\pi}(s’,b)​$的期望，最佳策略是选择$Q^{\pi}​$期望的最大值所对应的$\pi​$。也就是图中红框标出来的、代表各个期望中的最大值。</p>
+<p>这样求解略复杂，考虑进一步简化。若<strong>假设转移的状态为$s’$, 以及状态$s’$下的决策动作$a’$, 就能求得对应的$Q^{*}(s’,a’)$，那么遍历$s’$下的所有动作$a’$，就可以求出$Q^{*}(s’,a’)$中的最优值</strong>。因此，根据<strong>贝尔曼最优方程</strong>，<strong>贪心选择</strong>$a’$,来最大化$Q^{*}(s’,a’)$。注意这里的$a’$是下一状态$s’$下的决策动作，而当前状态s下的决策动作为$a$.</p>
+<p>因此，进一步改写递推式如下：<br>$$<br>Q^{*}(s,a) =  r_t + \gamma \mathop{max}_{\pi} E_{s’} [\sum_{a’} \pi(a’|s’) Q^{\pi}(s’,a’)|s,a] \\<br> \approx E_{s’ \sim \varepsilon}  [r_t+\gamma \mathop{max}_{a’} Q^{*}(s’,a’) |s, a]<br>$$</p>
+<p>另外补充一张图，图中给出model-based的value funtion和bellman equation的关系。只要将基于模型状态转移概率求和的地方替换成期望即可。参考见<a href="https://arxiv.org/pdf/1701.07274.pdf" target="_blank" rel="noopener">Deep Reinforcement Learning: An Overview</a><br><img src="/picture/machine-learning/value_fn.png" alt="value_fn"></p>
+<h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><p>最终得到<strong>贝尔曼最优方程</strong>。<br>$$<br>Q^{*}(s,a)  = E_{s’ \sim \varepsilon}  [r+\gamma \mathop{max}_{a’} Q^{*}(s’,a’) |s, a]<br>$$<br>上述$s’$是执行$a$动作后，可能转移到的新状态。而$a’$是新状态$s’$下的决策动作，选择使得$Q^{*}(s’,a’)$最大的动作$a’$。<br>通常的算法通过使用贝尔曼最优方程的迭代法来更新Q函数。<br>$$<br>Q_{i+1}(s,a) = E[r+\gamma \mathop{max}_{a’} Q_i(s’,a’)|s,a]<br>$$<br>注意下标。当前轮次的Q值，使用<strong>上一轮次的下一时间步的Q值来更新</strong>，当$i$趋近于正无穷时，$Q_i \rightarrow Q^{*}$</p>
+<p>然而这种方法通常是不可取的，因为每次只对一个序列$(s,a)$进行迭代，只能求得该序列的收敛值，不能泛化到新的样本序列上。<strong>因此需要使用函数估计的思想来估计Q函数，使其能够泛化到新样本上，故加上一个参数$\theta$, $Q(s,a;\theta) \approx Q^{*}(s,a)$</strong>。传统的方法使用线性函数来逼近Q函数，在本文中使用神经网络来逼近Q函数，这样的神经网络称作$Q-network$. 使用下述损失函数来学习：<br>$$<br>L_i(\theta_i) = E_{s,a \sim \rho(.)} \left[(y_i-Q(s,a;\theta_i))^2  \right] \\<br>其中，y_i = E_{s’\sim \varepsilon} [r+\gamma \mathop{max}_{a’}Q(s’,a’;\theta_{i-1})|s,a]<br>$$<br>上述$i$代表迭代轮次，$y_i$是目标值，依赖于当前迭代模型的参数，并且使用后续步的Q估计值来估计的，这种方法在强化学习中称作“boostraping”。在这篇论文中，使用当前神经网络求得$y_i$目标值，后续的改进，使用前面若干轮次的神经网络作为目标网络求解目标值，解决目标网络和在线网络之间的相关性问题。$Q(s,a;\theta_i)$代表当前轮次待更新的在线网络。$\rho(s,a)$是序列s和动作a上的概率分布，称作行为分布，通常使用$\epsilon-greedy$策略，并使用该策略分布产生多个样本，求这些样本的期望损失。求梯度如下：<br>$$<br>\nabla_{\theta_i} L(\theta_i) = E_{s,a\sim \rho(.); s’\sim \varepsilon}\left[ \left(r+\gamma \mathop{max}_{a’}Q(s’,a’;\theta_{i-1}))-Q(s,a;\theta_i)\right) \nabla_{\theta_i} Q(s,a;\theta_i)\right]<br>$$<br>如果使用SGD，且每个时间步更新一次的话，上述期望可以使用单独的一个样本替代。这个样本$(s,a,r,s’)$是使用行为分布$\rho$和模拟器$\varepsilon$生成的。</p>
+<p>上述算法有两个特点：</p>
+<ul>
+<li><p>Model-Free: 不需要对模拟器进行近似，也就是说不需要估计状态转移概率。</p>
+</li>
+<li><p>Off-policy: 不基于给定的策略进行学习。Off-policy的核心任务是学习最优策略或最优价值函数。而On-policy是对给定策略进行价值评估或策略提升。Off-policy在本文中通过学习最优动作价值函数来间接学习到策略。并且最终学习到的策略实际上是不同策略的组合(different-policy)，和实际生成数据的策略(same-policy)有所不同。</p>
+</li>
+</ul>
+<p>具体算法如下：</p>
+<p><img src="/picture/machine-learning/algorithm.png" alt="algorithm"></p>
+<ul>
+<li>$Replay \ memory \ D$ 经验缓存池：保存最新的$N$个经验。</li>
+<li>$Episode$: 表征每一局游戏。</li>
+<li>$t$: 表征每局游戏的每个时间步。</li>
+<li>$a_t$: 根据当前序列决策下一步动作，用于产生样本。$a_t$服从行为分布$\rho$。通常行为分布$\rho$使用$\epsilon-greedy$策略，即以$\epsilon$概率随机选择动作$a’$, 以$1-\epsilon$按照$max_{a’} Q^{*}(s’,a’)$概率选择动作$a’$。注意，这里是off-policy（policy未给定）方法，故基于贪心策略来选择最优动作。若是on-policy方法，则直接根据给定的策略分布抽样动作即可。这里的$Q^{*}$应该是目前正在学习的神经网络Q，即使用当前网络来决策动作。</li>
+<li>$\phi$：特征预处理组件。神经网络要求输入必须是相同长度的，而根据上文可知，$s_t=x_1,a_1,x_2,…,a_{t-1}, x_t$, 因此每个时间步的$s_t$长度是不同的。故需要进行预处理，具体预处理过程见下文。</li>
+<li>$transition$: 样本。$(\phi_t, a_t, r_t, \phi_{t+1})$ 分别指预处理后的当前状态，决策的下一步动作，模拟器返回的报酬，模拟器返回的、经过预处理后的下一步状态。</li>
+<li>$y_j$: 目标值。 若是结束步则设置成相应的报酬。否则传入预处理后的下一步状态$\phi_{t+1}$给上一轮的神经网络，根据$r_j+\gamma \mathop{max}_{a’}Q(\phi_{j+1}, a’;\theta)$计算。其中Q就是上一轮的神经网络，使用上一轮神经网络来生成目标值。</li>
+<li>$SGD$：梯度下降更新参数。</li>
+</ul>
+<h3 id="特征预处理和模型架构"><a href="#特征预处理和模型架构" class="headerlink" title="特征预处理和模型架构"></a>特征预处理和模型架构</h3><h4 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h4><p>使用$raw  frames$，即纯粹的帧像素，$210*160$, 128种颜色，RGB三通道。首先将RGB转化成Gray-scale，再down-sample下采样为$110*84$规格的图像, 最后crop成$84*84$的图像。$\phi$会截取最新的4帧图像，并叠加起来，作为神经网络的输入。</p>
+<h4 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h4><p><strong>Deep Q-Networks(DQN)</strong></p>
+<ul>
+<li>输入层：$84*84*4$ image.</li>
+<li>隐藏层1：8*8  stride=4, 16 filters卷积层。</li>
+<li>ReLU激活。</li>
+<li>隐藏层2： 4*4 stride=2, 32 filters卷积层。</li>
+<li>ReLU激活。</li>
+<li>全连接层1：256个units。</li>
+<li>输出层：全连接层，number of action个units。每个神经元代表对应动作的Q值，一次性输出下一步每个合法动作的Q值。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文原则上是强化学习和深度学习融合的第一篇论文。强化学习体现在Q-learning学习算法，模拟器的使用，样本的生成等。深度学习则体现在神经网络架构的使用。二者的联系是通过神经网络近似Q函数实现的。同时，本文引入的Experience Replay机制是后续其他研究的基础，也是算法有效性的保证。</p>
+<p>后续工作包括：神经网络架构的优化：是否有更好的网络架构；特征处理方法的优化：本文的特征处理略粗糙，如RGB通道是否不合并更好；强化学习算法的优化和选择，是否有其余更好的强化学习算法、算法迭代的时间周期选择，每个时间步连续迭代仍然存在较强的相关性，是否可以调整优化周期，这个优化点体现在Nature论文《Human-level control through deep reinforcement learning》，分离目标网络和迭代网络，使用目标网络生成样本标签，且周期性更新目标网络，比如每隔C-step，将当前迭代网络更新到目标网络上，这样能显著减小目标网络和迭代网络的相关性；最后，随机抽取样本方式的优化，是否可以优先抽取对迭代有帮助的样本等，例如使用TD-error衡量样本的优先级。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://arxiv.org/pdf/1312.5602.pdf" target="_blank" rel="noopener">Playing Atari with Deep Reinforcement Learning</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/tags/人工智能/" rel="tag"># 人工智能</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/强化学习/" rel="tag"># 强化学习</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/24/AlphaZeroDesign/" rel="next" title="AlphaZero问题研究和算法设计与实现">
+                <i class="fa fa-chevron-left"></i> AlphaZero问题研究和算法设计与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/03/recommender-system-survey/" rel="prev" title="推荐系统算法调研">
+                推荐系统算法调研 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法原理"><span class="nav-number">2.</span> <span class="nav-text">算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#补充数学：个人理解"><span class="nav-number">2.1.</span> <span class="nav-text">补充数学：个人理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">2.2.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征预处理和模型架构"><span class="nav-number">2.3.</span> <span class="nav-text">特征预处理和模型架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#特征处理"><span class="nav-number">2.3.1.</span> <span class="nav-text">特征处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模型架构"><span class="nav-number">2.3.2.</span> <span class="nav-text">模型架构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

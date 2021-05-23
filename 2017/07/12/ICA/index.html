@@ -1,0 +1,1055 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,独立成分分析," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前文提到的PCA是一个信息提取的过程，将原始数据进行降维。而本文提到的独立成分分析ICA（Independent Components Analysis）是一个信息解混过程，ICA认为观测信号是若干个统计独立的分量的线性组合。即假设观察到的随机信号x服从模型\(x=As\),其中s为未知源信号，其分量(代表不同信号源)相互独立，A为一未知混合矩阵(As实现不同信号源的线性组合)。ICA的目的是">
+<meta name="keywords" content="机器学习,独立成分分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="独立成分分析">
+<meta property="og:url" content="xtf615.com/2017/07/12/ICA/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="前文提到的PCA是一个信息提取的过程，将原始数据进行降维。而本文提到的独立成分分析ICA（Independent Components Analysis）是一个信息解混过程，ICA认为观测信号是若干个统计独立的分量的线性组合。即假设观察到的随机信号x服从模型\(x=As\),其中s为未知源信号，其分量(代表不同信号源)相互独立，A为一未知混合矩阵(As实现不同信号源的线性组合)。ICA的目的是">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/ica1.jpg">
+<meta property="og:image" content="/picture/machine-learning/ica2.png">
+<meta property="og:image" content="/picture/machine-learning/ica3.jpg">
+<meta property="og:image" content="/picture/machine-learning/ica4.jpg">
+<meta property="og:image" content="/picture/machine-learning/ica5.jpg">
+<meta property="og:image" content="/picture/machine-learning/ica6.jpg">
+<meta property="og:updated_time" content="2021-05-23T14:49:26.383Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="独立成分分析">
+<meta name="twitter:description" content="前文提到的PCA是一个信息提取的过程，将原始数据进行降维。而本文提到的独立成分分析ICA（Independent Components Analysis）是一个信息解混过程，ICA认为观测信号是若干个统计独立的分量的线性组合。即假设观察到的随机信号x服从模型\(x=As\),其中s为未知源信号，其分量(代表不同信号源)相互独立，A为一未知混合矩阵(As实现不同信号源的线性组合)。ICA的目的是">
+<meta name="twitter:image" content="/picture/machine-learning/ica1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/07/12/ICA/"/>
+
+
+
+
+
+  <title> 独立成分分析 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/07/12/ICA/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                独立成分分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-12T15:26:23+08:00">
+                2017-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　前文提到的PCA是一个信息提取的过程，将原始数据进行降维。而本文提到的独立成分分析ICA（Independent Components Analysis）是一个信息解混过程，ICA认为观测信号是若干个统计独立的分量的线性组合。即假设观察到的随机信号x服从模型\(x=As\),其中s为未知源信号，其分量(代表不同信号源)相互独立，A为一未知混合矩阵(As实现不同信号源的线性组合)。ICA的目的是通过且仅通过观察x来估计混合矩阵A以及源信号s。<br><a id="more"></a></p>
+<h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>　　让我们从经典的鸡尾酒宴会问题(cocktail party problem)谈起。假设在宴会中有n个人，他们可以同时说话，我们也在房间中的一些角落共放置了n个声音接收器(microphone)用来记录声音。宴会过后，我们从n个麦克风中得到了一组数据\(\{x^{(i)}\left(x_1^{(i)},x_2^{(i)},…,x_n^{(i)}\right),i=1,2,…m\}\),上标i代表采样的时间顺序，每个时刻n个声音组合得到1组样本，并且在每个时刻，每个麦克风都会得到一种n个声音的线性组合，也就是说每组样本包含了n种线性组合，m个时刻共得到了m组采样，并且每一组采样都是n维的。我们的目标是单单从这m组采样数据中分辨出每个人说话的信号。<br>　　将问题细化一下，有n个信号源\(s(s_1,s_2,…,s_n)^T,s \in \mathbb{R}^n\),每一维都是一个人的声音信号，每个人发出的声音信号独立。s是一个矩阵，假设m组样本，则s规格为\(n*m\),每一行代表一个人m个时刻的声音序列，总共有n行，即n个人的声音序列。A是一个未知的混合矩阵(mixing matrix)，用来组合叠加信号s，矩阵计算相当于s进行了线性组合，线性组合的系数由混合矩阵A来决定的。则：<br>$$x=As$$<br>　　x的意义在上文解释过，这里的x不是一个向量，是一个矩阵，其中每个列向量是\(x^{(i)},x^{(i)}=As^{(i)}\),\(x^{(i)}\)列向量是n维的，即n个接收器在i时刻接收到的序列，\(x^{(i)}\)每个分量代表i时刻不同接收器得到的所有n个声音的线性组合。例如第一个分量代表第一个接收器在第i时刻接收到的所有声音的线性组合，第n个分量代表第n个接收器在i时刻接收到的所有声音的线性组合。<br>　　表示成图如下：<br><img src="/picture/machine-learning/ica1.jpg" alt="ica"><br><img src="/picture/machine-learning/ica2.png" alt="ica"><br>　　\(x^{(i)}\)的每个分量都由\(s^{(i)}\)的分量线性表示。A和s都是未知的，x是已知的，我们要想办法根据x来推出s。这个过程也称作盲信号分离。<br>　　令\(W=A^{-1}\)，那么\(s^{(i)}=A^{-1}x^{(i)}=Wx^{(i)}\),则可将W表示成：<br>$$W=\begin{bmatrix}——w_1^T—— \\\ … \\\ ——w_n^T—— \end{bmatrix}$$<br>　　其中，\(w_i \in \mathbb{R}^n\),显然W是\(n*n\)规格的。得到：<br>$$s_j^{(i)}=w_j^{T}x^{(i)}$$</p>
+<h2 id="ICA的不确定性"><a href="#ICA的不确定性" class="headerlink" title="ICA的不确定性"></a>ICA的不确定性</h2><p>　　由于w和s都不确定，那么在没有先验知识的情况下，无法同时确定这两个相关参数。比如上面的公式s=wx。当w扩大两倍时，s只需要同时扩大两倍即可，等式仍然满足，因此无法得到唯一的s。同时如果将人的编号打乱，变成另外一个顺序，如上图的蓝色节点的编号变为3,2,1，那么只需要调换A的列向量顺序即可，因此也无法单独确定s。这两种情况称为原信号不确定。<br>　　还有一种ICA不适用的情况，那就是信号不能是高斯分布的。假设只有两个人发出的声音信号符合多元正态分布\(s \sim N(0,I)\)，I是\(2*2\)的单位矩阵，s的概率密度函数以均值0为中心，投影面是椭圆的山峰状，因为\(x=As\),因此x也是高斯分布的，均值为0，协方差为\(E[xx^T]=E[Ass^TA^T]=AA^T\)。<br>　　令R是正交阵(\(RR^T=R^TR=I\)),令\(A’=AR\)，如果将\(A\)替换成\(A’\)。那么\(x’=A’s\)，s的分布仍然是多元高斯分布，则\(x’\)的均值仍然为0，协方差为：<br>$$E[x’(x’)^T]=E[A’ss^T(A’)^T]=E[ARss^T(AR)^T]=ARR^TA^T=AA^T$$<br>　　因此，不管混合矩阵是\(A\)还是\(A’\),x的分布情况是一样的，此时混合矩阵不是唯一的，因此无法确定原信号。</p>
+<h1 id="密度函数与线性变换"><a href="#密度函数与线性变换" class="headerlink" title="密度函数与线性变换"></a>密度函数与线性变换</h1><p>　　在讨论ICA算法之前，我们先来回顾一下概率和线性代数里的知识。<br>　　假设我们的随机变量s有概率密度函数\(p_s(s)\)(连续值是概率密度函数，离散值是概率)。为了简单，我们再假设s是实数，有一个随机变量\(x=As\),A和x都是实数。令\(p_x\)是x的概率密度，那么怎么求\(p_x\)呢？<br>　　令\(W=A^{-1}\),首先将式子变幻成\(s=Wx\),然后得到\(P_x(x)=p_s(Ws)\),求解完毕。可惜这种方法是错误的。比如s符合均匀分布的话，即\(s \sim Uniform[0,1]\),那么s的概率密度\(P_s(s)=1\{0 \leq s \leq 1\}\),现在令A=2，即\(x=2s\),也就是说x在[0,2]上均匀分布，则\(p_x(x)=0.5\),因此，按照前面的推导会得到\(p_x(x)=p_s(0.5s)=1\),显然是不对的。正确的公式是：\(p_x=p_s(Wx)|w|\)<br>　　推导方法如下：<br>$$F_X(a)=P(X \leq a)=P(AS \leq a)= p(s \leq Wa)=F_s(Wa) \\\\<br>p_x(a)=F_X’(a)=F_S’(Wa)=p_s(Wa)|W|$$<br>　　更一般地，如果s是向量，A是可逆的方阵，那么上式仍成立。</p>
+<h1 id="ICA算法"><a href="#ICA算法" class="headerlink" title="ICA算法"></a>ICA算法</h1><p>　　ICA算法归功于Bell和Sejnowski，这里使用最大似然估计来解释算法，原始的论文中使用的是一个复杂的方法Infomax principal。<br>　　我们假定每个\(s_i\)有概率密度\(p_s\),那么给定时刻原信号的联合分布是：<br>$$p(s)=\prod_{i=1}^n p_s(s_i)$$<br>　　这个公式有一个假设前提：每个人发出的声音信号各自独立。有了p(s),我们可以求得p(x):<br>$$p(x) = p_s(Wx)|W|=|W|\prod_{i=1}^n p_s(w_i^T x)$$<br>　　左边是每个采样信号x(n维向量)的概率，右边是每个原信号概率乘积的|W|倍。<br>　　前面提到过，如果没有先验知识，我们无法求得W和s。因此我们需要知道\(p_s(s_i)\)，我们打算选取一个概率密度函数赋给s，但是我们不能选取高斯分布的密度函数。在概率论里面，我们知道密度函数p(x)由累积分布函数（CDF）F(x)求导得到。F(x)要满足两个性质是，单调递增和取值范围在[0,1]。我们发现sigmoid函数很适合，定义域为负无穷到正无穷，值域为0到1，缓慢递增。我们假定s的累积分布函数符合sigmoid函数：<br>$$g(s)=\frac{1}{1+e^{-s}}$$<br>　　求导后：<br>$$P_s(s)=g’(s)=\frac{e^s}{(1+e^s)^2}$$<br>　　这就是s的密度函数，这里s是实数。<br>　　如果我们预先知道s的分布函数，那就不用假设了。但是在缺失的情况下，sigmoid函数能够在大多数问题上取得不错的效果。由于上式中P_s(s)是个对称函数，因此E[s]=0,那么\(E[x]=E[As]=0\),x的均值也为0.<br>　　知道了\(p_s(s)\),就剩下W了。给定采样后的训练样本\(\{x^{(i)}(x_1^{(i)},x_2^{(i)},…,x_n^{(i)},i=1,2…,m\}\)，样本对数似然估计如下，使用前面得到的x的概率密度函数：<br>$$\ell(W)=\sum_{i=1}^m \left(\sum_{j=1}^n log \ g’(w_j^T x^{(i)}) + log |W| \right)$$<br>　　接下来就是对W球到了，这里牵涉一个问题就是对行列式|W|进行求导的方法，属于矩阵微积分。这里先给出结果：<br>$$\nabla_w|W|=|W|(W^{(-1)})^T$$<br>　　最终得到的求导公式如下，\(log g’(s)\)的导数是\(1-2g(s)\)（可以自己验证）：<br>$$W:=W+\alpha \left(\begin{bmatrix}1-2g(w_1^T x^{(i)}) \\\ 1-2g(w_2^T x^{(i)}) \\\ … \\\ 1-2g(w_n^T x^{(i)})\end{bmatrix} {x^{(i)}}^T+(W^T)^{-1} \right)$$<br>　　其中\(\alpha\)是梯度上升速率，人为指定。<br>　　当迭代求出W后，便可得到\(s^{(i)}=Wx^{(i)}\)来还原出原始信号。<br>　　注意：我们计算最大似然估计时，假设了\(x^{(i)}和x^{(j)}\)之间是独立的，然而对于语音信号或者其他具有时间连续依赖特性（如温度），这个假设不成立。但是在数据足够多时，假设独立对效果影响不大，同时如果事先打乱样例，并运行随机梯度上升算法，那么就能够加快收敛速度。<br>　　回顾鸡尾酒宴会问题，s是人发出的信号，是连续值，不同时间点的s不同，每个人发出的信号之间独立(\(s_i和s_j\)之间独立)。s的累积概率分布韩式sigmoid函数，但是所有人发出声音信号都符合这个分布。A(W的逆矩阵)代表了s相对于x的位置变化，x是s和A变化后的结果。</p>
+<h1 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h1><p>　　当n=3时，原始信号正弦、余弦、随机信号。如下图所示，也就相当于S矩阵：<br><img src="/picture/machine-learning/ica3.jpg" alt="ica"><br>　　经过随机混合，由6个麦克风录制下来，观察到的x信号如下，相当于X矩阵：<br><img src="/picture/machine-learning/ica4.jpg" alt="ica"><br>　　在使用ICA算法之前，需要对数据进行预处理，可使用PCA和白化。PCA、白化处理后，可以看到6路信号减少为3路，ICA仅需要这3路混合信号即可还原源信号。<br><img src="/picture/machine-learning/ica5.jpg" alt="ica"><br>　　使用ICA算法,进行多步迭代优化，就会按照信号之间独立最大的假设，将信号解混输出。得到原始S信号如下图所示：<br><img src="/picture/machine-learning/ica6.jpg" alt="ica"></p>
+<h1 id="PCA和ICA的联系和区别"><a href="#PCA和ICA的联系和区别" class="headerlink" title="PCA和ICA的联系和区别"></a>PCA和ICA的联系和区别</h1><p>　　不管是PCA还是ICA，都不需要你对源信号的分布做具体的假设；如果观察到的信号为高斯，那么源信号也为高斯，此时PCA和ICA等价。下面稍作展开。<br>　　假设你观察到的信号是n维随机变量\(x=(x_1,\ldots,x_n)^T\).主成分分析（PCA）和独立成分分析（ICA）的目的都是找到一个方向，即一个n维向量\(w=(w_1,\ldots,w_n)^T\)使得线性组合\(\sum_{i=1}^nw_ix_i=w^Tx\)的某种特征最大化。</p>
+<h2 id="PCA"><a href="#PCA" class="headerlink" title="PCA　　"></a>PCA　　</h2><p>　　PCA认为一个随机信号最有用的信息体包含在方差里。为此我们需要找到一个方向\(\mathbf{w}_1\)，使得随机信号x在该方向上的投影\(w_1^Tx\)的方差最大化。接下来，我们在与\(w_1\)正交的空间里到方向\(w_2\)，使得\(w_2^Tx\)的方差最大，以此类推直到找到所有的n个方向\(w_1,\ldots,w_n\). 用这种方法我们最终可以得到一列不相关的随机变量：\(w_1^Tx,\ldots,w_n^Tx\)。<br>　　如果用矩阵的形式，记\(W=(w_1,\ldots, w_n)\),那么本质上PCA是把原随机信号x变换成了\(y=Wx\),其中y满足,y的各分量不相关以及\(y_1,\ldots,y_n\)的方差递减。<br>　　特别地，当原随机信号x为高斯随机向量的时候，得到的y仍为高斯随机向量，此时它的各个分量不仅仅是线性无关的，它们还是独立的。<br>　　通过PCA，我们可以得到一列不相关的随机变量。至于这些随机变量是不是真的有意义，那必须根据具体情况具体分析。最常见的例子是，如果x的各分量的单位（量纲）不同，那么一般不能直接套用PCA。比如，若x的几个分量分别代表某国GDP, 人口，失业率，政府清廉指数，这些分量的单位全都不同，而且可以自行随意选取：GDP的单位可以是美元或者日元；人口单位可以是人或者千人或者百万人；失业率可以是百分比或者千分比，等等。对同一个对象（如GDP）选用不同的单位将会改变其数值，从而改变PCA的结果；而依赖“单位选择”的结果显然是没有意义的。</p>
+<h2 id="ICA"><a href="#ICA" class="headerlink" title="ICA"></a>ICA</h2><p>　　ICA又称盲源分离(Blind source separation, BSS)，它假设观察到的随机信号x服从模型，其中s为未知源信号，其分量相互独立，A为一未知混合矩阵。ICA的目的是通过且仅通过观察x来估计混合矩阵A以及源信号s。大多数ICA的算法需要进行“数据预处理”（data preprocessing）：先用PCA得到y，再把y的各个分量标准化（即让各分量除以自身的标准差）得到z。预处理后得到的z满足下面性质：z的各个分量不相关；z的各个分量的方差都为1。<br>　　有许多不同的ICA算法可以通过z把A和s估计出来。以著名的FastICA算法为例，该算法寻找方向使得随机变量\(w^Tz\)的某种“非高斯性”(non-Gaussianity)的度量最大化。一种常用的非高斯性的度量是四阶矩\(\mathbb{E}[(w^Tx)^4]\)。类似PCA的流程，我们首先找\(w_1\)使得\(\mathbb{E}[(w_1^Tx)^4]\)最大；然后在与\(w_1\)正交的空间里找\(w_2\)，使得\(\mathbb{E}[(w_2^Tx)^4]\)最大，以此类推直到找到所有的\(w_1,w_2…,w_n\). 可以证明，用这种方法得到的\(w_1^T z,…,w_n^T z\)是相互独立的。<br>　　ICA认为一个信号可以被分解成若干个统计独立的分量的线性组合，而后者携带更多的信息。我们可以证明，只要源信号非高斯，那么这种分解是唯一的。若源信号为高斯的话，那么显然可能有无穷多这样的分解。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://open.163.com/special/opencourse/machinelearning.html" target="_blank" rel="noopener">斯坦福大学机器学习视频教程</a><br><a href="https://www.zhihu.com/question/28845451/answer/42537342" target="_blank" rel="noopener">知乎：独立成分分析 ( ICA ) 与主成分分析 ( PCA ) 的区别在哪里？</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/独立成分分析/" rel="tag"># 独立成分分析</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/10/Factor-Analysis/" rel="next" title="因子分析">
+                <i class="fa fa-chevron-left"></i> 因子分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/15/RL/" rel="prev" title="强化学习：马尔科夫决策过程">
+                强化学习：马尔科夫决策过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引入"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ICA的不确定性"><span class="nav-number">1.1.</span> <span class="nav-text">ICA的不确定性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#密度函数与线性变换"><span class="nav-number">2.</span> <span class="nav-text">密度函数与线性变换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ICA算法"><span class="nav-number">3.</span> <span class="nav-text">ICA算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实例"><span class="nav-number">4.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA和ICA的联系和区别"><span class="nav-number">5.</span> <span class="nav-text">PCA和ICA的联系和区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PCA"><span class="nav-number">5.1.</span> <span class="nav-text">PCA　　</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ICA"><span class="nav-number">5.2.</span> <span class="nav-text">ICA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

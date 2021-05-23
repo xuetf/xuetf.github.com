@@ -1,0 +1,1081 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Paper,机器学习,变分推断," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="现代统计学核心问题之一是近似复杂的概率密度。这个问题在贝叶斯统计中尤其重要。贝叶斯统计框架下，所有的推断问题都是要求未知变量的后验概率。而后验概率通常是很难计算的，因此需要相应的算法来近似它。本文主要是阅读David M.Blei 2018发表的论文《Variational Inference: A Review for Statisticians》后的笔记。主要总结其中3种变分推断情况以及对应的">
+<meta name="keywords" content="Paper,机器学习,变分推断">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Variational Inference:A Review for Statisticians读书笔记">
+<meta property="og:url" content="xtf615.com/2018/09/10/vi/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="现代统计学核心问题之一是近似复杂的概率密度。这个问题在贝叶斯统计中尤其重要。贝叶斯统计框架下，所有的推断问题都是要求未知变量的后验概率。而后验概率通常是很难计算的，因此需要相应的算法来近似它。本文主要是阅读David M.Blei 2018发表的论文《Variational Inference: A Review for Statisticians》后的笔记。主要总结其中3种变分推断情况以及对应的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-05T07:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Variational Inference:A Review for Statisticians读书笔记">
+<meta name="twitter:description" content="现代统计学核心问题之一是近似复杂的概率密度。这个问题在贝叶斯统计中尤其重要。贝叶斯统计框架下，所有的推断问题都是要求未知变量的后验概率。而后验概率通常是很难计算的，因此需要相应的算法来近似它。本文主要是阅读David M.Blei 2018发表的论文《Variational Inference: A Review for Statisticians》后的笔记。主要总结其中3种变分推断情况以及对应的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2018/09/10/vi/"/>
+
+
+
+
+
+  <title> Variational Inference:A Review for Statisticians读书笔记 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2018/09/10/vi/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Variational Inference:A Review for Statisticians读书笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-10T09:56:43+08:00">
+                2018-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>现代统计学核心问题之一是近似复杂的概率密度。这个问题在贝叶斯统计中尤其重要。贝叶斯统计框架下，所有的推断问题都是要求未知变量的后验概率。而后验概率通常是很难计算的，因此需要相应的算法来近似它。本文主要是阅读David M.Blei 2018发表的论文《Variational Inference: A Review for Statisticians》后的笔记。主要总结其中3种变分推断情况以及对应的优化方法。<br><a id="more"></a></p>
+<h2 id="一般情况"><a href="#一般情况" class="headerlink" title="一般情况"></a>一般情况</h2><p>应用ELBO和Mean Field求解的一般步骤。</p>
+<ul>
+<li><p>1) 写出隐变量和观测数据的联合概率分布：$p(X,Z)$。可以画出概率图模型，根据依赖关系写。</p>
+</li>
+<li><p>2) 根据Mean Field写出$q(Z)$公式。$q(Z)=\prod_{j} q_j(z_j)$。具体求解过程中，注意global和local。</p>
+</li>
+<li><p>3) 将1)中联合概率$P(X,Z)$和2)中$q(Z)$代入到ELBO公式：$E_q[log p(X,Z)]-E_q[log  q(Z)]$，ELBO公式中期望是关于$q(Z)$的。对ELBO进行推导，代入$q(Z)$。可以得出一个<strong>重要的结论</strong>1：<br>$$<br>q^{*}_j(z_j) \propto exp(E_{-j}[log P(z_j|Z_{-j},X)]) \\<br>or \\<br>q^{*}_j(z_j) \propto exp(E_{-j}[log P(X,Z)])<br>$$<br>$-j$是对除了$z_j$之外的其它隐变量求期望。上述期望最后的形式只会包含变分参数。</p>
+</li>
+<li><p>4) 应用3中的公式，求得不同变分参数的迭代公式。核心步骤。即需要求$E_{-j}[log P(X,Z)]$。注意，3)中是整个$q_j(z_j)$的最优分布满足该结论。如果通过推导，可以得出$q_j(z_j)$的形式，如：某种指数分布族形式，那么可以直接将$q_j(z_j|\phi_j)$和$q^{*}_j(z_j)$转成指数分布族的形式，并令二者自然参数相等，即可得到变分参数$\phi_j$的迭代公式。或者有的时候，变分参数和分布之间就有某种转换关系，如Categorical中，$q(c_i=k)=\phi_{ik}$，就可以直接更新参数$\phi_{ik}$。 否则其他情况下，只能更新$q_j(z_j)$整个分布。</p>
+</li>
+<li><p>5) 使用CAVI（Coordinate-ascent variational inference）算法迭代更新参数。</p>
+<p>​</p>
+<p>​</p>
+</li>
+</ul>
+<h2 id="指数分布族情况"><a href="#指数分布族情况" class="headerlink" title="指数分布族情况"></a>指数分布族情况</h2><p>如果某个<strong>隐变量的完全后验概率</strong>（complete conditionals）属于指数分布族，那么有更简便的更新方法。</p>
+<p>隐变量$z_j$的完全后验概率为：<br>$$<br>p(z_j|Z_{-j},X)<br>$$<br>$z_{-j}$是除了$z_j$隐变量之外的其余隐变量，但通常可以简化。一般需要根据图模型找到$z_j$的依赖节点，子节点、父节点、co-parent节点。</p>
+<p>如果该完全后验概率是指数族形式：<br>$$<br>p(z_j|Z_{-j},X) = h(z_j)exp\left(\eta_j(Z_{-j},X)^T t(z_j) - A(\eta_j(Z_{-j},X)) \right)<br>$$<br>那么根据Mean Field, 上述的结论，$q^{*}_j(z_j) \propto exp(E_{-j}[log P(z_j|Z_{-j},X)])$。可以得出：<br>$$<br>q^{*}_j(z_j) \propto exp(E_{-j}[log P(z_j|Z_{-j},X)])  \\<br>= exp \left(log h(z_j)+ E_{-j}[\eta_j(Z_{-j},X)]^Tt(z_j) - E_{-j}[A(\eta_j(Z_{-j},X)) ] \right) \\<br>\propto h(z_j)exp(E_{-j}[\eta_j(Z_{-j},X)]^Tt(z_j) )<br>$$<br>可以看出，$q_j(z_j)$的最优分布和完全后验概率属于同一指数分布族，形式完全一样，包括自然参数和充分统计量。</p>
+<p>因此，假设$\lambda_j$是$q_j(z_j)$的变分<strong>自然</strong>参数。那么更新公式如下，<strong>结论2如下</strong>：<br>$$<br>\lambda_j = \mathbb{E}_{-j}[\eta_j(z_{-j},x)]<br>$$<br>即，<strong>某个变量的自然参数迭代公式等于完全后验概率的自然参数关于其他变量的期望</strong>。</p>
+<p>可以看出，上述结论唯一要求：<strong>隐变量的完全后验概率（complete conditionals）属于指数分布族。</strong></p>
+<p>不需要关于共轭的条件。</p>
+<p><strong>如果一开始假设了$q_j(z_j)$的分布，那么必须保证$q_j(z_j)$的分布和隐变量的后验概率的分布必须属于同一指数族形式</strong>，即，将$q_j(z_j)$转成指数分布族之后，自然参数和充分统计量和隐变量后验概率分布的自然参数和充分统计量对应一致。这样的话，可以令二者自然参数相等，来单独更新$q_j(z_j)$的变分参数。即，上述更新公式为：$\eta(\lambda_j) = \mathbb{E}_{-j}[\eta_j(z_{-j},x)]$。那么需要转成传统参数的更新，$\lambda_j = \eta^{-1}(\lambda_j)$。</p>
+<h2 id="条件共轭情况"><a href="#条件共轭情况" class="headerlink" title="条件共轭情况"></a>条件共轭情况</h2><p>一种关于指数分布族模型的特殊情况是条件共轭(conditionally conjugate models with local and global variables)。条件共轭中的全局变量通常是指”参数”(先验)，而局部变量通常是针对每个数据点的”隐变量”(数据似然)。全局变量影响所有的数据，局部变量只影响单个训练数据。联合概率密度：<br>$$<br>p(\beta,z,x)=p(\beta)\prod_{i=1}^n p(z_i,x_i|\beta)<br>$$<br>其中，$\beta$是全局变量，$z_i$是局部变量。</p>
+<p>上式必须保证每个变量($\beta,z$)的完全后验概率分布都是指数分布族形式，即上文提到的。</p>
+<p>接着定义似然分布和先验分布构成条件共轭。假设数据似然属于指数分布族：<br>$$<br>p(z_i,x_i|\beta)=h(z_i,x_i)exp(\beta^T t(z_i,x_i)- A(\beta))<br>$$<br>那么，为了使得先验为共轭分布，先验$p(\beta)$一种构造方式如下：<br>$$<br>p(\beta) = h(\beta)exp(\alpha^T [\beta, -A(\beta)]-A(\alpha))<br>$$<br>$\alpha$是先验分布的自然参数，$\alpha=[\alpha_1,\alpha_2]^T$。充分统计量使用$[\beta, -A(\beta)]$，即$\beta$和Log Normalizer。$\alpha_1$和$\beta$的维度一样，$\alpha_2$是一维的。此时可以证明，后验$p(\beta|z_i,x_i)$和$p(\beta)$分布一致。证明如下：<br>$$<br>p(\beta|z_i,x_i) = p(\beta)\prod_{i=1}^n p(z_i,x_i|\beta) \\<br>=h(\beta)exp(\alpha^T [\beta, -A(\beta)]-A(\alpha)) \prod_{i=1}^n \left(h(z_i,x_i)exp(\beta^T t(z_i,x_i)- A(\beta))\right) \\<br>\propto  h(\beta)exp(\alpha_1\beta -\alpha_2A(\beta)-A(\alpha_1,\alpha_2)) exp(\beta^T \sum_{i=1}^n t(z_i,x_i)-nA(\beta))\\<br>\propto h(\beta)exp([\alpha_1+\sum_{i=1}^n t(z_i,x_i), \alpha_2+n]^T [\beta, -A(\beta)]) \\<br>= h(\beta)exp([\hat{\alpha}_1, \hat{\alpha_2}]^T [\beta, -A(\beta)])=p(\beta|\hat{\alpha})\\<br>$$<br>可以看出，后验分布的充分统计量和先验分布一样。只需要令二者自然参数一致，即可得到，<strong>结论3</strong>：<br>$$<br>\hat{\alpha}_1 = \alpha_1+\sum_{i=1}^n t(z_i,x_i) \\<br>\hat{\alpha}_2  =\alpha_2 + n<br>$$<br>由于我们假定每个隐变量的后验概率分布$p(z_j|Z_{-j},X)$都是指数分布族，因此，根据上文提到的结论：<br>$$<br>\lambda_j = \mathbb{E}_{-j}[\eta_j(z_{-j},x)]<br>$$<br>其中，$\lambda_j$是$q_j(z_j|\lambda_j)$的变分<strong>自然</strong>参数。</p>
+<p>根据该结论，令$q_i(z_i|\varphi_i)$和$q(\beta|\lambda)$，</p>
+<p>则，对于局部变量$\varphi_i$有：<br>$$<br>\varphi_i = \mathbb{E}_\lambda[\eta(\beta,x_i)]<br>$$<br>对于全局变量$\lambda$，由于上述条件共轭推出的结论，有：<br>$$<br>\lambda = [\alpha_1+\sum_{i=1}^n \mathbb{E}_{\varphi_i}[t(z_i,x_i)],  \alpha_2+n]^T<br>$$</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>3大结论：</p>
+<ul>
+<li><p>ELBO+Mean Field Family</p>
+<p>隐变量分布更新公式如下：<br>$$<br>q^{*}_j(z_j) \propto exp(E_{-j}[log P(X,Z)])<br>$$</p>
+</li>
+<li><p>Complete Conditional in Exponential Family</p>
+<p>变分自然参数更新公式如下：<br>$$<br>\lambda_j = \mathbb{E}_{-j}[\eta_j(z_{-j},x)]<br>$$</p>
+</li>
+<li><p>Conditional Conjugacy</p>
+<p>全局参数更新公式如下：<br>$$<br>\lambda = [\alpha_1+\sum_{i=1}^n \mathbb{E}_{\varphi_i}[t(z_i,x_i)],  \alpha_2+n]^T<br>$$</p>
+</li>
+</ul>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="https://arxiv.org/pdf/1601.00670.pdf" target="_blank" rel="noopener">Variational Inference: A Review for Statisticians</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/变分推断/" rel="tag"># 变分推断</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/08/vi-demo/" rel="next" title="变分推断应用示例">
+                <i class="fa fa-chevron-left"></i> 变分推断应用示例
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/05/word2vec/" rel="prev" title="word2vec学习笔记">
+                word2vec学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一般情况"><span class="nav-number">1.</span> <span class="nav-text">一般情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指数分布族情况"><span class="nav-number">2.</span> <span class="nav-text">指数分布族情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件共轭情况"><span class="nav-number">3.</span> <span class="nav-text">条件共轭情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">5.</span> <span class="nav-text">引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

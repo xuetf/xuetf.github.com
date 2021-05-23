@@ -1,0 +1,1218 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="向量召回,ANN,KDD,工程," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本篇文章主要介绍KDD 2020 Applied Data Science Track Papers中的一篇来自Facebook的语义检索文章，Embedding-based Retrieval in Facebook Search。关于样本、模型、训练等细节可以参考：负样本为王：评Facebook的向量化召回算法。本文重点关注其工程实践上的经验，也借此机会对基于PQ量化的近似近邻搜索 (ANN)">
+<meta name="keywords" content="向量召回,ANN,KDD,工程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="语义向量召回之ANN检索">
+<meta property="og:url" content="xtf615.com/2020/08/01/EBR/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本篇文章主要介绍KDD 2020 Applied Data Science Track Papers中的一篇来自Facebook的语义检索文章，Embedding-based Retrieval in Facebook Search。关于样本、模型、训练等细节可以参考：负样本为王：评Facebook的向量化召回算法。本文重点关注其工程实践上的经验，也借此机会对基于PQ量化的近似近邻搜索 (ANN)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/ebr.png">
+<meta property="og:image" content="/picture/machine-learning/cq.png">
+<meta property="og:image" content="/picture/machine-learning/demo.png">
+<meta property="og:image" content="/picture/machine-learning/pq.png">
+<meta property="og:image" content="/picture/machine-learning/index_structure.png">
+<meta property="og:image" content="/picture/machine-learning/index_process.png">
+<meta property="og:image" content="/picture/machine-learning/search_process.png">
+<meta property="og:image" content="/picture/machine-learning/bool.png">
+<meta property="og:image" content="/picture/machine-learning/fusion.png">
+<meta property="og:updated_time" content="2021-05-23T14:52:32.294Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="语义向量召回之ANN检索">
+<meta name="twitter:description" content="本篇文章主要介绍KDD 2020 Applied Data Science Track Papers中的一篇来自Facebook的语义检索文章，Embedding-based Retrieval in Facebook Search。关于样本、模型、训练等细节可以参考：负样本为王：评Facebook的向量化召回算法。本文重点关注其工程实践上的经验，也借此机会对基于PQ量化的近似近邻搜索 (ANN)">
+<meta name="twitter:image" content="/picture/machine-learning/ebr.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2020/08/01/EBR/"/>
+
+
+
+
+
+  <title> 语义向量召回之ANN检索 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2020/08/01/EBR/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                语义向量召回之ANN检索
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-01T11:51:23+08:00">
+                2020-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/搜索/" itemprop="url" rel="index">
+                    <span itemprop="name">搜索</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇文章主要介绍KDD 2020 <a href="https://www.kdd.org/kdd2020/accepted-papers#ads-papers" target="_blank" rel="noopener">Applied Data Science Track Papers</a>中的一篇来自Facebook的语义检索文章，<a href="https://arxiv.org/pdf/2006.11632.pdf" target="_blank" rel="noopener">Embedding-based Retrieval in Facebook Search</a>。关于样本、模型、训练等细节可以参考：<a href="https://zhuanlan.zhihu.com/p/165064102" target="_blank" rel="noopener">负样本为王：评Facebook的向量化召回算法</a>。本文重点关注其<strong>工程实践</strong>上的经验，也借此机会对基于PQ量化的近似近邻搜索 (ANN) 的原理做个梳理。<br><a id="more"></a></p>
+<h2 id="架构总览"><a href="#架构总览" class="headerlink" title="架构总览"></a>架构总览</h2><p>首先从总体上预览一下paper提出的EBR系统的架构 (Embedding-based Retrieval System):</p>
+<p><img src="/picture/machine-learning/ebr.png" alt="image-20200808102616128"></p>
+<ul>
+<li>左上角是<strong>查询处理模块</strong>，是双塔模型中的query-side embedding model；</li>
+<li>右上角<strong>索引构建模块</strong>，是用document embedding model推断doc embedding后构造向量索引。构造过程中，先拓展doc的metadata，加入doc embedding，并导入doc的正排索引中 (比如用于ranking的特征)；同时，通过向量量化技术来降低索引存储和计算距离代价，并将<strong>量化的结果</strong>存在倒排索引中。这一部分也是paper中关注的重点，下文会重点介绍。</li>
+<li>左侧中间部分是<strong>检索模块</strong>，拿到query embedding后，可以通过精心为语义召回设计的<strong>NN算子(Near Neighbor Operator)</strong> 计算距离并进行<strong>语义召回</strong>。召回的过程中，既支持原来的布尔匹配召回，也支持向量语义召回，还支持混合召回。这部分下文也会重点介绍。</li>
+<li>左下角是<strong>排序模块</strong>，得到召回结果后，再经过排序模块进行实时排序，排序时会利用到<strong>embedding特征</strong>。</li>
+</ul>
+<p>paper中涉及工程实现细节的主要是<strong>索引构建模块</strong>和<strong>检索模块</strong>。下文我会先介绍索引构建模块，这里头涉及很多向量量化的概念，比如PQ量化、粗糙量化、残差量化等，我会先介绍一些量化的背景知识，核心的索引过程和搜索过程，然后介绍在线检索模块，认识基于构建好的向量索引，线上是<strong>如何运转</strong>和<strong>实现召回</strong>的；接着探讨paper中提到的工程优化点和调参经验。最后，做个总结。</p>
+<h2 id="索引构建模块"><a href="#索引构建模块" class="headerlink" title="索引构建模块"></a>索引构建模块</h2><p><strong>基于Product Quantization的近似最近邻搜索</strong>，核心的一些问题预览一下：</p>
+<ul>
+<li>问题描述，解决什么问题？</li>
+<li>传统方法存在什么问题？</li>
+<li>什么是向量量化？为什么要量化？量化场景下距离怎么计算？</li>
+<li>什么是乘积量化？为什么要乘积量化？</li>
+<li>什么是粗糙量化+残差量化？为什么要残差量化？</li>
+<li>索引过程？搜索过程</li>
+</ul>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>给定D维向量$x$和集合$\Gamma ={ y_1,y_2 … y_N }$ ,需要找到与$x$距离最短的<strong>k</strong>个最近邻。距离的衡量可以是欧式距离、余弦距离等。</p>
+<h3 id="暴力搜索问题"><a href="#暴力搜索问题" class="headerlink" title="暴力搜索问题"></a>暴力搜索问题</h3><p>如果以最粗暴的方法进行穷举搜索，构造<strong>距离矩阵</strong>的复杂度为：$O(D N^2)$。从距离矩阵中查找到<strong>k个最近邻</strong>，最小堆，则复杂度为$O((N-k)\log k)$。</p>
+<p>举个例子：假设$N=2000W, k=1000$，则构造的距离矩阵包含$400T$个元素，假设每个距离值32bit，至少占用1600TB空间，构建距离矩阵的时间是$10^{17}$量级，查找Top-K搜索时间是$10^9$量级。</p>
+<h3 id="向量量化"><a href="#向量量化" class="headerlink" title="向量量化"></a>向量量化</h3><p>所谓向量量化，就是将原来无限的空间$R^D$映射到一个有限的<strong>向量集合</strong> $\mathcal{C} = {\boldsymbol{c}_i, i\in[1,l]}$ 中，其中$||\mathcal{C}||=l$是一个自然数。将这个从 $R^D$ 到集合$\mathcal{C}$的函数记为$q$，则$\forall q(y) \in \mathcal{C}$，在信息论中称$\mathcal{C}$ 为codebook。即：通过$q(y)$来<strong>近似</strong>代表$y$。</p>
+<h4 id="聚类量化"><a href="#聚类量化" class="headerlink" title="聚类量化"></a>聚类量化</h4><p>最常用的就是k-means聚类，通过聚类后的<strong>聚类中心向量</strong>来近似<strong>量化</strong>原始的向量。<strong>聚类中心的个数</strong>即为<strong>codebook大小</strong>。因为量化的存在，<strong>任意两个向量之间的距离</strong>可以通过对应的<strong>量化向量的距离</strong>进行近似，也就是聚类中心向量的距离。因为聚类中心的个数<strong>小了</strong>很多，故计算距离的复杂度也下降了很多。（显然，这种方式太粗糙了，误差很大。除非聚类数非常大，极端情况下，聚类数等于样本数时，每个样本一个聚类簇，此时无误差，但是没有起到减少计算复杂度的目的）</p>
+<p><strong>聚类量化的结果：产出聚类中心向量的过程对应train的过程的一部分。</strong>量化后，每个向量都可以用<strong>聚类簇中心下标ID</strong>来<strong>标识</strong>，根据ID可以获取聚类簇的中心向量。</p>
+<p><img src="/picture/machine-learning/cq.png" alt="image-20200808103501538"></p>
+<p>如上图所示，N个向量，通过聚类量化产生多个聚类中心，每个向量属于某个聚类簇中，那么就用该聚类簇对应的中心向量来量化该向量，可以用聚类簇中心对应的下标ID来表示，比如：C1量化vec1。</p>
+<p>Faiss中对应的实现是<strong>IndexIVFFlat。</strong></p>
+<h4 id="乘积量化"><a href="#乘积量化" class="headerlink" title="乘积量化"></a>乘积量化</h4><p><strong>动机：</strong>即：PQ量化，很多时候我们向量不同部分之间的<strong>分布不同</strong>的，比如下图(3段向量)，因此可以考虑对<strong>向量分段</strong>，并<strong>分别进行分块量化。</strong>这个只是直觉原因，本质原因下文讲。</p>
+<p><img src="/picture/machine-learning/demo.png" alt="demo"></p>
+<p><strong>乘积量化定义：</strong>将向量分成$m$个不同的部分，对每个部分进行向量量化,假设平均划分，则每个部分的维度大小为$D^{\star}=D/m$</p>
+<p>一个向量$[x_1,x_2,…,x_{D^{\star}},…,x_{D-D^{\star}+1},…,x_D]$，可以划分为m组向量，第$i$组向量形如：$[x_{i_1},x_{i_2},…,x_{i_D^{\star}}]$，每组的codebook为$\mathcal{C_i}$，对应的量化器记为$q_i$, ($\forall q_i(x_{i^{\star}}) \in \mathcal{C_i}$)。则最终的全局codebook就是 $\mathcal{C} = \mathcal{C_1} * \mathcal{C_2} … * \mathcal{C_m}$，乘积量化的名称也来源于此。</p>
+<p>分块量化也可以采取聚类量化来实现，则<strong>分块聚类中心的个数</strong>即为<strong>分块codebook</strong>的大小。相当于在这个方法下，对每个向量，有【<strong>m个分块向量】</strong>来量化它，即：<strong>【m个分块聚类中心向量】</strong>。<strong>示意图如下：</strong></p>
+<p><img src="/picture/machine-learning/pq.png" alt="pq"><br>如上图所示，将原始向量等分为m组分块向量，每组都进行聚类量化，那么每个向量就有m个分块聚类中心向量来表示，比如vec1用$C_{1-1}$, …, $C_{m-2}$共m个向量来量化。</p>
+<p><strong>乘积量化的好处：</strong>假设每个子codebook大小一样，记做$||\mathcal{C}_i||=k^{\star}$，排列组合一下，那么相当于能表达的向量空间容量是这么大，$||k^{\star}||^m$，但是只需要$m k^{\star}$的codebook空间，这也是乘积量化大幅度降低空间占用的本质原因。PQ量化原论文中给出的经验取值是$k^{\star}=256，m=8$，即：分成8块，每个分块的codebook大小为256，对应的向量空间大小为约$256^8=2^{64}≈1.8 \times 10^{19}$，能够表达的向量个数足够大了。</p>
+<p><strong>乘积量化结果：$m \times k^{\star}$个分块聚类中心向量。</strong>每个向量可以用m个<strong>分块聚类簇中心下标</strong>ID来标识<strong>，所有ID连起来称为code</strong>。假设每块的聚类中心个数为256，则需要8bits，即1byte标识某分块下哪个聚类中心，m块则需要m bytes，即code大小为m bytes。</p>
+<h4 id="粗糙量化-残差量化"><a href="#粗糙量化-残差量化" class="headerlink" title="粗糙量化+残差量化"></a>粗糙量化+残差量化</h4><p><strong>核心思想：</strong>层次化量化，这个也是Faiss中PQ索引的实现方式。其中粗糙量化使用<strong>聚类量化</strong>，用划分到的<strong>粗糙聚类簇的中心向量</strong>来<strong>粗粒度</strong>量化该向量，该结果存在较大的误差；接着对残差结果进行<strong>细粒度</strong>乘积量化。这样的话，误差就小了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 总体上，每个向量先进行粗糙量化划分到某个粗糙聚类簇里，1个向量对应1个粗糙聚类簇标识，通常称为粗糙量化ID；</span><br><span class="line">2. 然后计算残差向量，即：向量-聚类簇中心向量，再对该残差向量进行分块，并进行细粒度分块残差量化。残差量化的时候，每一块对应一个细粒度聚类簇，1个向量M块，则对应M个细粒度聚类簇标识，通常称为残差量化code。</span><br><span class="line">3. 为什么用残差量化？原始向量可能会有特别大的分布差异/不平衡，也就是说可能聚类后，不同聚类簇分布得非常分散，每个簇所拥有的样本数极度不平衡。但是通过残差化后，即：每个样本向量减去所属的聚类簇中心向量后，残差向量之间的差异就不太大了，然后再对残差向量进行量化，就能更精确的近似原向量。</span><br></pre></td></tr></table></figure>
+<p><strong>过程：</strong>具体而言，向量库先构造一个小规模codebook $\mathcal{C}_c$，量化器为$q_c$。这个就是所谓的<strong>粗糙量化，或者称为粗糙聚类</strong>。接着，每个向量y都会有一个残差$r(y)=y−q_c(y)$。具体而言：记残差量化步骤的量化器为$q_p$，则<em>y</em>可以通过$q_c(y)+q_p(y−q_c(y))$来表示。</p>
+<p>$$<br>y = q_c(y) + q_p(y-q_c(y)) = y_C + y_R<br>$$</p>
+<p>其中， $y_C$是粗糙量化结果，$y_R$是残差量化结果。 </p>
+<p>这样的话，【<strong>查询向量x】和y之间的距离</strong>：</p>
+<p>$$<br>d(x,y) = ||x-y||^2=||x-y_C-y_R||^2=\underbrace{||x-y_C||^2}_{\text{term 1}} +<br>\underbrace{||y_R||^2 + 2 y_C y_R}_{\text{term 2}} - \underbrace{2 x y_R}_{\text{term 3}}<br>$$</p>
+<ul>
+<li>term 2<strong>与查询向量x</strong>无关，<strong>可以提前计算好；</strong></li>
+<li>term 1 求x和y的粗糙量化向量的欧式距离，最多计算$O(k)$次，$k$为粗糙聚类中心个数。</li>
+<li>term 3 求x和y的残差量化向量的内积，遍历所有簇的时候，最多计算$O(mk^{\star})$ 次，$mk^{\star}$为分块聚类中心向量。</li>
+</ul>
+<p>对应Faiss中的实现是 IndexIVFPQ。</p>
+<p>做个小结，量化的结果：</p>
+<table>
+<thead>
+<tr>
+<th>聚类量化</th>
+<th>乘积量化</th>
+<th>粗糙量化+残差量化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>k个聚类簇中心下标id</strong></td>
+<td><strong>m x k*</strong>个分块聚类中心下标组成的<strong>code</strong></td>
+<td><strong>k个聚类簇中心下标ID，m x k*</strong>个分块聚类中心下标组成的<strong>code</strong></td>
+</tr>
+</tbody>
+</table>
+<p>也就是说，为了表示每个doc的<strong>量化结果</strong>，可以为doc可以添加两种<strong>结构化字段</strong>：<strong>粗糙量化id， 残差量化code，用于实时检索使用。</strong></p>
+<h3 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h3><h4 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h4><p><img src="/picture/machine-learning/index_structure.png" alt="index"></p>
+<p><strong>建立从粗粒度聚类中心id 到 doc的映射关系，其中doc的信息包括：向量id</strong>，<strong>向量的残差量化code。每个doc通过粗糙聚类中心id和残差量化code就能知道原始向量如何映射到量化向量。</strong></p>
+<p>整个倒排索引不需要存储原始向量本身，索引结构存储的内容：</p>
+<ul>
+<li><p><strong>存储标识</strong>：<strong>粗糙量化id</strong>，<strong>doc id</strong>和残差量化<strong>code。</strong></p>
+<p>空间占用很小。m bytes 残差量化code，即：code_size或者pq_bytes。这个数越大，那么细粒度聚类簇越大，则精度越高。</p>
+<p><strong>基于id，可以找到对应的粗粒度量化向量</strong> <strong>(共k个)</strong> ；<strong>基于code</strong>可以找到对应<strong>细粒度残差量化向量</strong>（共 <strong>m x k*</strong> 个)。</p>
+</li>
+</ul>
+<h4 id="索引构建过程"><a href="#索引构建过程" class="headerlink" title="索引构建过程"></a>索引构建过程</h4><p>搜索场景中，y可以理解为doc。</p>
+<p><img src="/picture/machine-learning/index_process.png" alt="index"></p>
+<ul>
+<li>通过粗糙量化器 $q_c$将向量 $y$ 映射到$q_c(y)$，即粗糙量化。这样就知道挂到哪个链表上了。</li>
+<li>计算残差 $r(y) = y-q_c(y)$</li>
+<li>将残差 $r(y)$量化到 $q_p(r(y))$，其中包含了<strong>m</strong>个分组，每个分组有对应的一个细粒度聚类簇ID，用1byte表示，则共m bytes，对应code标识。</li>
+<li>构造一个 $id|code$ entry，其中id是doc的标识，code是残差量化标识。</li>
+</ul>
+<h4 id="搜索过程"><a href="#搜索过程" class="headerlink" title="搜索过程"></a>搜索过程</h4><p>搜索场景中，x可以理解为查询向量。</p>
+<p><img src="/picture/machine-learning/search_process.png" alt="search"></p>
+<ul>
+<li><p>通过粗糙量化器来量化<strong>查询向量x</strong>，即：找到离x最近的w个粗糙聚类簇。实际上是用于<strong>限定搜索的范围</strong>，只搜索w个粗糙聚类簇ID索引下的向量。w是个超参数，即nprobes，量化的结果<strong>对应term 1。</strong></p>
+</li>
+<li><p>选定某个粗糙聚类簇，</p>
+<ul>
+<li><p>计算<strong>x</strong>和该粗糙聚类簇下的<strong>k*</strong>（默认即256）个中心点向量的内积。对应term 3，计算时间复杂度<strong>O(m x D/m x k*) = O(Dk*)，记录下来，下一步查表用。</strong></p>
+</li>
+<li><p>遍历该聚类簇下的doc文档，<strong>计算距离时</strong>，实际上全是<strong>查表操作</strong>，term 2是提前算的，term 1粗糙量化时算的，term 3上一步算的。查表时间复杂度实际上是<strong>O(m)</strong></p>
+<p>w个粗糙聚类簇，搜索时间复杂度为<strong>O(w(Dk* + m))，</strong> 另外，返回top-k的话，要加上最小堆排序时间。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="检索模块"><a href="#检索模块" class="headerlink" title="检索模块"></a>检索模块</h2><h3 id="布尔检索"><a href="#布尔检索" class="headerlink" title="布尔检索"></a>布尔检索</h3><p>Facebook在自研的检索引擎<a href="http://www.vldb.org/pvldb/vol6/p1150-curtiss.pdf" target="_blank" rel="noopener">Unicorn</a>中支持了第一代的近邻搜索。</p>
+<p>首先简单介绍下Unicorn。Unicorn原本的检索方式主要以Term布尔匹配为主。</p>
+<ul>
+<li><p><strong>doc侧</strong>：以Term词袋的方式来表示doc，会基于Term的语义来区分命名空间。Term上还可以添加一些term特定的<strong>payload</strong>信息。举例：John living in Seattle会表示成【<strong>text</strong>: john and <strong>location</strong>: seattle】。</p>
+</li>
+<li><p><strong>query侧</strong>：定义 <strong>Term-level</strong> 的布尔表达式来表示query。举例：下述query主要返回doc的文本中有john和smithe字眼，并住在seattle和menlo_park的用户。</p>
+<p><img src="/picture/machine-learning/bool.png" alt="bool"></p>
+</li>
+</ul>
+<h3 id="向量检索"><a href="#向量检索" class="headerlink" title="向量检索"></a>向量检索</h3><p>为了支持embedding，需要扩展<strong>doc和query的表示</strong></p>
+<ul>
+<li>doc侧：添加结构化字段<strong>key</strong>来拓展doc词袋表示，形如：<strong><key>，</key></strong>比如：key=model-141795009，代表了产出doc embedding model的版本。设置该字段方便部署多种embedding版本。</li>
+<li>query侧：添加<strong>nn算子</strong>，即：<strong>nn <key>: radius <radius></radius></key></strong>，使用时，通过计算query embedding和<key>模型产出的doc embedding的距离，来匹配距离在指定radius内的<strong>文档</strong>。radius此处起到<strong>阈值约束</strong>的作用。</key></li>
+</ul>
+<p>索引和计算向量距离时，Facebook将<strong>向量索引和向量在线检索</strong>通过某种方式转化成上述已有的<strong>布尔检索语言</strong>，很巧妙，可以完美融入现有的<strong>布尔检索系统，</strong>而不需要重新写一套系统。</p>
+<p><strong>先做个对应关系。</strong></p>
+<table>
+<thead>
+<tr>
+<th>布尔匹配检索</th>
+<th>语义向量检索</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Term</td>
+<td>粗糙聚类中心ID 标识，Cluster-ID</td>
+</tr>
+<tr>
+<td>Payload</td>
+<td>细粒度聚类中心CODE 标识, Cluster-Code</td>
+</tr>
+</tbody>
+</table>
+<p>doc侧：每个doc embedding会被<strong>量化</strong>并转成一个<strong>term</strong>和一个<strong>payload</strong>，相当于是两个doc的结构化字段，完美兼容已有的检索系统Unicorn的设计。</p>
+<ul>
+<li>term，其实就是用于标识倒排索引中，该doc属于哪个<strong>粗粒度聚类簇</strong> (用于粗糙聚类量化)</li>
+<li>payload，用于标识每个分块向量下的<strong>细粒度聚类簇</strong>（用于残差量化）</li>
+</ul>
+<p>query侧：</p>
+<ul>
+<li><p>term: <strong>(nn)</strong> 重写成和粗糙聚类相关的 term。</p>
+<p><strong>重写规则</strong>：计算query embedding和所有粗糙聚类中心距离，选出nprobes个最近的，用粗糙聚类中心ID来标识 (和doc的结构化字段<strong>Cluster-ID</strong>进行比较)，不同聚类中心对应的Term之间的关系就是or的关系。</p>
+</li>
+<li><p><strong>payload</strong>: 对query进行残差量化，得到满足<strong>radius约束条件</strong>的细粒度聚类中心，用code标识<strong>。</strong></p>
+<p><strong>重写规则</strong>：对每个粗糙聚类簇，计算query embedding和其细粒度聚类中心的距离，距离<strong>满足&lt;radius约束</strong>的细粒度聚类中心对应的Code<strong>取值记录一下</strong> (和doc的<strong>结构化字段Cluster-Code</strong>进行比较)，Code之间是OR关系，但是Code和ID是AND关系。</p>
+</li>
+</ul>
+<p>举个query改写的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">or ((and( (term(Cluster-ID, '粗糙聚类中心ID-a')), </span><br><span class="line">          (or (term(Cluster-Code, '残差聚类中心ID-a1'), term(Cluster-Code, '残差聚类中心ID-a3'),...)))</span><br><span class="line">    ), </span><br><span class="line">    (and( (term(Cluster-ID, '粗糙聚类中心ID-b')), </span><br><span class="line">          (or (term(Cluster-Code, '残差聚类中心ID-b1'), term(Cluster-Code, '残差聚类中心ID-b4'),...)))</span><br><span class="line">    ),</span><br><span class="line">    ...</span><br><span class="line">   )</span><br></pre></td></tr></table></figure>
+<p>另外，作者强调了radius-mode和topk-mode的差异，radius方式的性能和质量更高。radius是一种<strong>受限制</strong>NN搜索。top-K需要扫描整个索引库来找<strong>Top-K结果</strong>。radius性能更好，但是需要确定radius值。</p>
+<p>正是因为在已有的布尔查询语言上融入目前的EBR语义检索，使得混合检索的实现非常方便。特别是在模糊匹配场景、或者query存在错误的场景。举个例子：</p>
+<p><img src="/picture/machine-learning/fusion.png" alt="fusion"></p>
+<p>上述查询，用户把smith-&gt;smithe了，这样基于term匹配的话，可能会没有结果。但是基于nn检索，只要满足query embedding和doc embedding的余弦相似性小于0.24的话，就会有结果。nprobe是超参数，扫描的粗糙聚类中心个数。</p>
+<h2 id="调参经验"><a href="#调参经验" class="headerlink" title="调参经验"></a>调参经验</h2><p>模型改进不大的时候，多调调参数，会有奇效。</p>
+<ul>
+<li><strong>调节粗糙量化聚类簇数量num_cluster和实时查询时扫描的聚类簇数量nprobe</strong>。由于不同聚类中心的向量个数可能存在很不平衡的现象，对于两个对比实验(比如对比不同构建索引的方法)，即使num_cluster和nprobe设置完全一致，可能两个实验扫描的文档数量是不一样的，因此要监控扫描文档数量，并通过调节这两个参数，来保证不同对比方法扫描的文档数量一致。</li>
+<li><strong>多尝试使用乘积量化</strong>：包括原生PQ，OPQ，PQ with PCA等。能够显著<strong>降低索引存储空间存储复杂度、查询时间复杂度</strong>。其中，<strong>pq_bytes，即残差量化codes的大小，很重要</strong>。决定了残差量化分块聚类中心的个数，个数越大越精确，比如m=8,k*=256时，pq_byte=1byte x 8= 8 byte。paper中建议采用d/4，d是向量的维度数，假设64维度，则d/4=16，是默认值的2倍。</li>
+<li>多进行<strong>在线调参</strong>，nprobe, num_clusters，pq_bytes。虽然离线能够直观感受perf vs recall之间的tradeoff，但是多部署几套参数进行在线调整，对于理解性能因素对EBR检索系统的影响会更加直观。这对于减少<strong>容量开销</strong>和<strong>离线参数搜索成本</strong>很有用。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>此次分享主要介绍了Facebook在KDD 2020发表的文章中的工程实践经验。首先从全局总览其系统架构，然后针对索引构建模块和实时检索模块展开讨论。其中，索引构建模块主要介绍了ANN中<strong>向量量化</strong>方法的背景知识。实时检索模块主要介绍<strong>系统实现</strong>，如何将向量检索通过<strong>query改写规则</strong>等融入现有的布尔检索系统中。最后介绍了一些<strong>调参的经验</strong>。</p>
+<p>做向量召回的初期可以先重点关注模型层面上的优化，索引上也可以先采用简单的聚类量化的索引构建方式。当向量召回优化到一定程度时，如果想进一步提升性能和召回率，可以考虑借鉴文中的一些经验，比如以PQ量化的方式来构建索引，调参等。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://arxiv.org/pdf/2006.11632.pdf" target="_blank" rel="noopener">KDD 2020:  Embedding-based Retrieval in Facebook Search</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/34363377" target="_blank" rel="noopener">Faiss基于PQ的倒排索引实现</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/165064102" target="_blank" rel="noopener">负样本为王：评Facebook的向量化召回算法</a></p>
+<p><a href="https://juejin.im/post/6844903823501164551" target="_blank" rel="noopener">Faiss向量召回引擎如何做到快速查找最近邻</a></p>
+<p><a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">A library for efficient similarity search and clustering of dense vectors</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/向量召回/" rel="tag"># 向量召回</a>
+          
+            <a href="/tags/ANN/" rel="tag"># ANN</a>
+          
+            <a href="/tags/KDD/" rel="tag"># KDD</a>
+          
+            <a href="/tags/工程/" rel="tag"># 工程</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/05/transformers/" rel="next" title="Transformers源码阅读和实践">
+                <i class="fa fa-chevron-left"></i> Transformers源码阅读和实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/14/GCE-GNN/" rel="prev" title="GCE-GNN基于全局上下文增强的图神经网络序列推荐方法">
+                GCE-GNN基于全局上下文增强的图神经网络序列推荐方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#架构总览"><span class="nav-number">1.</span> <span class="nav-text">架构总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引构建模块"><span class="nav-number">2.</span> <span class="nav-text">索引构建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-number">2.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#暴力搜索问题"><span class="nav-number">2.2.</span> <span class="nav-text">暴力搜索问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向量量化"><span class="nav-number">2.3.</span> <span class="nav-text">向量量化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#聚类量化"><span class="nav-number">2.3.1.</span> <span class="nav-text">聚类量化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#乘积量化"><span class="nav-number">2.3.2.</span> <span class="nav-text">乘积量化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#粗糙量化-残差量化"><span class="nav-number">2.3.3.</span> <span class="nav-text">粗糙量化+残差量化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#倒排索引"><span class="nav-number">2.4.</span> <span class="nav-text">倒排索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#索引结构"><span class="nav-number">2.4.1.</span> <span class="nav-text">索引结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引构建过程"><span class="nav-number">2.4.2.</span> <span class="nav-text">索引构建过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搜索过程"><span class="nav-number">2.4.3.</span> <span class="nav-text">搜索过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检索模块"><span class="nav-number">3.</span> <span class="nav-text">检索模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布尔检索"><span class="nav-number">3.1.</span> <span class="nav-text">布尔检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向量检索"><span class="nav-number">3.2.</span> <span class="nav-text">向量检索</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调参经验"><span class="nav-number">4.</span> <span class="nav-text">调参经验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

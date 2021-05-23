@@ -1,0 +1,1260 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Paper,推荐系统,深度学习,Graph Embedding,GCN,Representation Learning,Survey," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本篇文章主要从一篇关于Graphs的表示学习的调研文章出发，介绍基于Graph表示学习的一个Encoder-Decoder框架，该框架可以启发关于Graph表示学习的研究切入点以及良好的编程实践。此外，本文还围绕目前主流的一些Graph Embedding或Graph Neural Networks方法，来探讨如何使用Encoder-Decoder框架来重新组织和提炼方法中的核心思想和核心步骤，这">
+<meta name="keywords" content="Paper,推荐系统,深度学习,Graph Embedding,GCN,Representation Learning,Survey">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图表示学习Encoder-Decoder框架介绍和拓展">
+<meta property="og:url" content="xtf615.com/2019/12/04/representation-learning-on-graphs/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本篇文章主要从一篇关于Graphs的表示学习的调研文章出发，介绍基于Graph表示学习的一个Encoder-Decoder框架，该框架可以启发关于Graph表示学习的研究切入点以及良好的编程实践。此外，本文还围绕目前主流的一些Graph Embedding或Graph Neural Networks方法，来探讨如何使用Encoder-Decoder框架来重新组织和提炼方法中的核心思想和核心步骤，这">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/mf+rw.png">
+<meta property="og:image" content="/picture/machine-learning/GCN.png">
+<meta property="og:image" content="/picture/machine-learning/node2vec.png">
+<meta property="og:image" content="/picture/machine-learning/line.png">
+<meta property="og:image" content="/picture/machine-learning/metapath2vec.png">
+<meta property="og:image" content="/picture/machine-learning/graphsage.png">
+<meta property="og:image" content="/picture/machine-learning/gat.png">
+<meta property="og:image" content="/picture/machine-learning/pinsage.png">
+<meta property="og:image" content="/picture/machine-learning/AMHEN.png">
+<meta property="og:updated_time" content="2021-05-23T14:52:32.299Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="图表示学习Encoder-Decoder框架介绍和拓展">
+<meta name="twitter:description" content="本篇文章主要从一篇关于Graphs的表示学习的调研文章出发，介绍基于Graph表示学习的一个Encoder-Decoder框架，该框架可以启发关于Graph表示学习的研究切入点以及良好的编程实践。此外，本文还围绕目前主流的一些Graph Embedding或Graph Neural Networks方法，来探讨如何使用Encoder-Decoder框架来重新组织和提炼方法中的核心思想和核心步骤，这">
+<meta name="twitter:image" content="/picture/machine-learning/mf+rw.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2019/12/04/representation-learning-on-graphs/"/>
+
+
+
+
+
+  <title> 图表示学习Encoder-Decoder框架介绍和拓展 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2019/12/04/representation-learning-on-graphs/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                图表示学习Encoder-Decoder框架介绍和拓展
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-04T11:20:42+08:00">
+                2019-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GNN/" itemprop="url" rel="index">
+                    <span itemprop="name">GNN</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇文章主要从一篇关于Graphs的表示学习的调研文章出发，介绍基于Graph表示学习的一个Encoder-Decoder框架，该框架可以启发关于Graph表示学习的研究切入点以及良好的编程实践。此外，本文还围绕目前主流的一些Graph Embedding或Graph Neural Networks方法，来探讨如何使用Encoder-Decoder框架来重新组织和提炼方法中的核心思想和核心步骤，这对于改进模型和编程实践有非常好的借鉴意义。<br><a id="more"></a></p>
+<h2 id="Survey"><a href="#Survey" class="headerlink" title="Survey"></a>Survey</h2><p><a href="https://arxiv.org/pdf/1709.05584.pdf" target="_blank" rel="noopener">2017: Representation learning on graphs: Methods and applications</a></p>
+<p>下面主要围绕graph表示学习的问题定义，主流方法分类，encoder-decoder框架展开来介绍这篇调研paper.</p>
+<h3 id="Problem-Definition"><a href="#Problem-Definition" class="headerlink" title="Problem Definition"></a>Problem Definition</h3><ul>
+<li>Graph机器学习的核心问题：如何把<strong>Graph结构</strong>信息纳入机器学习模型中。常用的Graph结构信息包括：节点的<strong>全局位置</strong> (Global Position) 和节点的<strong>局部近邻结构</strong> (The structure of the node’s local graph neighborhood) 等。</li>
+<li>Graph Embedding的目标：学习node或entire(sub)graph的<strong>低维</strong>embedding，使得embedding space中的几何关系能够<strong>反映原始Graph的结构信息</strong>，如两个node节点在embedding space中的距离能够反映原始<strong>高维</strong>空间Graph中二者的相似性。（Learn embeddings that encode graph structure）</li>
+</ul>
+<h3 id="Method-Categories"><a href="#Method-Categories" class="headerlink" title="Method Categories"></a>Method Categories</h3><p>目前主流的Graph Embedding方向是<strong>Node Embedding</strong>，包含了3大类主流方法：Matrix Factorization、Random Walk、Graph Convolution Networks。</p>
+<ul>
+<li><strong>Matrix Factorization</strong>：矩阵分解。将Graph结构信息使用矩阵来刻画，例如Graph邻接矩阵或节点的共现矩阵，衡量了所有节点之间的相似性，对该矩阵进行分解，学习节点的低维向量表示。例如：Graph Laplacian Eigenmaps、Graph Factorization。</li>
+<li><strong>Random Walk</strong>：随机游走。构建Graph中Node的随机游走序列，构建游走序列内部节点之间的上下文共现对，再使用Word2Vec方法进行学习。例如：DeepWalk、Node2Vec。</li>
+<li><strong>Graph Convolutional Networks</strong>：Graph卷积网络。将卷积从Image/Sentence拓展到Graph。基于节点local Neighborhoods的汇聚。例如：GCN、GraphSAGE。</li>
+</ul>
+<h3 id="Encoder-Decoder-Framework"><a href="#Encoder-Decoder-Framework" class="headerlink" title="Encoder-Decoder Framework"></a>Encoder-Decoder Framework</h3><p>作者针对<strong>Node Embedding</strong>，提出了一个统一的Encoder-Decoder编程框架来设计和实现Graph Embedding算法，上述所述目前主流的Graph Embedding算法都可以使用该框架来重新组织代码结构。</p>
+<ul>
+<li>Encoder：目标是将每个Node映射编码成低维的向量表示，或embedding。</li>
+<li>Decoder：目标是利用Encoder输出的Embedding，来解码关于图的结构信息。</li>
+</ul>
+<p>这一框架的核心思想在于，如果我们能够基于<strong>编码</strong>得到的低维embeddings，来学习高维Graph结构信息的<strong>解码</strong>，这些信息包括节点的全局位置或节点的局部近邻结构等，那么，原则上，这些低维emebdding包含了所有下游机器学习任务所需要的全部信息。</p>
+<p>形式化地，Encoder是如下映射函数：<br>$$<br>ENC: \mathcal{V} \rightarrow \mathbb{R}^d<br>$$<br>即，将节点 $i \in \mathcal{V}$ 映射成embedding $\boldsymbol{z}_i \in \mathbb{R}^d$。</p>
+<p>Decoder是这样一个函数，函数的输入是上述node emebddings集合，输出是<strong>要解码的、用户自定义的Graph结构信息</strong>。例如：Decoder目标可能是预测在给定节点embedding条件下，节点之间的连边是否存在；或给定embeddings下，预测节点所属的社区类别。Decoder的形式是多样化的，但是最常用的是<strong>pairwise decoder</strong>，<br>$$<br>DEC: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}^+<br>$$<br>即，Decoder的输入是Node Pair的embeddings，输出是一个实数，衡量了这两个Node在<strong>原始Graph</strong>中的相似性。</p>
+<p>为了学习emebdding，我们的目标是重构节点低维emebddings的相似性，以反映二者在原始Graph中的相似性。即给定Node Pair $(v_i,v_j)$,<br>$$<br>DEC(ENC(v_i), ENC(v_j)) = DEC(\boldsymbol{z}_i,\boldsymbol{z}_j)  \approx s_{\mathcal{G}}(v_i, v_j)<br>$$<br>其中，$DEC(\boldsymbol{z}_i,\boldsymbol{z}_j)$是模型基于编码的embedding，解码得到的二者的相似性（Estimated）；而$s_{\mathcal{G}}$是用于<strong>定义的、原始图中</strong>，顶点之间的相似性（Ground Truth），例如可以使用邻接矩阵$A$来表示。那么，学习的目标就是所有训练集<strong>Node Pairs</strong>上，上述重构误差最小化，<br>$$<br>\mathcal{L} = \sum_{(v_i,v_j) \in \mathcal{D}} \ell (DEC(\boldsymbol{z_i}, \boldsymbol{z_j}),  s_{\mathcal{G}}(v_i,v_j))<br>$$<br>$\ell: \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$是用于定义的损失函数，衡量了两个输入之间的差异。例如可以使用平方损失或交叉熵损失等。其中，$DEC(z_i, z_j)$可以看做是<strong>估计</strong>的(相似)值；$s_{\mathcal{G}}(v_i,v_j)$可以看做是<strong>真实</strong>的(相似)值。</p>
+<p>上述框架涉及到4大组件：</p>
+<ul>
+<li><strong>Pairwise Similarity Function</strong> $s_{\mathcal{G}}: \mathcal{V} \times \mathcal{V} \rightarrow \mathbb{R}^+$，定义在原始Graph上，衡量了节点之间的相似性。可以看做是pairwise “ground truth” label在Loss中使用，只不过这个ground truth通常是无监督的，反映了原始图的拓扑结构。</li>
+<li><strong>Encoder Function</strong>，$ENC$，产生节点的embedding。这个函数包含了训练参数，最常使用的是embedding lookup操作，即每个节点学习一个自己的embedding表示，不同节点之间<strong>不存在</strong>参数共享。在decoder中使用。</li>
+<li><strong>Decoder Function</strong>，$DEC$，基于embeddings，重构Node相似性。通常不包含训练参数。例如使用点乘、欧式距离等来表示相似性。可以看做是estimated label在Loss中使用，定义了node pair在embedding空间的相似性。</li>
+<li><strong>Loss Function</strong>，$\ell$，评判重构好坏，即对比$DEC(\boldsymbol{z_i}, \boldsymbol{z_j})$和$s_{\mathcal{G}}(v_i,v_j)$。融合了decoder的estimated label和pairwise similarity function的ground truth label来构造损失，指导学习。</li>
+</ul>
+<p>目前基于<strong>矩阵分解</strong>，<strong>随机游走</strong>的方法都可以使用上述框架来抽象，并且其encoder都是<strong>浅层</strong>的embedding，即，使用embedding lookup，每个节点学习一个自己的emebdding，不同节点不进行参数共享，如下表：</p>
+<p><img src="/picture/machine-learning/mf+rw.png" alt="mf+rw"></p>
+<p>例如：Laplacian Eigenmaps（谱聚类用的方法）的Decoder使用的是欧式距离，相似性度量可以使用任何方法（例如邻接矩阵，每个元素为$w_{ij}$），损失函数形如$\ell=w_{ij}(z_i-z_j)^2$，即两个节点相似性越大，施加大的权重，使得模型学习到的二者embedding更近。再比如DeepWalk使用$\text{softmax}(z_i^T z_j)$作为Decoder，而相似性度量是基于条件概率分布$P_{\mathcal{G}}(v_j|v_i)$，这个分布是指以$v_i$为起点，访问到$v_j$的概率，通过采样节点序列并构造共现对来近似的，而损失函数使用的是交叉熵损失。具体实现时，通常使用$\mathcal{L}=\sum_{(v_i, v_j) \in \mathcal{D}} -\log(\text{DEC}(\boldsymbol{z}_i, \boldsymbol{z}_j))$，其中， $(v_i,v_j) \sim P_{\mathcal{G}}(v_j|v_i)$，是通过随机游走在Graph采样得到的。</p>
+<p><strong>此外，GNN的方法实际上也能用上述框架来抽象，将在拓展一节介绍。</strong></p>
+<p>上述浅层的embedding的缺点：</p>
+<ul>
+<li>节点的<strong>encoder</strong>没有参数共享，当Graph很大、节点很多时，每个节点学习一个embedding，会导致参数过多，即$O(|\mathcal{V}|)$的参数量。</li>
+<li>不能建模Node的Attribute。但是有时候Node的Attribute很重要。目前使用到的方法可以认为只使用了节点的ID或节点的one-hot表示，而其他属性都没有使用。</li>
+<li>不能拓展到Graph动态变化的场景（Transductive），例如新节点。说白了就是类似<strong>冷启动</strong>的场景。</li>
+</ul>
+<p>为了解决上述问题，目前有几种方案：</p>
+<ul>
+<li><p>Structural Deep Network Embeddings (SDNE) 把<strong>graph的structure</strong>在节点encoder的时候使用到。使用的是AutoEncoder，节点的原始输入经过encoder后再decoder，decoder的结果与原始输入越接近越好，原始输入通常使用某个节点和其邻居节点的相似度值集合来表示。此时SDNE的解码器是unary decoder，即不是上文提到的pairwise decoder。$DEC ( ENC (s _i )) = DEC (z_i ) ≈ s_i$。$s_i$即节点$i$和邻居节点的相似值。Loss为：$\mathcal{L}=\sum_{v_i \in \mathcal{V}} ||DEC(z_i) - s_i||_2^2$。该Loss的目标其实就是为了压缩节点的邻居结构信息($O(|V|)$)到低维空间$z_i$。</p>
+</li>
+<li><p>目前广泛使用的方法是Graph Convolutional Networks（GCN）。GCN中，每个节点单独encoder，但encode的时候，会利用卷积操作来汇聚<strong>Local Neighborhoods</strong>的节点的属性信息，并叠加多层网络，形成节点的embedding表示。而卷积核参数或网络的参数是所有之间之间共享的，因此能够有效减少参数量，同时能够泛化到新的节点，只要新的节点有属性信息以及节点的Local Neighborhoods结构化信息即可。而Decoder和Loss可以使用前面提到的任意方法。<a href="http://xtf615.com/2019/02/24/gcn/">关于GCN的介绍参见我的另一篇博客</a>。</p>
+<p><img src="/picture/machine-learning/GCN.png" alt="gcn"></p>
+</li>
+<li><p>引入特定任务的监督信息。上述方法都是无监督学习目标。我们可以使用监督学习目标。例如针对一个二分类问题，将embedding经过一层MLP（$\boldsymbol{\theta}$）参数为输出一个预测值，即逻辑回归的损失函数。即：</p>
+<p>$\mathcal{L} =\sum_{v_i \in \mathcal{V}} y_i \log(\sigma(ENC(v_i)^T\boldsymbol{\theta})) + (1-y_i)\log(1-\sigma(ENC(v_i)^T \boldsymbol{\theta}))$</p>
+</li>
+</ul>
+<p>从上述框架可以看出，Decoder，Loss，Similarity通常情况下是可以复用的。近年来的文章其实落脚点都主要在Encoder的改进上。如：如何融入节点的辅助信息；如何建模graph的structure；如何建模结点的local neighborhoods等。然后再通过Decoder和Loss来学习出结点的embedding。</p>
+<h2 id="Extension：Representative-Approaches-on-Graphs"><a href="#Extension：Representative-Approaches-on-Graphs" class="headerlink" title="Extension：Representative Approaches on Graphs"></a>Extension：Representative Approaches on Graphs</h2><p>本节将作为上述survey的拓展。我将引入Encoder-Decoder框架，围绕现有的代表性的Graph表示学习工作，总结和抽象出不同方法中的各大组件的具体表现形式。注，读本节前，请详细阅读上述关于Encoder-Decoder框架的介绍。</p>
+<h3 id="DeepWalk"><a href="#DeepWalk" class="headerlink" title="DeepWalk"></a>DeepWalk</h3><p><a href="https://arxiv.org/pdf/1403.6652.pdf" target="_blank" rel="noopener">KDD 2014: DeepWalk: Online Learning of Social Representations</a></p>
+<h4 id="Encoder"><a href="#Encoder" class="headerlink" title="Encoder"></a>Encoder</h4><p>每个节点根据id进行embedding，节点的encoder就是Embedding Lookup操作。记做：$\boldsymbol{z}_i=\text{ENC}(v_i) = \text{Embedding-Lookup}(v_i, \boldsymbol{W})$，$\boldsymbol{W} \in \mathbb{R}^{N \times k}$是所有节点的Embedding矩阵，$N$是节点数量，$k$是向量维数。</p>
+<h4 id="Similarity-function"><a href="#Similarity-function" class="headerlink" title="Similarity function"></a>Similarity function</h4><p>如何衡量原始图空间中的Ground Truth结构信息呢？DeepWalk采用的是随机游走策略。观察某个节点$v_j$出现在以$v_i$为起始节点的游走路径上的概率。$s_{\mathcal{G}}(v_i, v_j) = P_{\mathcal{G}}(v_j | v_i)$。这个概率通过在带权图上进行随机游走采样路径序列，并在序列上使用滑动窗口来构造共现节点pair来近似。$(v_i, v_j) \sim P_{\mathcal{G}}(v_j | v_i)$。</p>
+<h4 id="Decoder"><a href="#Decoder" class="headerlink" title="Decoder"></a>Decoder</h4><p>如何衡量低维嵌入空间中的Estimated Information？DeepWalk希望上述采样到的共现节点pair的embedding越相近越好。采用的是点乘操作接softmax，即：$\text{DEC}(\boldsymbol{z_i}, \boldsymbol{z_j})=\text{softmax}(\boldsymbol{z}_i^T \boldsymbol{z}_j)$。</p>
+<h4 id="Loss-Function"><a href="#Loss-Function" class="headerlink" title="Loss Function"></a>Loss Function</h4><p>DeepWalk真正意义上的损失是交叉熵损失函数，即所有节点对上的交叉熵损失，$s_{\mathcal{G}}(v_i,v_j)$是ground truth，$\mathcal{L}(\boldsymbol{W}) = -\sum_{(v_i, v_j) \in \mathcal{R}^{|V| \times |V|}}s_{\mathcal{G}}(v_i,v_j) \log(\text{DEC}(\boldsymbol{z_i}, \boldsymbol{z_j}))$。具体实现时，无法把所有的节点对都配对，故基于采样的方式，$(v_i,v_j) \sim P_{\mathcal{G}}(v_j|v_i)$，优化目标转化为负对数似然损失函数，即：$\mathcal{L}(\boldsymbol{W})=\sum_{(v_i, v_j) \in \mathcal{D}} -\log(\text{DEC}(\boldsymbol{z}_i, \boldsymbol{z}_j))$。进一步，为了加速softmax配分函数的计算，使用层次softmax来优化。</p>
+<h3 id="Node2Vec"><a href="#Node2Vec" class="headerlink" title="Node2Vec"></a>Node2Vec</h3><p><a href="https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf" target="_blank" rel="noopener">KDD 2016: node2vec: Scalable Feature Learning for Networks</a></p>
+<p>和DeepWalk唯一不同点在于Similarity Function，更准确的说，是衡量哪些node pair是相似的方法不同，体现在随机游走的规则上。</p>
+<h4 id="Similarity-Function"><a href="#Similarity-Function" class="headerlink" title="Similarity Function"></a>Similarity Function</h4><p>设计了有偏的游走策略来采样共现pair。考虑目前刚从节点$t$游走到某个节点$v$，准备从$v$游走到下一个节点$x$，Node2Vec会考虑$t$和$x$的关系，来约束$v$的游走规则。DeepWalk中，$P_{\mathcal{G}}(x | v) \propto w_{vx}$，即：游走概率正比于从$v$到$x$的连边权重，和怎么到达$v$的上一步$t$无关。但是在Node2Vec中，会判断下一步$x$和$t$的关系，设置一个系数$\alpha_{p,q}(x,t)$，则：</p>
+<p>$$<br>P_{\mathcal{G}}(x | v) \propto \alpha_{p,q}(x,t) \cdot w_{vx}, \text{其中t是到达v的上一步节点}<br>$$</p>
+<p>其中，<br>$$<br>\alpha_{p,q}(x,t) =<br>\begin{cases}<br>\frac{1}{p} &amp; , &amp;  d_{tx}=0 \\<br>1 &amp; , &amp; d_{tx}=1 \\<br>\frac{1}{q} &amp; , &amp; d_{tx}=2<br>\end{cases}<br>$$</p>
+<p>$d_{tx}=0$ 代表下一步$x$又回到了上一个点$t$，即同一个点。代表了回溯到上一个节点的概率。</p>
+<p>$d_{tx}=1$代表下一步$x$和当前节点$v$同属于节点$t$的邻居节点，代表了BFS宽度优先遍历，作者认为BFS通过发现节点的局部近邻相似性能够在全图上探索出结构等价性节点。也就是说，BFS将某个节点游走限制在邻居节点，能够使得该节点获取到微观的邻居结构view。这样若在全图上存在某两个相似的、但距离较远的节点，说明这两个节点的邻居很相似，这进一步能够表明这两个节点存在结构等价性。</p>
+<p>$d_{tx}=2$代表下一步$x$和上一步节点$t$没有直接连边，代表了DFS深度优先遍历。某个节点通过DFS游走到的节点，更多的是反映该节点在全图上的宏观view下的其邻居结构特点。即：虽然没有直接连边，但是存在潜在的相似性。这很适合用于进行社区发现。</p>
+<p>$p$和$q$是超参数，代表了DFS和BFS之间的权衡，当都等于1时，Node2Vec退化成DeepWalk。</p>
+<p>示意图如下：</p>
+<p><img src="/picture/machine-learning/node2vec.png" alt="node2vec"></p>
+<h4 id="Loss-Function-1"><a href="#Loss-Function-1" class="headerlink" title="Loss Function"></a>Loss Function</h4><p>和DeepWalk一样，只不过在优化softmax时，采用的是负采样方法。<br>$$<br>J_{\mathcal{G}}(\boldsymbol{z}_i)=-\log \left(\sigma(\boldsymbol{z}_i^T \boldsymbol{z}_j)\right) - \sum_{v_{j_n} \in W_j^{‘}} \log\left(\sigma(-\boldsymbol{z}_i^T \boldsymbol{z}_{j_n})\right)<br>$$</p>
+<h3 id="Line"><a href="#Line" class="headerlink" title="Line"></a>Line</h3><p><a href="https://arxiv.org/pdf/1503.03578.pdf" target="_blank" rel="noopener">WWW 2015: LINE: Large-scale Information Network Embedding</a></p>
+<p>和Deepwalk的不同点主要体现在Similarity Function，Decoder，Loss上，即如何定义哪些node pair是在原始空间是相似的？如何定义embedding空间中node pair之间的相似性？</p>
+<h4 id="Similarity-Function-1"><a href="#Similarity-Function-1" class="headerlink" title="Similarity Function"></a>Similarity Function</h4><p>Line定义了两种相似性node pair，一阶相似性(First-order Proximity)和二阶相似性(Second-order Proximity)。其中，</p>
+<ul>
+<li><p>一阶相似性只针对<strong>无向图</strong>而言，是图中每一条边所对应的两个顶点之间存在相似性。即：对于每条无向边，$(i, j)$，其similarity function是$s_{\mathcal{G}}(v_i,v_j)=\hat{w}_{ij}$，其中归一化边权重$\hat{w}_{ij}=\frac{w_{ij}}{\sum_{(i,j) \in E}w_{ij}}$，即：使用所有边的权重和来归一化。如下图，6，7之间属于一阶相似性。</p>
+</li>
+<li><p>二阶相似性和deepwalk中类似，$s_{\mathcal{G}}(v_i, v_j) = P_{\mathcal{G}}(v_j | v_i)$。只不过Line中把每个节点的两个角色说的更清楚一些，即：target角色和context角色（deepwalk中也是有的）。context角色的意义在于，如果两个节点各自的上下文邻居很相似，那么这两个节点也相似，所以能够学习到Graph上远距离的结构相似性，如下图所示，节点5，6之间属于二阶相似性，因为5，6的上下文节点相似性（1，2，3，4）。在我看来，从生成概率角度而言，整个graph是通过若干个target节点(如社区)不断生成context节点；context节点再充当target节点，生成新的context节点而产生的。</p>
+<p>DeepWalk中，$P_{\mathcal{G}}(v_j | v_i)$是通过随机游走+构造滑动窗口来近似，一次性能够采样到multi-hop多跳距离的节点；而在Line中，$P_{\mathcal{G}}(v_j | v_i)=\frac{w_{ij}}{d_i}$，$d_i$是节点的出度和，一次只能采样到相连接的上下文顶点$v_j$。通过context的桥梁作用(5和1相似，6和1相似，则5和6会慢慢相似；5和6相似了，因为7和6相似，则5和7可能也会慢慢相似)，在不断迭代过程中，节点’感受野’会慢慢在graph中拓展开，因此会学习到这种多跳的节点之间的相似性。所以相比于DeepWalk，Line的收敛速度可能相对比较慢(作者提到，一般迭代步数正比于$O(E)$，In practice, we ﬁnd that the number of steps used for optimization is usually proportional to the number of edges $O(|E|)$. 很多人忽视这一点，导致实际使用时性能很差)。</p>
+<p><img src="/picture/machine-learning/line.png" alt="line"></p>
+</li>
+</ul>
+<h4 id="Decoder-1"><a href="#Decoder-1" class="headerlink" title="Decoder"></a>Decoder</h4><ul>
+<li><p>对于一阶相似性，节点$(v_i, v_j)$在embedding空间的解码相似性定义为，$DEC(v_i, v_j)=\text{sigmoid}(z_i^Tz_j)=\frac{1}{1+\exp(-\boldsymbol{z}_i^T \boldsymbol{z}_j)}$，其中，$\boldsymbol{z}_i, \boldsymbol{z}_j$分别是节点$v_i,v_j$的encoder。</p>
+</li>
+<li><p>对于二阶相似性，节点$(v_i, v_j)$在embedding空间的解码相似性定义为，</p>
+<p>$DEC(v_i,v_j)=p(v_j|v_i)=\text{softmax}(\boldsymbol{z}_i^T \boldsymbol{z}_j))$。如上图，$v_i$为目标结点5时，$p(\cdot |v_i)$定义了$v_i$产生上下文节点1, 2, 3, 4的概率。</p>
+</li>
+</ul>
+<h4 id="Loss-Function-2"><a href="#Loss-Function-2" class="headerlink" title="Loss Function"></a>Loss Function</h4><ul>
+<li><p>对于一阶相似性，基于KL散度，实际上去掉常数，化简完就是交叉熵，$\mathcal{L}(\boldsymbol{W}) = -\sum_{(v_i, v_j) \in E} s_{\mathcal{G}}(v_i,v_j) \log(\text{DEC}(\boldsymbol{z_i}, \boldsymbol{z_j}))= -\sum_{(v_i, v_j) \in E} w_{ij} \log(\text{DEC}(\boldsymbol{z_i}, \boldsymbol{z_j}))$。</p>
+</li>
+<li><p>对于二阶相似性，基于KL散度，实际上化简完也是交叉熵。为了化简完的形式更优雅，作者引入了每个target node的重要性$\lambda_i$，得到加权的KL散度损失，即$\mathcal{L}(W)=\sum_{(i,j) \in E} \lambda_i  \text {KL}(s_{\mathcal{G}}(v_i, v_j), \text{DEC}(v_i,v_j))$；使用的是节点的度$d_i$来衡量，把这几个代入并去掉常数项，很容易得到：<br>$$<br>\mathcal{L}(\boldsymbol{W}) = -\sum_{(i,j) \in E} w_{ij} \log(\text{DEC}(v_i, v_j))<br>$$<br>注意到，和DeepWalk<strong>不同</strong>的是，不管是一阶还是二阶，这里头的node pair样本对只使用<strong>每条边对应的两个顶点</strong>；而DeepWalk实际上是<strong>任意两个顶点对</strong>（全图随机游走采样，只要游走距离够长，窗口够大，任意两个节点都有可能成为相似节点对）。具体实现时，使用alias sampling，每个迭代步依$w_{ij}$分布采样节点$i$的若干个邻居$j$，优化负对数似然$ -\sum_{(i,j) \in E} \log(\text{DEC}(v_i, v_j))$。（实际上，作者实现时，是采用边采样的策略，相当于把边的权重拍扁，然后随机采边，为了更好的收敛，<strong>迭代步数要正比于边的数量（paper里头说的）</strong>；如果按照deepwalk那种方式，以点为主的话，也是可以的，只不过迭代步数要够，才好收敛，因为通常情况下，边的数量是大于点的）。</p>
+</li>
+</ul>
+<h3 id="metapath2vec"><a href="#metapath2vec" class="headerlink" title="metapath2vec"></a>metapath2vec</h3><p><a href="http://library.usc.edu.ph/ACM/KKD%202017/pdfs/p135.pdf" target="_blank" rel="noopener">KDD2017: metapath2vec: Scalable Representation Learning for Heterogeneous Networks</a></p>
+<p>这篇文章将DeepWalk拓展到异构图场景。主要的改进包括：引入了meta-path based random walk，Heterogeneous Skip-Gram和Heterogeneous negative sampling。其中，meta-path based random walk属于similarity function的范畴；Heterogeneous Skip-Gram和Heterogeneous negative sampling属于Loss Function的范畴。</p>
+<h4 id="Similarity-Function-2"><a href="#Similarity-Function-2" class="headerlink" title="Similarity Function"></a>Similarity Function</h4><p>meta-path based random walk制定一个游走规则，好处是能把节点之间的语义关系纳入到随机游走中。比如：U-I-U，I-U-I。通过该游走规则采样到的样本，可以认为是：$p(v_j |v_i, \mathcal{P})$的近似。其中，$\mathcal{P}$即为meta-path。实际上就是通过meta-path来限定转移概率分布。</p>
+<p><img src="/picture/machine-learning/metapath2vec.png" alt="metapath2vec"></p>
+<p>注意，作者还提到，一般meta-paths都是对称的。</p>
+<h4 id="Loss-Function-3"><a href="#Loss-Function-3" class="headerlink" title="Loss Function"></a>Loss Function</h4><p>Loss形式如下：<br>$$<br>\arg \max_{\theta} \sum_{v \in V} \sum_{t \in T_V} \sum_{c_t \in N_t(v)} \log p(c_t|v;\theta)<br>$$<br>实际上就是把结点的类型纳入到损失中。$T_V$是所有的节点类型。$N_t(v)$是$v$的类型为$t$的邻居节点，即要为$v$节点采样所有类型的上下文节点$c_t, t \in T_V$。</p>
+<p>$p$是softmax的形式的，故为了优化，作者引入了Heterogeneous Skip-Gram和Heterogeneous negative sampling。引入Skip Gram With negative sampling方法对上述Loss进行近似，即可得到：Heterogeneous Skip-Gram with negative sampling Loss：<br>$$<br>\log \sigma(\boldsymbol{z}_{c_t} \boldsymbol{z}_v) + \sum_{m=1}^M \mathbb{E}_{u^m \sim P(u)}[\log \sigma(-\boldsymbol{z}_{u^m} \cdot \boldsymbol{z}_v)]<br>$$<br>实际上和常规的Skip Gram是一样的，只不过上下文节点的类型$c_t$是基于meta-path random walk得到的。</p>
+<p>同理，heterogeneous negative sampling也没有什么大的改动，对softmax分母的配分函数使用属于类型$t$的所有节点，而不是全部类型的节点：<br>$$<br>p(c_t|v;\theta) = \frac{\exp(\boldsymbol{z}_v^T \boldsymbol{z}_{c_t})}{\sum_{u_t \in V_t} \exp(\boldsymbol{z}_{u_t}^T\boldsymbol{z}_v)}<br>$$<br>上式重点在分母的求和项$\sum_{u_t \in V_t}$。则相应的，heterogeneous negative sampling改成使用该类型的节点上的分布$P_t(u)$即可。则对应的最终loss如下：<br>$$<br>\log \sigma(\boldsymbol{z}_{c_t} \boldsymbol{z}_v) + \sum_{m=1}^M \mathbb{E}_{u_t^m \sim P_t(u)}[\log \sigma(-\boldsymbol{z}_{u_t^m} \cdot \boldsymbol{z}_v)]<br>$$</p>
+<h3 id="Alibaba-EGES"><a href="#Alibaba-EGES" class="headerlink" title="Alibaba: EGES"></a>Alibaba: EGES</h3><p><a href="https://arxiv.org/pdf/1803.02349.pdf" target="_blank" rel="noopener">KDD 2018: Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba</a></p>
+<p>阿里KDD2018的文章，也是最早将graph embedding应用于推荐系统的工作之一。这篇文章主要是在DeepWalk基础上改进了节点的Encoder结构。</p>
+<h4 id="Encoder-1"><a href="#Encoder-1" class="headerlink" title="Encoder"></a>Encoder</h4><p>除了节点的id的embedding之外，还融入了节点的稀疏特征的embedding。<br>$$<br>\boldsymbol{H}_v =\frac{\sum_{j=0}^n e^{a_v^{j}}\boldsymbol{w}_v^j}{\sum_{j=0}^{n}e^{a_v^{j}}}<br>$$<br>上述，$v$代表结点，$\boldsymbol{a}_{v} \in \mathbb{R}^{n+1}$，$n$是稀疏特征的数量，+1代表的是id特征(j=0是id的索引)。对于每个结点$v$，有1个$n+1$维的向量$\boldsymbol{a}_v$，向量的每个取值$a_v^j$代表第$j$个特征的权重。若结点有$N$个，则有N个$\boldsymbol{a}_{v} \in \mathbb{R}^{n+1}$向量。</p>
+<p>$\boldsymbol{w}_v^{j}$是该结点$v$第$j$个特征的embedding，可以看出结点最终的embedding就是每个特征embedding的指数加权和，权重系数向量$\boldsymbol{a}_v$也是要学习的。上式重写一下：<br>$$<br>\boldsymbol{H}_v =\sum_{j=0}^n \frac{e^{a_v^{j}}}{\sum_{j=0}^{n}e^{a_v^{j}}}  \boldsymbol{w}_v^j = \sum_{j=0}^n \text{softmax}(a_v^j) \cdot \boldsymbol{w_v^j}<br>$$</p>
+<h3 id="GraphSAGE"><a href="#GraphSAGE" class="headerlink" title="GraphSAGE"></a>GraphSAGE</h3><p><a href="https://papers.nips.cc/paper/6703-inductive-representation-learning-on-large-graphs.pdf" target="_blank" rel="noopener">NIPS 2017: Inductive Representation Learning on Large Graphs</a></p>
+<h4 id="Encoder-2"><a href="#Encoder-2" class="headerlink" title="Encoder"></a>Encoder</h4><p>基于邻域节点的特征汇聚。单个节点的Encoder过程如下图所示：</p>
+<p><img src="/picture/machine-learning/graphsage.png" alt="encoder"></p>
+<p>形式化表示为：$\boldsymbol{z}_i=\text{ENC}(v_i, \mathcal{N}(v_i))$，即：每个节点的encoder除了融入了自身节点的信息以外，还汇聚了局部的邻域节点的特征信息。汇聚的过程是个多层的网络。</p>
+<p>初始的时候，节点使用辅助信息来表示(节点特征；节点本身的id embedding；graph上的节点拓扑结构信息，如：度)。接着对第$k$层网络，首先使用AGGREGATE函数汇聚节点$i$的邻居$\mathcal{N}(v)$的$k-1$层的表示，得到汇聚后的邻域 hidden vector，然后和自身的vector连接在一起，经过一个全连接层，再sigmoid激活，得到该节点$v_i$第$k$层的表示，<strong>可以认为该表示融入了节点$v_i$的k-hop范围内的节点的特征信息</strong>，例如：第1层的时候，融入了1-hop，即邻域节点的特征信息；同理，在第$k+1$层时，AGGREGATE函数的输入变为了第$k$层的输出表示，$k+1$层的节点表示融入了节点k+1 hop范围内的节点信息，重复该过程$K$次，就能够学习到节点在graph上K-hop的拓扑结构信息，节点的”感受野”随着迭代的进行不断扩大。注意，每次迭代完，作者还进行了一个范数归一化的操作（这个操作在层数比较大的时候应该还是必要的，还可以使用layer normalization替代）。</p>
+<p>具体实现的时候，3~6行不需要使用所有的顶点进行更新。对于某个min-batch节点集合，只需要依次<strong>采样</strong>节点1-hop 邻居; 1-hop 邻居的邻居，即节点的2-hop 邻居；依次类推，采样到K-hop 邻居。则3~6行，只需要对这些采样到的K-hop执行操作即可，即：只要从1-hop~K-hop依次向外aggregate迭代执行即可。3~6的时间复杂度为：$O(\prod_{i=1}^K S_i)$， 其中$S_i$为第$k$层采样的邻居的个数。作者在paper中使用的$K=2$，且$S1*S2 \leq 500$就能达到很好的性能。也就是说平均每个节点大概采样20个邻居。</p>
+<p>这里头最主要的是AGGREGATE汇聚函数的设计：</p>
+<ul>
+<li><p><strong>Mean Aggregator</strong>: $\text{MEAN}(\boldsymbol{h}_u^{k-1},  \forall u \in \mathcal{N}(v))$， element-wise mean of the vectors.</p>
+</li>
+<li><p><strong>GCN Aggregator</strong>: 4-5步合并起来，并用如下式子替换<br>$$<br>\boldsymbol{h}_v^k \leftarrow \sigma \left(\boldsymbol{W} \cdot \text{MEAN}\left({\boldsymbol{h}_v^{k-1}} \cup {\boldsymbol{h}_u^{k-1},  \forall u \in \mathcal{N}(v)}\right)\right)<br>$$<br>这个怎么理解呢？此处实际上是第三代的GCN(<a href="http://xtf615.com/2019/02/24/gcn/">参考我的另一篇博客</a>)。第三代GCN形式化：<br>$$<br>\underbrace{\boldsymbol{Z}}_{\mathbb{R}^{N \times F}} = \underbrace{\tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}}_{\mathbb{R}^{N \times N}} \underbrace{\boldsymbol{X}}_{\mathbb{R}^{N \times C}} \ \ \underbrace{\boldsymbol{\Theta}}_{\mathbb{R}^{C \times F}} \\\\<br>\boldsymbol{I_n} + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2} \rightarrow \tilde{\boldsymbol{D}}^{-1/2}\tilde{\boldsymbol{W}} \tilde{\boldsymbol{D}}^{-1/2}<br>$$</p>
+<p>$\boldsymbol{\Theta}$类比于此处的$\boldsymbol{W}$，$X$类比于$\boldsymbol{h}$。第二个式子指的是加了skip-connection（原本W的对角元素为0），是一个renormalization trick，即：把结点自身的信息也考虑了。那么代入2式，并乘上常数$\boldsymbol{D}^{-1/2}$，可得：<br>$$<br>\boldsymbol{Z} = (\boldsymbol{I}_n + \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2})\boldsymbol{X} \boldsymbol{\Theta} = (\boldsymbol{X}+ \boldsymbol{D}^{-1/2} \boldsymbol{W} \boldsymbol{D}^{-1/2} \boldsymbol{X})\boldsymbol{\Theta} \\<br>\leftrightarrow \\<br>\boldsymbol{D}^{-1/2} \boldsymbol{Z} = (\boldsymbol{D}^{-1/2} \boldsymbol{X} + (\boldsymbol{D}^{-1} \boldsymbol{W}) (\boldsymbol{D}^{-1/2} \boldsymbol{X}))\boldsymbol{\Theta}  \\<br>= (\tilde{\boldsymbol{X}} + \tilde{\boldsymbol{W}} \tilde{\boldsymbol{X}}) \boldsymbol{\Theta}<br>$$<br>$\boldsymbol{W}$是对角为0的邻接矩阵，故$\tilde{\boldsymbol{W}} \tilde{\boldsymbol{X}}$实际上获取的就是节点的邻居的特征，因此，实际上也是对节点的邻居做了汇聚操作，再加上自身的节点特征（通过skip-connection实现的，和concat是异曲同工！）。故，GCN Aggregator 和 Mean Aggregator+Concat实际上异曲同工，二者是线性近似的关系。</p>
+</li>
+<li><p><strong>LSTM aggregator</strong>: 直接对邻域节点随机扰动permutation，然后将扰动后的序列使用LSTM来聚合。感觉有点简单粗暴了。</p>
+</li>
+<li><p><strong>Pooling aggregator</strong>：<br>$$<br>\text{AGGREGATE}_k^{pool}=\max({\sigma(\boldsymbol{W}_{pool}\boldsymbol{h}_{u_i}^k + \boldsymbol{b}), \forall u_i \in \mathcal{N}(v)})<br>$$<br>即：每个邻居节点的表示先经过一个MLP，然后进行sigmoid激活；最后应用element-wise max pooling策略，此处的max pooling，作者提到用mean pooling也是可以的。内部的MLP也可以改成多层的MLP。</p>
+</li>
+</ul>
+<p>另外，similarity function作者采用的相似性函数和deepwalk一样，$s_{\mathcal{G}}(v_i, v_j) = P_{\mathcal{G}}(v_j | v_i)$，并通过基于graph的<strong>随机游走</strong>来构造共现对来近似（原paper: where $v$ is a node that co-occurs near $u$ on <strong>ﬁxed-length random walk</strong>）。为了佐证这点，笔者特地读了原作者实现的代码，其中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># link: https://github.com/williamleif/GraphSAGE/blob/a0fdef95dca7b456dab01cb35034717c8b6dd017/graphsage/unsupervised_train.py#L143</span></span><br><span class="line"></span><br><span class="line">context_pairs = train_data[<span class="number">3</span>] <span class="keyword">if</span> FLAGS.random_context <span class="keyword">else</span> <span class="keyword">None</span></span><br><span class="line">placeholders = construct_placeholders()</span><br><span class="line">minibatch = EdgeMinibatchIterator(G, </span><br><span class="line">                                  id_map,</span><br><span class="line">                                  placeholders, batch_size=FLAGS.batch_size,</span><br><span class="line">                                  max_degree=FLAGS.max_degree, </span><br><span class="line">                                  num_neg_samples=FLAGS.neg_sample_size,</span><br><span class="line">                                  context_pairs = context_pairs)</span><br><span class="line"><span class="comment"># 可以看出，如果FLAGS.random_context为True，则使用random walk得到的上下文节点对构造正样本对；</span></span><br><span class="line"><span class="comment"># 其中train_data[3]即为walks构造得到的上下文边。</span></span><br><span class="line"><span class="comment"># 如果FLAGS.random_context为False, 则直接使用连边来构造正样本对</span></span><br><span class="line"><span class="comment"># 默认取值为True，故默认用的是random walk。</span></span><br></pre></td></tr></table></figure>
+<p>除此之外，Loss Function中，无监督的损失函数和Node2Vec一样，采用的是skip-gram with negative sampling。Decoder和DeepWalk/Node2Vec也一样。</p>
+<h3 id="GATs"><a href="#GATs" class="headerlink" title="GATs"></a>GATs</h3><p><a href="https://arxiv.org/pdf/1710.10903.pdf" target="_blank" rel="noopener">ICLR 2018：Graph Attention Networks</a></p>
+<p>ICLR 2018的文章，在GraphSAGE基础上，引入了self-attention机制对aggregator进行了改进。</p>
+<h4 id="Encoder-3"><a href="#Encoder-3" class="headerlink" title="Encoder"></a>Encoder</h4><p>基于邻域节点的特征汇聚。只不过引入了self-attention机制，每个节点attend到自身的邻域节点上。不同于GraphSAGE采用Mean/Pooling Aggregator，GATs采用了基于self-attention机制的Aggregator。也就是说，把目标节点的表示和邻域节点的表示通过一个attention网络，计算注意力值，再依据该注意力值来aggregate邻域节点。对于节点$i$及其邻域节点$j$。我们要计算$i$节点attend到$j$的注意力值，attention score计算如下：</p>
+<ul>
+<li><p>先对$i$和$j$的node feature分别做一个线性变换 (即multi-head attention的特例，1-head attention)，$\boldsymbol{W} \boldsymbol{h}_i$</p>
+</li>
+<li><p>再把变换后的表示送到attention网络并进行softmax得到注意力值，$\alpha_{ij} = \text{softmax}(\text{attention}(\boldsymbol{W} \boldsymbol{h}_i, \boldsymbol{W} \boldsymbol{h}_j))=\text{softmax}(e_{ij})$，这个attention网络就可以随便设计和尝试了。作者使用的是：<br>$$<br>e_{ij}=\text{LeakyReLU}(\boldsymbol{a}[\boldsymbol{W}\boldsymbol{h}_i ,\boldsymbol{W}\boldsymbol{h_j}])<br>$$<br>即：二者Concat到一起后，经过一个线性变换$\boldsymbol{a}$ (attention网络的参数)，再LeakyReLU激活。另外，对于节点$i$和自身的attention score，作者提到直接代入$j=i$即可。</p>
+</li>
+</ul>
+<p>则Aggregator直接依注意力值对线性变换后的vector加权并激活即可：<br>$$<br>\boldsymbol{h}^{\prime}_i = \sigma(\sum_{j \in \mathcal{N}_i}\alpha_{ij} \boldsymbol{W} \boldsymbol{h}_j)<br>$$<br>另外，作者提到，可以采用multi-head attention来拓展，即：attention score计算的第一步中，将node feature变换到不同的语义子空间，再进行attention score计算并aggregate。每个head输出一个$\boldsymbol{h}_i^{\prime}$，将所有的输出concat到一起；或者做mean pooling，作为节点的最终表示。</p>
+<p>示意图如下：</p>
+<p><img src="/picture/machine-learning/gat.png" alt="gat"></p>
+<p>上述描述的是单层的GAT。实际上，可以像GraphSAGE那样，设置多层。作者在实验中，采取的是2层以及3层的GAT。</p>
+<h3 id="PinSAGE"><a href="#PinSAGE" class="headerlink" title="PinSAGE"></a>PinSAGE</h3><p><a href="https://arxiv.org/pdf/1806.01973.pdf" target="_blank" rel="noopener">KDD2018: Graph Convolutional Neural Networks for Web-Scale Recommender Systems</a></p>
+<h4 id="Encoder-4"><a href="#Encoder-4" class="headerlink" title="Encoder"></a>Encoder</h4><p>encoder结构非常简单，伪代码如下：</p>
+<p><img src="/picture/machine-learning/pinsage.png" alt="pinsage"></p>
+<p>主要步骤和GraphSAGE几乎是一样的。$\gamma$就是Aggregation Function。作者提到，步骤2中的concat操作比average操作效果要好很多；步骤3中的归一化操作使得训练更稳定，且对后面基于embedding的相似性搜索更加高效。实际上，作者采用的$\gamma$是weighted mean pooling aggregator（important pooling aggregator）。其中，weight根据下面介绍的基于重要性的领域节点采样方法。</p>
+<p>关键点在于，</p>
+<ul>
+<li>基于重要性的邻域节点的采样：Importance-based neighborhoods.</li>
+</ul>
+<p>传统的方法从目标结点$u$开始采样K-hop的邻居。作者采用了从$u$起始的随机游走的方式，并计算随机游走过程中每一个路径上的节点的L1-normalized visit count；则邻域节点定义为：最大的Top $T$ L1-normlized visit count。则每个邻域节点的weight也根据L1-normalized visit count来计算。作者称这种方法为important pooling。</p>
+<ul>
+<li>层叠式卷积层：Stacking convolutions</li>
+</ul>
+<p>实际上指的就是使用多层的卷积操作，前一层的结果作为下一层的输入。跟GraphSAGE中也是一样的，只不过作者换了个名字。</p>
+<p>作者接着将卷积得到的结果通过2个全连接层得到最终节点的embedding。</p>
+<h4 id="Loss-Function-4"><a href="#Loss-Function-4" class="headerlink" title="Loss Function"></a>Loss Function</h4><p>作者采用了最大间隔损失函数（类似pairwise SVM Loss)。对某个正样本对$(q, i)$，其损失为：<br>$$<br>J_{\mathcal{G}}(\boldsymbol{z}_q \boldsymbol{z}_i) = \mathbb{E}_{n_k \sim P_n(q)}\max \{0, \boldsymbol{z}_q \cdot \boldsymbol{z}_{n_k} - \boldsymbol{z}_q \boldsymbol{z}_i + \Delta \}<br>$$<br>其中，$n_k$是采样的负样本，即，和$q$不相关的样本。$\Delta$是间隔参数，例如一般设置为1。</p>
+<p>多说几句，个人认为这个文章的亮点主要在工程实现，作者提到了很多部署模型的细节，例如多GPU训练；生产消费者模式来产生训练样本等。尤其是生产消费者模式这个值得借鉴：由于graph图数据和节点的特征数据非常大，只能存储在CPU中，训练的时候如果让TF把数据从CPU搬到GPU来计算的话，代价是非常庞大的。作者的思路是，使用re-indexing技术，构造包括节点以及其邻域的子图，并把其纳入到mini-batch数据产生器中，使得子图在每次mini-batch 迭代开始前就已经送到GPU中了。个人认为就是利用了TF自带的喂数据的接口，并封装了一下generator。CPU中提取节点特征，re-indexing，负采样产生训练样本的操作可以认为是生产者；GPU中消费数据来训练样本可以认为是消费者。</p>
+<p>对于负采样，作者为每个子图一次性采样了500个共享的负样本，可以有效的减少训练时间。如果每个节点都采样本的话，训练的时候，需要为每个负样本都计算embedding，非常耗时（感同身受）。</p>
+<p>对于负样本采样个数，作者也有比较深入的讨论（非常值得学习）。Pinterest需要从20亿多个Item中，为每个Item找到最相关的1000个Item（1：2,000,000，相当于200万个Item中得找到1个相关Item）；如果使用均匀分布随机采样500个负样本的话，相当于从500个Item中找到1个相关Item，显然是不够的。为了解决这个问题，作者引入了hard negative samples的概念，除了负采样easy negative samples，作者还采样了hard negative samples。用的是相对于正样本$q$，Personalized PageRank取值最高的若干负样本。具体训练时，交替执行，1轮不用hard samples，1轮使用hard samples（作者称这种方式为：curriculum training scheme）。</p>
+<p>最后，作者还提到对于重复计算embedding的问题。每个节点的邻居可能存在交叉，即：某个节点是多个其他目标结点的邻居，此时这个节点只需要计算一次embedding即可。作者采用了Map-Reduce架构来防止重复的计算问题。</p>
+<h3 id="GATNE"><a href="#GATNE" class="headerlink" title="GATNE"></a>GATNE</h3><p><a href="https://arxiv.org/pdf/1905.01669.pdf" target="_blank" rel="noopener">KDD 2019: Representation Learning for Attributed Multiplex Heterogeneous Network</a></p>
+<p>作者在这篇文章中想要解决的是一种多类型节点，多类型连边关系的异构图网络的表示学习。这种网络称作AMHEN（Attributed Multiplex Heterogeneous Network），可以翻译做复合异构属性网络。</p>
+<ul>
+<li>Heterogeneous Network: 多种类型节点/边的异构网络。</li>
+<li>Attributed：节点的属性。</li>
+<li>Multiplex：节点与节点之间的连边关系可以是多种。例如：电商邻域的user-item的交互关系包括了：click, conversion, add-to-cart, add-to-preference等。</li>
+</ul>
+<p>作者提出了一种叫做GATNE（<strong>G</strong>eneral <strong>A</strong>ttributed Multiplex He<strong>T</strong>erogeneous <strong>N</strong>etwork <strong>E</strong>mbedding）的模型，能够建模丰富的属性信息，并从不同类型的节点中捕捉复合拓扑结构（capture both rich attributed information and to utilize multiplex topological structures from different node types）。</p>
+<p>看到这里，我们对作者的思路其实已经略知一二了。作者主要的创新点在<strong>于把节点之间多种多样的连边关系融入到节点的Encoder中</strong>。Multiplex在其他文章可能叫做Multi-View，即<strong>多视图</strong>。直觉上而言，节点之间的连边关系的层次是不同的，例如U-I交互中的click和conversion关系，显然是不等的。把这种交互关系的层次区分开，确实值得借鉴。下面就要看作何如何设计Encoder架构来建模多种连边关系，区分开不同level的interaction关系，并统一到Encoder中。</p>
+<h4 id="Encoder-5"><a href="#Encoder-5" class="headerlink" title="Encoder"></a>Encoder</h4><p>首先给出AMHEN的形式化表述：</p>
+<p><img src="/picture/machine-learning/AMHEN.png" alt="AMHEN"></p>
+<p>作者实际上仍然是把Multi-View Graph拆分开为多个1-View Sub-Graph。</p>
+<ul>
+<li><strong>Step 1:</strong> 首先对每个节点在每个View Graph下各自进行Encoder，记做：$\boldsymbol{u}_{i,r}$，即节点$i$在View $r$下的Embedding (作者称作Edge Embedding，但实际上是更准确的是，在某种edge-view下的Node Embedding)。对于$\boldsymbol{u}_{i,r}$，作者采用了GraphSAGE的方法，基于邻域节点的特征汇聚。对于第$k$层的edge embedding：</li>
+</ul>
+<p>$$<br>\boldsymbol{u}_{i,r}^k=\text{aggregator}(\{\boldsymbol{u_{j,r}}^{k-1}, \forall v_j \in \mathcal{N}_{i,r} \})<br>$$</p>
+<p>即：使用r-view sub-graph下，$i$的邻域节点汇聚得到$u_{i,r}$。对于transductive learning，初始化的$\boldsymbol{u}_{i,r}^0$随机初始化（也就是每个节点在每种view下都有唯一的 id embedding）。最终$\boldsymbol{u}_{i,r}^K$作为$\boldsymbol{u}_{i,r}$。此处，只用到r-view下，邻域节点的edge embeddings，<strong>未用到</strong>自身的edge embedding。aggregator可以使用mean pooling或者max pooling。</p>
+<ul>
+<li><strong>Step 2:</strong> 接着，把每个view下得到的edge embedding，concat到一起，</li>
+</ul>
+<p>$$<br>\boldsymbol{U}_i = (\boldsymbol{u}_{i,1}, \boldsymbol{u}_{i,2},…,\boldsymbol{u}_{i,m})<br>$$</p>
+<p>$\boldsymbol{U_i} \in \mathbb{R}^{s \times m}$矩阵，$s$是$\boldsymbol{u}_{i,r}$的维度数，$m$是连边类型的数量。</p>
+<ul>
+<li><strong>Step 3:</strong>  接着，作者会对$\boldsymbol{U}_i$使用self-attention网络。目标是：某个节点$i$在edge type $r$下的overall embedding，融入$i$在所有edge type的关联关系，再依据该关联关系的强度对$\boldsymbol{U}_i$做一个线性组合，得到r-view下的，节点的overall embedding。</li>
+</ul>
+<p>为此，引入了self-attention网络，可以把$\boldsymbol{U}_i$类比作word序列，每个word都要focus到句子的每个word上。同理，每个edge embedding都要focus到所有的edge embeddings上。对于某个edge type $r$，首先计算focus到所有edge embedding上的权重向量：<br>$$<br>\boldsymbol{a}_{i,r}=\text{softmax}(\boldsymbol{w}_r^T \text{tanh}(\boldsymbol{W}_r \boldsymbol{U}_i))^T<br>$$<br>其中，$\boldsymbol{a}_{i,r} \in \mathbb{R}^m$，$W_r \in \mathbb{R}^{d_a \times s}, \boldsymbol{w}_r \in \mathbb{R}^{d_a}$。衡量了r-view下，节点$i$和所有edge emebddings的关联程度。怎么从直觉上，或者从<a href="http://xtf615.com/2019/01/06/attention/">attention的范式上</a>（Query, Key, Value）理解该self-attention网络呢？</p>
+<p>$\boldsymbol{W}_r, \boldsymbol{w}_r$是r-view specific权重参数，可以认为是<strong>Query</strong>，$\boldsymbol{U}_i$是all-view下节点$i$的edge embeddings，可以认为是<strong>Key</strong>，即：探讨r-view和$i$的all-view的<strong>关联关系</strong>（Query和Key的关联关系），得到的就是$i$的r-view和all-view的关联关系。</p>
+<p>再依据关联关系对Value ($\boldsymbol{M}_r^T \boldsymbol{U}_i$) 做聚合得到最终的节点$i$在edge type $r$下的overall embedding。<br>$$<br>\boldsymbol{v_{i,r}}=\boldsymbol{b_i} + \alpha_r (\boldsymbol{M_r}^T \boldsymbol{U}_i) \boldsymbol{a}_{i,r}<br>$$<br>$b_i$是节点的base embedding(node-specific，所有view共享)；$\boldsymbol{M}_r^T \boldsymbol{U}_i$其实就是对Key $\boldsymbol{U}_i$做了个r-view specific transformation，最简单的情况下，$\boldsymbol{U}_i$既是Key，又是Value，此处额外做了个<strong>线性变换</strong>。然后基于self-attention向量$\boldsymbol{a}_{i,r}$做加权。$\alpha_r$是个可学习的常量系数，衡量了相比于base embedding，edge embeddings对overall embedding的重要性。</p>
+<p>上述是transductive learning，为了实现inductive learning，只需要把$\boldsymbol{b}_i=h_z(\boldsymbol{x}_i)$ , 且$\boldsymbol{u}_{i,r}^0=g_{z,r}(\boldsymbol{x}_i)$, $\boldsymbol{x_i}$是节点的attribute向量，$z$是节点的类型，$h_z$，$g_{z,r}$是映射函数，如线性变换。除此之外，作者还加了一项关于节点本身attribute关于节点类型的线性变换项，最终形成如下的embedding：<br>$$<br>\boldsymbol{v_{i,r}}=h_z(\boldsymbol{x}_i) + \alpha_r (\boldsymbol{M_r}^T \boldsymbol{U}_i) \boldsymbol{a}_{i,r} + \beta_r \boldsymbol{D}_z^T \boldsymbol{x}_i<br>$$<br>作者为每个节点学习了$m$种embedding，$\boldsymbol{v}_{i, 1},…,\boldsymbol{v}_{i, m}$，并没有把$m$种aggregate到一起。说明在Similarity Function或者Loss Function上有一定的设计。</p>
+<h4 id="Similarity-Function-3"><a href="#Similarity-Function-3" class="headerlink" title="Similarity Function"></a>Similarity Function</h4><p>作者使用的和metapath2vec方法差不多的similarity function，由于是异构网络，作者引入了meta-based random walk来得到similarity function，$p(v_j |v_i , \mathcal{T})$。对于某个r-view sub-Graph $\mathcal{G}_r = (\mathcal{V}, \mathcal{E}_r , \mathcal{A})$, meta-path scheme $\mathcal{T}: \mathcal{V}_1 \rightarrow \mathcal{V}_2 \rightarrow … \rightarrow \mathcal{V}_t \rightarrow … \rightarrow \mathcal{V}_l$，其中$l$是meta-path scheme的长度。每个sub-graph分别按照这种方式采样训练样本。作者采用的meta-path其实就是U-I-U, I-U-I。</p>
+<h4 id="Loss-Function-5"><a href="#Loss-Function-5" class="headerlink" title="Loss Function"></a>Loss Function</h4><p>作者采取的损失为Skip Gram with negative sampling。对于某个node pair $(v_i,v_j)$，损失为：<br>$$<br>E = − \log \sigma(\boldsymbol{c}_j^T \cdot \boldsymbol{v}_{i,r}) − \sum_{l=1}^L \mathbb{E}_{v_k \sim P_t(v)}[\log \sigma(-\boldsymbol{c}_k^T \boldsymbol{v}_{i,r})]<br>$$<br>会根据该node pair的连边类型$r$，选择对应的$\boldsymbol{v}_{i,r}$。这样相当于每个节点可以学到$m$种embedding。</p>
+<p>遗憾的是，作者没有对$m$种embedding做一个aggregator。看了下实验，可能对于node-node之间多种的interaction关系进行链接预测时，使用对应的$\boldsymbol{v}_{i,r}$。但是实际进行推荐的时候，是不是聚合一下得到唯一的embedding更好呢？</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>本文介绍了一种Encoder-Decoder框架，用于抽象和组织关于Representation Learning on Graph的方法。对于发现方法中的核心思想和核心组成部分有非常好的辅助作用。同时，该框架可以用于指导关于图表示学习的编程实践。据我所知，Alibaba开源的图表示学习框架 <a href="https://github.com/alibaba/euler" target="_blank" rel="noopener">Euler</a> 中，核心模型层的代码就是使用该Enocder-Decoder结构来组织的。这是一个非常好的实践，对于定义Encoder和Decoder的定制非常方便，笔者一直在用。后续有机会会分享一下关于Euler的实践经验。</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://arxiv.org/pdf/1709.05584.pdf" target="_blank" rel="noopener">Hamilton W L, Ying R, Leskovec J. Representation learning on graphs: Methods and applications[J]. arXiv preprint arXiv:1709.05584, 2017.</a></p>
+<p><a href="https://arxiv.org/pdf/1403.6652" target="_blank" rel="noopener">Perozzi B, Al-Rfou R, Skiena S. Deepwalk: Online learning of social representations[C]//Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2014: 701-710.</a></p>
+<p><a href="https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf" target="_blank" rel="noopener">Grover A, Leskovec J. node2vec: Scalable feature learning for networks[C]//Proceedings of the 22nd ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2016: 855-864.</a></p>
+<p><a href="https://arxiv.org/pdf/1503.03578" target="_blank" rel="noopener">Tang J, Qu M, Wang M, et al. Line: Large-scale information network embedding[C]//Proceedings of the 24th international conference on world wide web. International World Wide Web Conferences Steering Committee, 2015: 1067-1077.</a></p>
+<p><a href="http://library.usc.edu.ph/ACM/KKD%202017/pdfs/p135.pdf" target="_blank" rel="noopener">Dong Y, Chawla N V, Swami A. metapath2vec: Scalable representation learning for heterogeneous networks[C]//Proceedings of the 23rd ACM SIGKDD international conference on knowledge discovery and data mining. ACM, 2017: 135-144.</a></p>
+<p><a href="https://arxiv.org/pdf/1803.02349.pdf" target="_blank" rel="noopener">Wang J, Huang P, Zhao H, et al. Billion-scale commodity embedding for e-commerce recommendation in alibaba[C]//Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining. ACM, 2018: 839-848.</a></p>
+<p><a href="https://papers.nips.cc/paper/6703-inductive-representation-learning-on-large-graphs.pdf" target="_blank" rel="noopener">Hamilton W, Ying Z, Leskovec J. Inductive representation learning on large graphs[C]//Advances in Neural Information Processing Systems. 2017: 1024-1034.</a></p>
+<p><a href="https://arxiv.org/pdf/1710.10903.pdf" target="_blank" rel="noopener">Veličković P, Cucurull G, Casanova A, et al. Graph attention networks[J]. arXiv preprint arXiv:1710.10903, 2017.</a></p>
+<p><a href="https://arxiv.org/pdf/1806.01973" target="_blank" rel="noopener">Ying R, He R, Chen K, et al. Graph convolutional neural networks for web-scale recommender systems[C]//Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining. ACM, 2018: 974-983.</a></p>
+<p><a href="https://arxiv.org/pdf/1905.01669" target="_blank" rel="noopener">Cen Y, Zou X, Zhang J, et al. Representation Learning for Attributed Multiplex Heterogeneous Network[J]. arXiv preprint arXiv:1905.01669, 2019.</a></p>
+<p><a href="https://github.com/alibaba/euler" target="_blank" rel="noopener">Euler: A distributed graph deep learning framework (Alibaba)</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/tags/推荐系统/" rel="tag"># 推荐系统</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/Graph-Embedding/" rel="tag"># Graph Embedding</a>
+          
+            <a href="/tags/GCN/" rel="tag"># GCN</a>
+          
+            <a href="/tags/Representation-Learning/" rel="tag"># Representation Learning</a>
+          
+            <a href="/tags/Survey/" rel="tag"># Survey</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/04/GAN/" rel="next" title="生成对抗网络">
+                <i class="fa fa-chevron-left"></i> 生成对抗网络
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/13/Representation-Learning-on-Bipartite-Graphs/" rel="prev" title="推荐系统中二分图表示学习调研">
+                推荐系统中二分图表示学习调研 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Survey"><span class="nav-number">1.</span> <span class="nav-text">Survey</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Problem-Definition"><span class="nav-number">1.1.</span> <span class="nav-text">Problem Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method-Categories"><span class="nav-number">1.2.</span> <span class="nav-text">Method Categories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Encoder-Decoder-Framework"><span class="nav-number">1.3.</span> <span class="nav-text">Encoder-Decoder Framework</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extension：Representative-Approaches-on-Graphs"><span class="nav-number">2.</span> <span class="nav-text">Extension：Representative Approaches on Graphs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DeepWalk"><span class="nav-number">2.1.</span> <span class="nav-text">DeepWalk</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder"><span class="nav-number">2.1.1.</span> <span class="nav-text">Encoder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Similarity-function"><span class="nav-number">2.1.2.</span> <span class="nav-text">Similarity function</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Decoder"><span class="nav-number">2.1.3.</span> <span class="nav-text">Decoder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function"><span class="nav-number">2.1.4.</span> <span class="nav-text">Loss Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node2Vec"><span class="nav-number">2.2.</span> <span class="nav-text">Node2Vec</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Similarity-Function"><span class="nav-number">2.2.1.</span> <span class="nav-text">Similarity Function</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">Loss Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Line"><span class="nav-number">2.3.</span> <span class="nav-text">Line</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Similarity-Function-1"><span class="nav-number">2.3.1.</span> <span class="nav-text">Similarity Function</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Decoder-1"><span class="nav-number">2.3.2.</span> <span class="nav-text">Decoder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function-2"><span class="nav-number">2.3.3.</span> <span class="nav-text">Loss Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#metapath2vec"><span class="nav-number">2.4.</span> <span class="nav-text">metapath2vec</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Similarity-Function-2"><span class="nav-number">2.4.1.</span> <span class="nav-text">Similarity Function</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function-3"><span class="nav-number">2.4.2.</span> <span class="nav-text">Loss Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Alibaba-EGES"><span class="nav-number">2.5.</span> <span class="nav-text">Alibaba: EGES</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder-1"><span class="nav-number">2.5.1.</span> <span class="nav-text">Encoder</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphSAGE"><span class="nav-number">2.6.</span> <span class="nav-text">GraphSAGE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder-2"><span class="nav-number">2.6.1.</span> <span class="nav-text">Encoder</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GATs"><span class="nav-number">2.7.</span> <span class="nav-text">GATs</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder-3"><span class="nav-number">2.7.1.</span> <span class="nav-text">Encoder</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PinSAGE"><span class="nav-number">2.8.</span> <span class="nav-text">PinSAGE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder-4"><span class="nav-number">2.8.1.</span> <span class="nav-text">Encoder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function-4"><span class="nav-number">2.8.2.</span> <span class="nav-text">Loss Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GATNE"><span class="nav-number">2.9.</span> <span class="nav-text">GATNE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Encoder-5"><span class="nav-number">2.9.1.</span> <span class="nav-text">Encoder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Similarity-Function-3"><span class="nav-number">2.9.2.</span> <span class="nav-text">Similarity Function</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Loss-Function-5"><span class="nav-number">2.9.3.</span> <span class="nav-text">Loss Function</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Summary"><span class="nav-number">3.</span> <span class="nav-text">Summary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

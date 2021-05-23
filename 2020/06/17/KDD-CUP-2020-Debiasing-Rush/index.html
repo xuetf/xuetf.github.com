@@ -1,0 +1,1210 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="推荐系统,深度学习,GNN,kddcup2020,Debiasing," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="此次比赛是典型的序列推荐场景中的纠偏问题，即：debiasing of next-item-prediction。模型构建的过程中要重点考虑行为序列和蕴含在序列中的时间信息，位置信息和长短期偏好等。为此，本文提出了一种融合传统协同过滤方法和图神经网络方法的多路召回模型以及集成了GBDT和DIN的排序模型的方案。该方案遵循了推荐系统的主流架构，即召回+粗排+精排。召回方案主要包括了多种改进后的协同过">
+<meta name="keywords" content="推荐系统,深度学习,GNN,kddcup2020,Debiasing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDD CUP 2020之Debiasing赛道方案">
+<meta property="og:url" content="xtf615.com/2020/06/17/KDD-CUP-2020-Debiasing-Rush/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="此次比赛是典型的序列推荐场景中的纠偏问题，即：debiasing of next-item-prediction。模型构建的过程中要重点考虑行为序列和蕴含在序列中的时间信息，位置信息和长短期偏好等。为此，本文提出了一种融合传统协同过滤方法和图神经网络方法的多路召回模型以及集成了GBDT和DIN的排序模型的方案。该方案遵循了推荐系统的主流架构，即召回+粗排+精排。召回方案主要包括了多种改进后的协同过">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/data_preview.png">
+<meta property="og:image" content="/picture/machine-learning/tr_val_split.png">
+<meta property="og:image" content="/picture/machine-learning/item_count.png">
+<meta property="og:image" content="/picture/machine-learning/sr-gnn-1.png">
+<meta property="og:image" content="/picture/machine-learning/sr-gnn-2.png">
+<meta property="og:image" content="/picture/machine-learning/debiasing_results.png">
+<meta property="og:updated_time" content="2021-05-23T14:52:32.295Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KDD CUP 2020之Debiasing赛道方案">
+<meta name="twitter:description" content="此次比赛是典型的序列推荐场景中的纠偏问题，即：debiasing of next-item-prediction。模型构建的过程中要重点考虑行为序列和蕴含在序列中的时间信息，位置信息和长短期偏好等。为此，本文提出了一种融合传统协同过滤方法和图神经网络方法的多路召回模型以及集成了GBDT和DIN的排序模型的方案。该方案遵循了推荐系统的主流架构，即召回+粗排+精排。召回方案主要包括了多种改进后的协同过">
+<meta name="twitter:image" content="/picture/machine-learning/data_preview.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2020/06/17/KDD-CUP-2020-Debiasing-Rush/"/>
+
+
+
+
+
+  <title> KDD CUP 2020之Debiasing赛道方案 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2020/06/17/KDD-CUP-2020-Debiasing-Rush/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                KDD CUP 2020之Debiasing赛道方案
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-17T21:03:17+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GNN/" itemprop="url" rel="index">
+                    <span itemprop="name">GNN</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>此次比赛是典型的序列推荐场景中的纠偏问题，即：debiasing of next-item-prediction。模型构建的过程中要重点考虑行为序列和蕴含在序列中的时间信息，位置信息和长短期偏好等。为此，本文提出了一种融合传统协同过滤方法和图神经网络方法的多路召回模型以及集成了GBDT和DIN的排序模型的方案。该方案遵循了推荐系统的主流架构，即召回+粗排+精排。召回方案主要包括了多种改进后的协同过滤方法，即：user-cf、item-cf、swing、bi-graph，以及改进的基于序列的图神经网络SR-GNN[1]方法。这些改进的召回方法能够有效进行数据的纠偏。对每种召回方法，粗排阶段会基于物品的流行度等因素对每个用户的推荐结果进行初步重排，然后将不同方法的Recall的结果初步融合起来。精排方案主要采用了GBDT和DIN[4]方法，会重点挖掘召回特征，内容特征和ID类特征。最后通过集成GBDT和DIN产生排序结果。最终，我们团队<strong>Rush</strong>的方案在Track B中，<strong>full指标第3名，half指标第10名。</strong></p>
+<p>方案解析也可参考我的知乎：<a href="https://zhuanlan.zhihu.com/p/149061129" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/149061129</a></p>
+<p>目前代码已开源：<a href="https://github.com/xuetf/KDD_CUP_2020_Debiasing_Rush" target="_blank" rel="noopener">https://github.com/xuetf/KDD_CUP_2020_Debiasing_Rush</a></p>
+<a id="more"></a>
+<h1 id="赛题解析"><a href="#赛题解析" class="headerlink" title="赛题解析"></a>赛题解析</h1><p>赛题介绍：<a href="https://tianchi.aliyun.com/competition/entrance/231785/information" target="_blank" rel="noopener">KDD Cup 2020 Challenges for Modern E-Commerce Platform: Debiasing</a><br>主要包括了4个数据集：</p>
+<ul>
+<li>underexpose_user_feat.csv: <strong>用户的特征</strong>，uid, age, gender, city。缺失值非常多。</li>
+<li>underexpose_item_feat.csv: <strong>物品的特征</strong>，iid, 128维图片向量+128维文字向量。</li>
+<li>underexpose_train_click-T.csv:  uid, iid, time, <strong>训练集</strong>，记录了用户历史点击行为。</li>
+<li>underexpose_test_click-T.csv: uid, iid, time, <strong>测试集</strong>，记录了待预测用户的历史点击行为。赛题方  还给出了要预测的用户下一次发生点击行为时的时间，即：underexpose_test_qtime-T.csv</li>
+</ul>
+<p>目标是基于用户历史点击行为，来预测下一次用户会点击的item，即<strong>next-item prediction</strong>。</p>
+<p>根据赛题介绍和对数据集的观察，可以推测主办方是从全量数据里头随机采样部分用户，将这些用户的点击数据作为赛题的数据。在进行数据划分的时候，选取了部分用户的数据作为测试集test，其他用户的数据作为训练集train。对于测试集，将每个用户行为序列的最后一次交互item作为线上测试answer，行为序列去除掉最后一个交互item以外的作为test用户的历史行为数据公开给我们，同时将answer中的user id和query time也公开给我们，即，test_q_time。具体如下图所示：</p>
+<p><img src="/picture/machine-learning/data_preview.png" alt="线上数据划分"></p>
+<p>显然，这是典型的序列推荐场景，即<strong>next-item-prediction</strong>。模型构建的过程中要<strong>重点考虑行为序列和蕴含在序列中的时间信息，位置信息和长短期偏好等</strong>。</p>
+<p>为了保证线上线下数据分布的一致性，验证集划分思路可参考线上数据的划分方式。即，利用线上train训练集进行划分，从train数据集中随机采样1600个用户，将这1600个用户的最后一次交互item作为验证集answer，其它数据作为验证集用户的历史行为数据。具体如下图所示：</p>
+<p><img src="/picture/machine-learning/tr_val_split.png" alt="验证集划分"></p>
+<p>这样的划分，保证了离线环境和线上环境的一致性。上述操作对每个phase都会进行这样的划分过程。</p>
+<h1 id="数据分析"><a href="#数据分析" class="headerlink" title="数据分析"></a>数据分析</h1><p>几个重要的数据分析观察和结论如下：</p>
+<ul>
+<li><p>经过统计分析，每个阶段的时间范围一致，不同阶段按照时间推移，且不同阶段的时间重叠部分占到了阶段时间区间的3/4，因此会出现当前阶段记录不完全的情况，所以训练模型时需要考虑使用联合多个phase的全量数据训练模型。<strong>推测可能是线上打点日志系统的延迟上报，或者主办方对每个阶段的数据，都是从某个较大的时间区间内通过滑动窗口的方式随机采样得到的，因此样本存在较大的时间重叠。</strong></p>
+</li>
+<li><p>经过验证集上的统计，每个用户的最后一次点击有99%以上是在当前阶段出现过的item，因此利用全量数据时需要将不属于当前phase的item过滤掉，防止item的穿越。</p>
+</li>
+<li><p>一条相同的点击数据可能会分布在各个阶段之中，重复率占比非常高，因此需要对记录进行<strong>去重处理</strong>。</p>
+</li>
+<li><p>item出现的次数呈现典型的长尾分布，在重排阶段需要挖掘长尾物品，如结合物品出现的频次进行纠偏。</p>
+<p><img src="/picture/machine-learning/item_count.png" alt="item_count"></p>
+</li>
+<li><p>其它的一些分析包括，最后一次点击和倒二次点击之间的内容相似性、基于w2v嵌入的行为相似性等分析。不一一列举。</p>
+</li>
+</ul>
+<h1 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h1><p>我们的方案遵循了推荐系统的主流架构，即召回+粗排+精排。召回方案主要包括了多种改进后的协同过滤方法，即：<strong>user-cf</strong>、<strong>item-cf</strong>、<strong>swing</strong>、<strong>bi-graph</strong>。以及改进的基于序列的<strong>图神经网络</strong>SR-GNN方法。对每种召回方法，粗排阶段会基于物品的流行度等因素对每个用户的推荐结果进行初步重排，然后将不同方法的Recall的结果初步融合起来。精排方案主要采用了GBDT和DIN方法，会重点挖掘召回特征，内容特征和ID类特征。最终产生的结果是<strong>GBDT</strong>和<strong>DIN</strong>的集成。</p>
+<h2 id="召回方案"><a href="#召回方案" class="headerlink" title="召回方案"></a>召回方案</h2><h3 id="召回训练集构造"><a href="#召回训练集构造" class="headerlink" title="召回训练集构造"></a>召回训练集构造</h3><p>经过数据分析，我们发现不同阶段的数据存在明显的交叉，说明了不同阶段之间不存在明确的时间间隔。因此，我们希望充分利用所有阶段的数据。但是直接利用所有阶段的数据会造成<strong>非常严重的数据穿越问题</strong>。为了保证数据不穿越，我们对全量数据做了进一步的筛选。这是本方案的<strong>key points</strong>之一。具体包括两点：</p>
+<ul>
+<li><p>1)  对每个用户，根据测试集中的q-time，将q-time之后的数据过滤掉，防止user的行为穿越。</p>
+</li>
+<li><p>2)  对1) 中过滤后的数据，进一步，把不在当前阶段出现的item的行为数据过滤掉，防止item穿越。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_whole_phase_click</span><span class="params">(all_click, click_q_time)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    get train data for target phase from whole click</span></span><br><span class="line"><span class="string">    :param all_click: the click data of target phase</span></span><br><span class="line"><span class="string">    :param click_q_time: the infer q_time of target phase</span></span><br><span class="line"><span class="string">    :return: the filtered whole click data for target phase</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    whole_click = get_whole_click()</span><br><span class="line"></span><br><span class="line">    phase_item_ids = set(all_click[<span class="string">'item_id'</span>].unique())</span><br><span class="line">    pred_user_time_dict = dict(zip(click_q_time[<span class="string">'user_id'</span>], click_q_time[<span class="string">'time'</span>]))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">group_apply_func</span><span class="params">(group_df)</span>:</span></span><br><span class="line">        u = group_df[<span class="string">'user_id'</span>].iloc[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">if</span> u <span class="keyword">in</span> pred_user_time_dict:</span><br><span class="line">            u_time = pred_user_time_dict[u]</span><br><span class="line">            group_df = group_df[group_df[<span class="string">'time'</span>] &lt;= u_time]</span><br><span class="line">        <span class="keyword">return</span> group_df</span><br><span class="line"></span><br><span class="line">    phase_whole_click = whole_click.groupby(<span class="string">'user_id'</span>, 	group_keys=<span class="keyword">False</span>).apply(group_apply_func)</span><br><span class="line">    print(phase_whole_click.head())</span><br><span class="line">    print(<span class="string">'group done'</span>)</span><br><span class="line">    <span class="comment"># filter-out the items that not in this phase</span></span><br><span class="line">    phase_whole_click = phase_whole_click[phase_whole_click[<span class="string">'item_id'</span>].isin(phase_item_ids)]</span><br><span class="line">    <span class="keyword">return</span> phase_whole_click</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>对每个阶段，经过上述步骤后得到筛选后的针对该阶段的全量训练数据，会作为多路召回模型的输入进行训练和召回。</p>
+<h3 id="多路召回"><a href="#多路召回" class="headerlink" title="多路召回"></a>多路召回</h3><p>多路召回包括了4种改进的协同过滤方法以及改进的图神经网络SR-GNN方法。</p>
+<h4 id="Item-CF"><a href="#Item-CF" class="headerlink" title="Item-CF"></a>Item-CF</h4><p>参考item-cf [7, 8]的实现，考虑了交互时间信息，方向信息、物品流行度、用户活跃度等因素对模型的影响对模型的影响。<br>$$<br>sim(i,j) = \frac{1}{\sqrt{|U_i||U_j|}} \sum_{u \in U_i \cap U_j} \frac{\left(exp(-\alpha * |t_i - t_j|)\right) \times (c \cdot \beta^{|l_i-l_j|-1})}{\log(1+|I_u|)} \tag{1}<br>$$<br>其中，</p>
+<ul>
+<li>$\left(exp(-\alpha * |t_i - t_j|)\right)$考察了交互时间差距因素的影响，$\alpha=15000$</li>
+<li>$(c \cdot \beta^{|l_i-l_j|-1})$考虑交互方向的影响，$\beta=0.8$；正向时，即$l_i &gt; l_j$时，$c=1$，否则，即，反向时，$c=0.7$</li>
+<li>$\sqrt{|U_i||U_j|}$考虑了物品流行度的影响，越流行的商品，协同信号越弱。$U_i$即为交互过物品$i$的用户。</li>
+<li>$log(1+|I_u|)$考虑了用户活跃度的影响，越活跃的用户，协同信号越弱，$I_u$是用户$u$的交互过的物品。</li>
+</ul>
+<p>上述改进能够有效进行纠偏。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_time_dir_aware_sim_item</span><span class="params">(df)</span>:</span></span><br><span class="line">    user_item_time_dict = get_user_item_time_dict(df)</span><br><span class="line"></span><br><span class="line">    sim_item = &#123;&#125;</span><br><span class="line">    item_cnt = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> user, item_time_list <span class="keyword">in</span> tqdm(user_item_time_dict.items()):</span><br><span class="line">        <span class="keyword">for</span> loc_1, (i, i_time) <span class="keyword">in</span> enumerate(item_time_list):</span><br><span class="line">            item_cnt[i] += <span class="number">1</span></span><br><span class="line">            sim_item.setdefault(i, &#123;&#125;)</span><br><span class="line">            <span class="keyword">for</span> loc_2, (relate_item, related_time) <span class="keyword">in</span> enumerate(item_time_list):</span><br><span class="line">                <span class="keyword">if</span> i == relate_item:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                loc_alpha = <span class="number">1.0</span> <span class="keyword">if</span> loc_2 &gt; loc_1 <span class="keyword">else</span> <span class="number">0.7</span></span><br><span class="line">                loc_weight = loc_alpha * (<span class="number">0.8</span> ** (np.abs(loc_2 - loc_1) - <span class="number">1</span>))</span><br><span class="line">                time_weight = np.exp(<span class="number">-15000</span> * np.abs(i_time - related_time))</span><br><span class="line"></span><br><span class="line">                sim_item[i].setdefault(relate_item, <span class="number">0</span>)</span><br><span class="line">                sim_item[i][relate_item] += loc_weight * time_weight / math.log(<span class="number">1</span> + len(item_time_list))</span><br><span class="line"></span><br><span class="line">    sim_item_corr = sim_item.copy()</span><br><span class="line">    <span class="keyword">for</span> i, related_items <span class="keyword">in</span> tqdm(sim_item.items()):</span><br><span class="line">        <span class="keyword">for</span> j, cij <span class="keyword">in</span> related_items.items():</span><br><span class="line">            sim_item_corr[i][j] = cij / math.sqrt(item_cnt[i] * item_cnt[j])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sim_item_corr, user_item_time_dict</span><br></pre></td></tr></table></figure>
+<h4 id="User-CF"><a href="#User-CF" class="headerlink" title="User-CF"></a>User-CF</h4><p>在原始user-cf基础上考虑了用户活跃度、物品的流行度因素。<br>$$<br>sim(u,v) = \frac{1}{\sqrt{|I_u||I_v|}} \sum_{i \in I_u \cap I_v} \frac{1}{log(1+|U_i|)}  \tag{2}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_sim_user</span><span class="params">(df)</span>:</span></span><br><span class="line">    <span class="comment"># user_min_time_dict = get_user_min_time_dict(df, user_col, item_col, time_col) # user first time</span></span><br><span class="line">    <span class="comment"># history</span></span><br><span class="line">    user_item_time_dict = get_user_item_time_dict(df)</span><br><span class="line">    <span class="comment"># item, [u1, u2, ...,]</span></span><br><span class="line">    item_user_time_dict = get_item_user_time_dict(df)</span><br><span class="line"></span><br><span class="line">    sim_user = &#123;&#125;</span><br><span class="line">    user_cnt = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> item, user_time_list <span class="keyword">in</span> tqdm(item_user_time_dict.items()):</span><br><span class="line">        num_users = len(user_time_list)</span><br><span class="line">        <span class="keyword">for</span> u, t <span class="keyword">in</span> user_time_list:</span><br><span class="line">            user_cnt[u] += <span class="number">1</span></span><br><span class="line">            sim_user.setdefault(u, &#123;&#125;)</span><br><span class="line">            <span class="keyword">for</span> relate_user, relate_t <span class="keyword">in</span> user_time_list:</span><br><span class="line">                <span class="comment"># time_diff_relate_u = 1.0/(1.0+10000*abs(relate_t-t))</span></span><br><span class="line">                <span class="keyword">if</span> u == relate_user:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                sim_user[u].setdefault(relate_user, <span class="number">0</span>)</span><br><span class="line">                weight = <span class="number">1.0</span></span><br><span class="line">                sim_user[u][relate_user] += weight / math.log(<span class="number">1</span> + num_users)</span><br><span class="line"></span><br><span class="line">    sim_user_corr = sim_user.copy()</span><br><span class="line">    <span class="keyword">for</span> u, related_users <span class="keyword">in</span> tqdm(sim_user.items()):</span><br><span class="line">        <span class="keyword">for</span> v, cuv <span class="keyword">in</span> related_users.items():</span><br><span class="line">            sim_user_corr[u][v] = cuv / math.sqrt(user_cnt[u] * user_cnt[v])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sim_user_corr, user_item_time_dict</span><br></pre></td></tr></table></figure>
+<h4 id="Swing"><a href="#Swing" class="headerlink" title="Swing"></a>Swing</h4><p>基于图结构的推荐算法Swing [9]，将物品的流行度因素也考虑进去。<br>$$<br>Sim(i,j)=\frac{1}{\sqrt{|U_i||U_j|}} \sum_{u \in U_i \cap U_j} \sum_{v \in U_i \cap U_j} \frac{1}{\alpha+|I_u \cap I_v|} \tag{3}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">swing</span><span class="params">(df, user_col=<span class="string">'user_id'</span>, item_col=<span class="string">'item_id'</span>, time_col=<span class="string">'time'</span>)</span>:</span></span><br><span class="line">    <span class="comment"># 1. item, (u1,t1), (u2, t2).....</span></span><br><span class="line">    item_user_df = df.sort_values(by=[item_col, time_col])</span><br><span class="line">    item_user_df = item_user_df.groupby(item_col).apply(</span><br><span class="line">        <span class="keyword">lambda</span> group: make_user_time_tuple(group, user_col, item_col, time_col)).reset_index().rename(</span><br><span class="line">        columns=&#123;<span class="number">0</span>: <span class="string">'user_id_time_list'</span>&#125;)</span><br><span class="line">    item_user_time_dict = dict(zip(item_user_df[item_col], item_user_df[<span class="string">'user_id_time_list'</span>]))</span><br><span class="line"></span><br><span class="line">    user_item_time_dict = defaultdict(list)</span><br><span class="line">    <span class="comment"># 2. ((u1, u2), i1, d12)</span></span><br><span class="line">    u_u_cnt = defaultdict(list)</span><br><span class="line">    item_cnt = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> item, user_time_list <span class="keyword">in</span> tqdm(item_user_time_dict.items()):</span><br><span class="line">        <span class="keyword">for</span> u, u_time <span class="keyword">in</span> user_time_list:</span><br><span class="line">            <span class="comment"># just record</span></span><br><span class="line">            item_cnt[item] += <span class="number">1</span></span><br><span class="line">            user_item_time_dict[u].append((item, u_time))</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> relate_u, relate_u_time <span class="keyword">in</span> user_time_list:</span><br><span class="line">                <span class="keyword">if</span> relate_u == u:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                key = (u, relate_u) <span class="keyword">if</span> u &lt;= relate_u <span class="keyword">else</span> (relate_u, u)</span><br><span class="line">                u_u_cnt[key].append((item, np.abs(u_time - relate_u_time)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3. (i1,i2), sim</span></span><br><span class="line">    sim_item = &#123;&#125;</span><br><span class="line">    alpha = <span class="number">5.0</span></span><br><span class="line">    <span class="keyword">for</span> u_u, co_item_times <span class="keyword">in</span> u_u_cnt.items():</span><br><span class="line">        num_co_items = len(co_item_times)</span><br><span class="line">        <span class="keyword">for</span> i, i_time_diff <span class="keyword">in</span> co_item_times:</span><br><span class="line">            sim_item.setdefault(i, &#123;&#125;)</span><br><span class="line">            <span class="keyword">for</span> j, j_time_diff <span class="keyword">in</span> co_item_times:</span><br><span class="line">                <span class="keyword">if</span> j == i:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                weight = <span class="number">1.0</span>  <span class="comment"># np.exp(-15000*(i_time_diff + j_time_diff))</span></span><br><span class="line">                sim_item[i][j] = sim_item[i].setdefault(j, <span class="number">0.</span>) + weight / (alpha + num_co_items)</span><br><span class="line">    <span class="comment"># 4. norm by item count</span></span><br><span class="line">    sim_item_corr = sim_item.copy()</span><br><span class="line">    <span class="keyword">for</span> i, related_items <span class="keyword">in</span> sim_item.items():</span><br><span class="line">        <span class="keyword">for</span> j, cij <span class="keyword">in</span> related_items.items():</span><br><span class="line">            sim_item_corr[i][j] = cij / math.sqrt(item_cnt[i] * item_cnt[j])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sim_item_corr, user_item_time_dict</span><br></pre></td></tr></table></figure>
+<h4 id="Bi-Graph"><a href="#Bi-Graph" class="headerlink" title="Bi-Graph"></a>Bi-Graph</h4><p>Bi-Graph [3, 10] 核心思想是将user和item看做二分图中的两个集合，即：用户集合和物品集合，通过不同集合的关系进行单模式投影得到item侧的物品之间的相似性度量。改进方式：将时间因素、商品热门度、用户活跃度三因素考虑进去。<br>$$<br>Sim(i,j)= \sum_{u \in U_i} \sum_{j \in I_u} \frac{\left(\exp(-\alpha * |t_i - t_j|)\right)}{\log(|I_u|+1) \cdot \log(|U_j|+1)} \tag{4}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_bi_sim_item</span><span class="params">(df)</span>:</span></span><br><span class="line">    item_user_time_dict = get_item_user_time_dict(df,)</span><br><span class="line">    user_item_time_dict = get_user_item_time_dict(df)</span><br><span class="line"></span><br><span class="line">    item_cnt = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> user, item_times <span class="keyword">in</span> tqdm(user_item_time_dict.items()):</span><br><span class="line">        <span class="keyword">for</span> i, t <span class="keyword">in</span> item_times:</span><br><span class="line">            item_cnt[i] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    sim_item = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> item, user_time_lists <span class="keyword">in</span> tqdm(item_user_time_dict.items()):</span><br><span class="line"></span><br><span class="line">        sim_item.setdefault(item, &#123;&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> u, item_time <span class="keyword">in</span> user_time_lists:</span><br><span class="line"></span><br><span class="line">            tmp_len = len(user_item_time_dict[u])</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> relate_item, related_time <span class="keyword">in</span> user_item_time_dict[u]:</span><br><span class="line">                sim_item[item].setdefault(relate_item, <span class="number">0</span>)</span><br><span class="line">                weight = np.exp(<span class="number">-15000</span> * np.abs(related_time - item_time))</span><br><span class="line">                sim_item[item][relate_item] += weight / (math.log(len(user_time_lists) + <span class="number">1</span>) * math.log(tmp_len + <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sim_item, user_item_time_dict</span><br></pre></td></tr></table></figure>
+<h4 id="SR-GNN"><a href="#SR-GNN" class="headerlink" title="SR-GNN"></a>SR-GNN</h4><p>SR-GNN [1] 是将GNN用于序列推荐的一种模型，原论文的方法在多个数据集上都表现出较好的性能。SR-GNN通过GGNN能够捕捉序列中不同item之间的多阶关系，同时会综合考虑序列的长短期偏好，尤其是短期的最后一次交互item，天然适用于该比赛的场景。但是直接使用原始论文开源的代码[13]，在我们的比赛场景中，召回效果不佳，还不如单个CF方法来的好，因此需要进行改进。</p>
+<p>我们将用户的行为记录按时间戳排序，然后对用户序列进行数据增强操作，得到增强后的行为序列后，使用改进的SR-GNN实施召回。具体改进如下：</p>
+<h5 id="嵌入初始化"><a href="#嵌入初始化" class="headerlink" title="嵌入初始化"></a><strong>嵌入初始化</strong></h5><p>由于训练样本较少，难以对物品嵌入矩阵进行充分的学习，因此不宜使用随机初始化。考虑到比赛提供的数据中包含了物品特征，为此我们使用物品的文本描述和图片描述向量（共256维）对嵌入矩阵进行初始化。这是<strong>本方案的重要trick之一。</strong> 这个方法能够显著解决某些长尾item的嵌入学习不充分的问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># obtain item feat</span></span><br><span class="line">item_embed_np = np.zeros((item_cnt + <span class="number">1</span>, <span class="number">256</span>))</span><br><span class="line"><span class="keyword">for</span> raw_id, idx <span class="keyword">in</span> item_raw_id2_idx_dict.items():</span><br><span class="line">    vec = item_content_vec_dict[int(raw_id)]</span><br><span class="line">    item_embed_np[idx, :] = vec</span><br><span class="line">np.save(open(sr_gnn_dir + <span class="string">'/item_embed_mat.npy'</span>, <span class="string">'wb'</span>), item_embed_np)</span><br><span class="line"></span><br><span class="line"><span class="comment"># initialize node item embedding</span></span><br><span class="line"><span class="keyword">if</span> kwargs.get(<span class="string">'feature_init'</span>, <span class="keyword">None</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">    init = tf.constant_initializer(np.load(kwargs[<span class="string">'feature_init'</span>]))</span><br><span class="line">    logger.info(<span class="string">"Use Feature Init"</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    init = tf.random_uniform_initializer(-self.var_init, self.var_init)</span><br><span class="line"></span><br><span class="line">self.node_embedding = (tf.get_variable(<span class="string">"node_embedding"</span>, shape=[node_count, self.hidden_size], dtype=tf.float32, initializer=init))</span><br></pre></td></tr></table></figure>
+<p>这里头有一个小细节，点击数据里存在一些特征缺失的items(未出现在item_feat.csv中)，这些items的特征需要做填充。我们采用了局部上下文统计item-item共现关系，并基于共现item的特征做特征填充的方法，这种方式得到的完整item feat对排序过程的提升作用也非常大。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fill_item_feat</span><span class="params">(processed_item_feat_df, item_content_vec_dict)</span>:</span></span><br><span class="line">    online_total_click = get_online_whole_click()</span><br><span class="line"></span><br><span class="line">    all_click_feat_df = pd.merge(online_total_click, processed_item_feat_df, on=<span class="string">'item_id'</span>, how=<span class="string">'left'</span>)</span><br><span class="line"></span><br><span class="line">    missed_items = all_click_feat_df[all_click_feat_df[<span class="string">'txt_embed_0'</span>].isnull()][<span class="string">'item_id'</span>].unique()</span><br><span class="line">    user_item_time_hist_dict = get_user_item_time_dict(online_total_click)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># calculate co-occurrence</span></span><br><span class="line">    co_occur_dict = &#123;&#125;</span><br><span class="line">    window = <span class="number">5</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">cal_occ</span><span class="params">(sentence)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> i, word <span class="keyword">in</span> enumerate(sentence):</span><br><span class="line">            hist_len = len(sentence)</span><br><span class="line">            co_occur_dict.setdefault(word, &#123;&#125;)</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(max(i - window, <span class="number">0</span>), min(i + window, hist_len)):</span><br><span class="line">                <span class="keyword">if</span> j == i <span class="keyword">or</span> word == sentence[j]: <span class="keyword">continue</span></span><br><span class="line">                loc_weight = (<span class="number">0.9</span> ** abs(i - j))</span><br><span class="line">                co_occur_dict[word].setdefault(sentence[j], <span class="number">0</span>)</span><br><span class="line">                co_occur_dict[word][sentence[j]] += loc_weight</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> u, hist_item_times <span class="keyword">in</span> user_item_time_hist_dict.items():</span><br><span class="line">        hist_items = [i <span class="keyword">for</span> i, t <span class="keyword">in</span> hist_item_times]</span><br><span class="line">        cal_occ(hist_items)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># fill</span></span><br><span class="line">    miss_item_content_vec_dict = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> miss_item <span class="keyword">in</span> missed_items:</span><br><span class="line">        co_occur_item_dict = co_occur_dict[miss_item]</span><br><span class="line">        weighted_vec = np.zeros(<span class="number">256</span>)</span><br><span class="line">        sum_weight = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">for</span> co_item, weight <span class="keyword">in</span> co_occur_item_dict.items():</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> co_item <span class="keyword">in</span> item_content_vec_dict:</span><br><span class="line">                sum_weight += weight</span><br><span class="line">                co_item_vec = item_content_vec_dict[co_item]</span><br><span class="line">                weighted_vec += weight * co_item_vec</span><br><span class="line"></span><br><span class="line">        weighted_vec /= sum_weight</span><br><span class="line">        txt_item_feat_np = weighted_vec[<span class="number">0</span>:<span class="number">128</span>] / np.linalg.norm(weighted_vec[<span class="number">0</span>:<span class="number">128</span>])</span><br><span class="line">        img_item_feat_np = weighted_vec[<span class="number">128</span>:] / np.linalg.norm(weighted_vec[<span class="number">128</span>:])</span><br><span class="line">        cnt_vec = np.concatenate([txt_item_feat_np, img_item_feat_np])</span><br><span class="line">        miss_item_content_vec_dict[miss_item] = cnt_vec</span><br><span class="line"></span><br><span class="line">    miss_item_feat_df = pd.DataFrame()</span><br><span class="line">    miss_item_feat_df[item_dense_feat] = pd.DataFrame(miss_item_content_vec_dict.values(),</span><br><span class="line">                                                      columns=item_dense_feat)</span><br><span class="line">    miss_item_feat_df[<span class="string">'item_id'</span>] = list(miss_item_content_vec_dict.keys())</span><br><span class="line">    miss_item_feat_df = miss_item_feat_df[[<span class="string">'item_id'</span>] + item_dense_feat]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> miss_item_feat_df, miss_item_content_vec_dict</span><br></pre></td></tr></table></figure>
+<h5 id="带有节点权重的消息传播"><a href="#带有节点权重的消息传播" class="headerlink" title="带有节点权重的消息传播"></a>带有节点权重的消息传播</h5><p>在SR-GNN中，得到物品序列后，将序列中的物品作为图节点，序列中相邻的物品之间通过有向边连接，最终分别得到入边和出边的邻接矩阵并按行归一化。例如，物品序列$s=[v_1, v_2, v_3, v_2, v_4]​$对应的有向图及邻接矩阵$\boldsymbol{M}_{s, out}, \boldsymbol{M}_{s, in}​$,  如下所示:</p>
+<p><img src="/picture/machine-learning/sr-gnn-1.png" alt="img"></p>
+<p><img src="/picture/machine-learning/sr-gnn-2.png" alt="img"></p>
+<p> 得到序列的图表示后，之后进行GNN处理的，<strong>遵循GNN信息传递架构 </strong>[12]，即：<strong>信息构造—传播—更新</strong>三个步骤：</p>
+<p>1)、 <strong>信息构造：</strong>针对全部物品设置嵌入矩阵，每个节点对应的物品可用嵌入矩阵的一个行向量$\boldsymbol{e}_i \in \mathbb{R}^d$表示。由于训练集中物品呈长尾分布，<strong>对于出现次数较多的物品，我们希望降低它的影响</strong>，因此我们设置节点$i$（即对应的物品$i$）的初始权重，<br>$$<br>w_i = \frac{1}{\sqrt{\#i / \text{median}}+1} \tag{5}<br>$$</p>
+<p>$\#i$为物品$i$在训练集中出现的次数，$\text{median}$为全部物品出现次数的中位数，最终权重位于(0,1)之间，出现次数较多的物品权重较小，而出现次数较少的物品权重接近1。我们设置权值$w_i$为可学习的参数，因此节点$i$待传播的信息为$w_i \boldsymbol{e_i}$。</p>
+<p>2)、 <strong>传播：</strong>按照连接矩阵进行传播，</p>
+<p>$$<br>o_{s,i}^t = \text{concat}(\boldsymbol{M}_{s, in}^i \boldsymbol{E}^{t-1} \boldsymbol{W}_{in}, \boldsymbol{M}_{s, out}^i \boldsymbol{E}^{t-1} \boldsymbol{W}_{out})+b \tag{6}<br>$$</p>
+<p>此处，$\boldsymbol{E}^{t-1}=[w_1 \boldsymbol{e}_1^{t-1}, …, w_n \boldsymbol{e}_n^{t-1}]$为图中全部节点的信息矩阵，$\boldsymbol{M}_{s, in}, \boldsymbol{M}_{s, out} \in \mathbb{R}^{1 \times n}$分别表示入度矩阵和出度矩阵的$i$行， 我们从入边和出边两个方向传播信息，$o_{s,i}^t \in \mathbb{R}^{2d}$为节点$i$在第$t$步时从邻居节点汇聚得到的信息。$\boldsymbol{W}_{in}, \boldsymbol{W}_{out}, b​$为模型可学习的参数。</p>
+<p>3)、 <strong>更新：</strong>根据节点自身的信息和来自邻居的信息，更新节点的信息。这里使用GRU进行结点信息的更新：$\boldsymbol{e_i}^t=GRU(o_{s,i}^t, \boldsymbol{e}_i^{t-1}) + \boldsymbol{e}_i^0​$，此处，我们采用了残差连接。</p>
+<p> 以上过程可循环进行$R$步，最终每个节点可获取到它的$R$阶邻居的信息。我们的方案中，$R=2$。</p>
+<h5 id="位置编码"><a href="#位置编码" class="headerlink" title="位置编码"></a><strong>位置编码</strong></h5><p>用户的行为受最后一次交互影响较大，为了强化交互顺序的影响，我们增加了位置编码矩阵$P \in \mathbb{R}^{k \times d}$，$k$为位置数量，我们从后向前编码，最后一次交互的物品位置为1，上一次为2，以此类推。通过GNN更新后的节点向量和位置编码向量相加：<br>$$<br>\boldsymbol{e_i} \leftarrow \boldsymbol{e}_i + \boldsymbol{p}_i \tag{7}<br>$$<br>   $\boldsymbol{p}_i$为节点$i$的位置编码向量。我们设置$k=5$，对于倒数第5个物品之前的物品，它们的位置均为5。</p>
+<h5 id="序列级别的嵌入表征"><a href="#序列级别的嵌入表征" class="headerlink" title="序列级别的嵌入表征"></a><strong>序列级别的嵌入表征</strong></h5><p>这里需要汇聚图中全部节点向量，得到一个图级别的输出作为序列的嵌入表征。考虑到最后一次行为的重要性，我们使用了加权平均池化的汇聚方式，即：</p>
+<p>$$<br>\boldsymbol{s}_h = w \boldsymbol{e}_T + (1-w) \sum_{i=1}^{T-1} \frac{\boldsymbol{e_i}}{T-1} \tag{8}<br>$$</p>
+<p>$\boldsymbol{e}_T$为序列最后一个item的嵌入表示，这里我们对序列中最后一个物品之前的物品向量进行平均池化，之后和最后一个物品向量按照权重$w$进行加权，得到序列的表示。$w$是可学习的参数。</p>
+<h5 id="预测和损失函数"><a href="#预测和损失函数" class="headerlink" title="预测和损失函数"></a><strong>预测和损失函数</strong></h5><p>   我们对序列向量及物品向量进行L2归一化：<br>$$<br>   \boldsymbol{s}_h = \frac{\boldsymbol{s}_h}{||\boldsymbol{s}_h||_2}, \boldsymbol{e}_i = \frac{\boldsymbol{e}_i}{||\boldsymbol{e}_i||_2} \tag{9}<br>$$<br>   之后通过点积对物品进行打分：<br>$$<br>   \hat{y}_i = \text{softmax}(\sigma \boldsymbol{s}_h^T \boldsymbol{e}_i) \tag{10}<br>$$<br>   $\sigma$为超参数，我们设为10，来进一步拉大高意向item和低意向item之间的差距。这实际上是通过余弦相似度对物品进行打分，这些在参考文献[2]中有具体描述。模型的损失为预测概率的多分类交叉熵损失。</p>
+<h3 id="产出多路召回结果"><a href="#产出多路召回结果" class="headerlink" title="产出多路召回结果"></a>产出多路召回结果</h3><p>上述协同过滤方案实际上分为了Item-based，即：item-cf、swing、bi-graph和User-based，即user-cf。在具体进行推荐时，我们封装了基于item的产生召回结果的流程和基于user的产生召回结果的流程。</p>
+<h4 id="Item-based"><a href="#Item-based" class="headerlink" title="Item-based"></a>Item-based</h4><p>item-based的方法在进行推荐的时候，会利用用户的历史行为item，计算历史行为item最相似的Top-K个item推荐给用户。在计算相似性时，同样会利用前文提到的策略，即：根据交互时间进行指数衰减；根据交互方向进行幂函数衰减。同时，我们还利用了物品的内容特征，即，利用Faiss [11] 计算了item-item之间的内容相似性权重，最后，每个item的得分=召回方法的分数 $\times$ 时间权重 $\times$ 方向权重 $\times$ 内容权重。每种方法产生Top-200个召回结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">item_based_recommend</span><span class="params">(sim_item_corr, user_item_time_dict, user_id, top_k, item_num, alpha=<span class="number">15000</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                         item_cnt_dict=None, user_cnt_dict=None, adjust_type=<span class="string">'v2'</span>)</span>:</span></span><br><span class="line">    item_content_sim_dict = get_glv(<span class="string">'item_content_sim_dict'</span>) <span class="comment"># get global variables</span></span><br><span class="line">    rank = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> user_id <span class="keyword">not</span> <span class="keyword">in</span> user_item_time_dict:</span><br><span class="line">        <span class="keyword">return</span> []</span><br><span class="line">    interacted_item_times = user_item_time_dict[user_id]</span><br><span class="line">    min_time = min([time <span class="keyword">for</span> item, time <span class="keyword">in</span> interacted_item_times])</span><br><span class="line">    interacted_items = set([item <span class="keyword">for</span> item, time <span class="keyword">in</span> interacted_item_times])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> loc, (i, time) <span class="keyword">in</span> enumerate(interacted_item_times):</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">not</span> <span class="keyword">in</span> sim_item_corr:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">for</span> j, wij <span class="keyword">in</span> sorted(sim_item_corr[i].items(), key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="keyword">True</span>)[<span class="number">0</span>:top_k]:</span><br><span class="line">            <span class="keyword">if</span> j <span class="keyword">not</span> <span class="keyword">in</span> interacted_items:</span><br><span class="line">                rank.setdefault(j, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">                content_weight = <span class="number">1.0</span></span><br><span class="line">                <span class="keyword">if</span> item_content_sim_dict.get(i, &#123;&#125;).get(j, <span class="keyword">None</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                    content_weight += item_content_sim_dict[i][j]</span><br><span class="line">                <span class="keyword">if</span> item_content_sim_dict.get(j, &#123;&#125;).get(i, <span class="keyword">None</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                    content_weight += item_content_sim_dict[j][i]</span><br><span class="line"></span><br><span class="line">                time_weight = np.exp(alpha * (time - min_time))</span><br><span class="line">                loc_weight = (<span class="number">0.9</span> ** (len(interacted_item_times) - loc))</span><br><span class="line">                rank[j] += loc_weight * time_weight * content_weight * wij</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> item_cnt_dict <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">for</span> loc, item <span class="keyword">in</span> enumerate(rank):</span><br><span class="line">            rank[item] = re_rank(rank[item], item, user_id, item_cnt_dict, user_cnt_dict, adjust_type=adjust_type)</span><br><span class="line"></span><br><span class="line">    sorted_rank_items = sorted(rank.items(), key=<span class="keyword">lambda</span> d: d[<span class="number">1</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sorted_rank_items[<span class="number">0</span>:item_num]</span><br></pre></td></tr></table></figure>
+<h4 id="User-based"><a href="#User-based" class="headerlink" title="User-based"></a>User-based</h4><p>User-based进行推荐时，会将相似用户的历史感兴趣item推荐给目标用户。但是这里面的一个问题是，没有利用到目标用户本身的行为序列信息。我们做了改进，会计算相似用户历史感兴趣item和目标用户本身行为序列中的item之间的相似性，计算相似性时，同样会利用时间权重和方向权重进行衰减。产生Top-200个召回结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">user_based_recommend</span><span class="params">(sim_user_corr, user_item_time_dict, user_id, top_k, item_num, alpha=<span class="number">15000</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                         item_cnt_dict=None, user_cnt_dict=None, adjust_type=<span class="string">'v2'</span>)</span>:</span></span><br><span class="line">    item_content_sim_dict = get_glv(<span class="string">'item_content_sim_dict'</span>)</span><br><span class="line"></span><br><span class="line">    rank = &#123;&#125;</span><br><span class="line">    interacted_items = set([i <span class="keyword">for</span> i, t <span class="keyword">in</span> user_item_time_dict[user_id]])</span><br><span class="line">    interacted_item_time_list = user_item_time_dict[user_id]</span><br><span class="line">    interacted_num = len(interacted_items)</span><br><span class="line"></span><br><span class="line">    min_time = min([t <span class="keyword">for</span> i, t <span class="keyword">in</span> interacted_item_time_list])</span><br><span class="line">    time_weight_dict = &#123;i: np.exp(alpha * (t - min_time)) <span class="keyword">for</span> i, t <span class="keyword">in</span> interacted_item_time_list&#125;</span><br><span class="line">    loc_weight_dict = &#123;i: <span class="number">0.9</span> ** (interacted_num - loc) <span class="keyword">for</span> loc, (i, t) <span class="keyword">in</span> enumerate(interacted_item_time_list)&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> sim_v, wuv <span class="keyword">in</span> sorted(sim_user_corr[user_id].items(), key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="keyword">True</span>)[<span class="number">0</span>:top_k]:</span><br><span class="line">        <span class="keyword">if</span> sim_v <span class="keyword">not</span> <span class="keyword">in</span> user_item_time_dict:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">for</span> j, j_time <span class="keyword">in</span> user_item_time_dict[sim_v]:</span><br><span class="line">            <span class="keyword">if</span> j <span class="keyword">not</span> <span class="keyword">in</span> interacted_items:</span><br><span class="line">                rank.setdefault(j, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">                content_weight = <span class="number">1.0</span></span><br><span class="line">                <span class="keyword">for</span> loc, (i, t) <span class="keyword">in</span> enumerate(interacted_item_time_list):</span><br><span class="line">                    loc_weight = loc_weight_dict[i]</span><br><span class="line">                    time_weight = time_weight_dict[i]</span><br><span class="line">                    <span class="keyword">if</span> item_content_sim_dict.get(i, &#123;&#125;).get(j, <span class="keyword">None</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">                        content_weight += time_weight * loc_weight * item_content_sim_dict[i][j]</span><br><span class="line"></span><br><span class="line">                <span class="comment"># weight = np.exp(-15000*abs(j_time-q_time))</span></span><br><span class="line">                rank[j] += content_weight * wuv</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> item_cnt_dict <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">for</span> loc, item <span class="keyword">in</span> enumerate(rank):</span><br><span class="line">            rank[item] = re_rank(rank[item], item, user_id, item_cnt_dict, user_cnt_dict, adjust_type=adjust_type)</span><br><span class="line"></span><br><span class="line">    rec_items = sorted(rank.items(), key=<span class="keyword">lambda</span> d: d[<span class="number">1</span>], reverse=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rec_items[:item_num]</span><br></pre></td></tr></table></figure>
+<h4 id="SR-GNN-1"><a href="#SR-GNN-1" class="headerlink" title="SR-GNN"></a>SR-GNN</h4><p>我们还对数据进行了增强操作。对每个用户的交互序列进行截断，变成多条的交互序列。然后使用模型进行训练并产出结果。具体使用时，我们使用了两套参数(原始论文实现+改进版实现)训练SR-GNN，每套参数对应的模型根据公式(10)各产生Top-100个召回结果，共Top-200个召回结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Train</span></span><br><span class="line">python3 &#123;sr_gnn_lib_dir&#125;/main.py --task train --node_count &#123;item_cnt&#125; \</span><br><span class="line">              --checkpoint_path &#123;model_path&#125;/session_id --train_input &#123;file_path&#125;/train_item_seq_enhanced.txt \</span><br><span class="line">              --test_input &#123;file_path&#125;/test_item_seq.txt --gru_step <span class="number">2</span> --epochs <span class="number">10</span> \</span><br><span class="line">              --lr <span class="number">0.001</span> --lr_dc <span class="number">2</span> --dc_rate <span class="number">0.1</span> --early_stop_epoch <span class="number">3</span> --hidden_size <span class="number">256</span> --batch_size <span class="number">256</span> \</span><br><span class="line">              --max_len <span class="number">20</span> --has_uid <span class="keyword">True</span> --feature_init &#123;file_path&#125;/item_embed_mat.npy --sigma <span class="number">10</span> \</span><br><span class="line">              --sq_max_len <span class="number">5</span> --node_weight <span class="keyword">True</span>  --node_weight_trainable <span class="keyword">True</span></span><br><span class="line">            </span><br><span class="line"><span class="comment"># Output Recommendations          </span></span><br><span class="line">python3 &#123;sr_gnn_lib_dir&#125;/main.py --task recommend --node_count &#123;item_cnt&#125; --checkpoint_path &#123;checkpoint_path&#125; \</span><br><span class="line">              --item_lookup &#123;file_path&#125;/item_lookup.txt --recommend_output &#123;rec_path&#125; \</span><br><span class="line">              --session_input &#123;file_path&#125;/test_user_sess.txt --gru_step <span class="number">2</span> \</span><br><span class="line">              --hidden_size <span class="number">256</span> --batch_size <span class="number">256</span> --rec_extra_count <span class="number">50</span> --has_uid <span class="keyword">True</span> \</span><br><span class="line">              --feature_init &#123;file_path&#125;/item_embed_mat.npy \</span><br><span class="line">              --max_len <span class="number">10</span> --sigma <span class="number">10</span> --sq_max_len <span class="number">5</span> --node_weight <span class="keyword">True</span> \</span><br><span class="line">              --node_weight_trainable <span class="keyword">True</span></span><br></pre></td></tr></table></figure>
+<p>在A榜中，单模型的SR-GNN效果已超过4种改进后的CF融合后的效果。</p>
+<p>最终，每个用户产生了1000个召回结果。</p>
+<h2 id="粗排方案"><a href="#粗排方案" class="headerlink" title="粗排方案"></a>粗排方案</h2><p>粗排阶段主要基于这样的观察，我们的模型Top 100的hit-rate指标远高于Top 50，说明可能很多低流行度的物品被我们的模型召回了，但是排序较靠面，因此需要提高低频商品的曝光率，以消除对高频商品的偏向性。具体而言，对每个阶段进行召回时，本方案会统计<strong>该阶段内</strong>的物品出现的频次，然后根据该频次以及召回方法计算的item-item相似性分数，对相似性分数进行调整。这是<strong>本方案的key points之一，能够在基本不影响full的情况下，有效提高half</strong>。不同于其他开源的方案，我们在召回后进行re-rank，而不是在精排后进行re-rank。</p>
+<p>本方案考虑加入频率因素，具体方法包括：</p>
+<p>(1)  首先将频率作为一个单独的考量标准，为了初步鉴定频次的打压效果并尽量排除其他权重对其干扰，直接将召回分数除以物品出现的频次，初步鉴定对half有比较明显的提升，但是会显著降低full指标。</p>
+<p>(2)  进一步，经过对item频次进行数据分析，item频率的分布呈现长尾效应，因此对于这些高频但极少数的item，考虑使用幂函数削弱打击的效果。采用的打压函数分段函数如下所示：<br>$$<br>\begin{split}<br>f(c) &amp;= \log(c + 2), c &lt; 4 \\<br>f(c) &amp;= c,  4 \leq  c &lt; 10 \\<br>f(c) &amp;=  c^{0.75} + 5.0, c &gt; 10<br>\end{split}<br>$$<br>其中，$c$为item出现在目标pahse中的频次，则新的分数为，$s_i^{*} = s_i  /  f(c_i)$。</p>
+<p>(3) 考虑到不同活跃度的用户对于不同频率的物品的倾向性不同，越活跃的用户越倾向于点击低频的商品，因此对高活跃度的用户，需要提高高频item打压程度；对低活跃度的用户，提高对于低频率物品的打压程度。对于不同用户进行区分的策略在几乎不影响ndcg-full同时，有效提高了ndcg-half。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">re_rank</span><span class="params">(sim, i, u, item_cnt_dict, user_cnt_dict, adjust_type=<span class="string">'v2'</span>)</span>:</span></span><br><span class="line">    <span class="string">'''</span></span><br><span class="line"><span class="string">    :param sim: recall sim value</span></span><br><span class="line"><span class="string">    :param i: item</span></span><br><span class="line"><span class="string">    :param u: user</span></span><br><span class="line"><span class="string">    :param item_cnt_dict: item frequency map</span></span><br><span class="line"><span class="string">    :param user_cnt_dict: user frequency map</span></span><br><span class="line"><span class="string">    :param adjust_type: re-rank strategy, v0, v1, v2</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    <span class="keyword">if</span> adjust_type <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        <span class="keyword">return</span> sim</span><br><span class="line">    <span class="keyword">elif</span> adjust_type == <span class="string">'v1'</span>:</span><br><span class="line">        <span class="comment"># Log，Linear, 3/4, only consider item frequency</span></span><br><span class="line">        <span class="keyword">if</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &lt; <span class="number">4</span>:</span><br><span class="line">            heat = np.log(item_cnt_dict.get(i, <span class="number">1.0</span>) + <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">elif</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &gt;= <span class="number">4</span> <span class="keyword">and</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &lt; <span class="number">10</span>:</span><br><span class="line">            heat = item_cnt_dict.get(i, <span class="number">1.0</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            heat = item_cnt_dict.get(i, <span class="number">1.0</span>) ** <span class="number">0.75</span> + <span class="number">5.0</span>  <span class="comment"># 3/4</span></span><br><span class="line">        sim *= <span class="number">2.0</span> / heat</span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> adjust_type == <span class="string">'v2'</span>:</span><br><span class="line">        <span class="comment"># Log，Linear, 3/4, consider user activity</span></span><br><span class="line">        user_cnt = user_cnt_dict.get(u, <span class="number">1.0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &lt; <span class="number">4</span>:</span><br><span class="line">            heat = np.log(item_cnt_dict.get(i, <span class="number">1.0</span>) + <span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 对低活跃度的用户，提高对于低频率物品的打压程度</span></span><br><span class="line">        <span class="keyword">elif</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &gt;= <span class="number">4</span> <span class="keyword">and</span> item_cnt_dict.get(i, <span class="number">1.0</span>) &lt; <span class="number">10</span>:</span><br><span class="line">            <span class="keyword">if</span> user_cnt &gt; <span class="number">50</span>:</span><br><span class="line">                heat = item_cnt_dict.get(i, <span class="number">1.0</span>) * <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> user_cnt &gt; <span class="number">25</span>:</span><br><span class="line">                heat = item_cnt_dict.get(i, <span class="number">1.0</span>) * <span class="number">1.2</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                heat = item_cnt_dict.get(i, <span class="number">1.0</span>) * <span class="number">1.6</span></span><br><span class="line">        <span class="comment"># 对高活跃度的用户，需要提高高频item打压程度</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> user_cnt &gt; <span class="number">50</span>:</span><br><span class="line">                user_cnt_k = <span class="number">0.4</span></span><br><span class="line">            <span class="keyword">elif</span> user_cnt &gt; <span class="number">10</span>:</span><br><span class="line">                user_cnt_k = <span class="number">0.1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                user_cnt_k = <span class="number">0</span></span><br><span class="line">            heat = item_cnt_dict.get(i, <span class="number">1.0</span>) ** user_cnt_k + <span class="number">10</span> - <span class="number">10</span> ** user_cnt_k</span><br><span class="line">        sim *= <span class="number">2.0</span> / heat</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        sim += <span class="number">2.0</span> / item_cnt_dict.get(i, <span class="number">1.0</span>)</span><br><span class="line">    <span class="keyword">return</span> sim</span><br></pre></td></tr></table></figure>
+<p>不同的召回方法得到的分数会经过上述步骤进行分数调整粗排，然后需要将不同召回模型初步融合在一起，我们的方法是，每种方法对<strong>每个用户</strong>产生的推荐结果先进行打分的最小最大归一化；然后求和合并不同方法对同一个用户的打分结果。</p>
+<p><strong>注</strong>：实际上，我们临近截止日期的时候对召回做了小修改，full指标上升了一些，half下降了一些，导致覆盖了原本最好的half结果，没来的及对改进后的召回重排策略进行精排。<strong>最终导致目前线上最终的成绩是仅通过上述召回方案得到的</strong>。而在我们所有的提交记录中，我们最好的half指标的成绩是该召回方案和下文即将描述的排序方案产生的。笔者认为，如果对改进后的重排策略进行精排的话，我们的分数应该还会更高。</p>
+<p><img src="/picture/machine-learning/debiasing_results.png" alt="results"></p>
+<h2 id="精排方案"><a href="#精排方案" class="headerlink" title="精排方案"></a>精排方案</h2><p>到目前为止，B榜的最终成绩(full rank 3rd, half rank 10th)仅由上文提到的召回+粗排即可得到。精排方案在A榜的时候会有full会有0.05+的提升；half会有0.01+的提升。B榜由于时间问题没来得及对改进后的召回方案做排序并提交。如果你有兴趣可以接着往下阅读。</p>
+<p>精排方案主要由GBDT和DIN方法组成。这里面最重要的步骤来自于训练样本的构造和特征的构造。其中，训练样本的构造是重中之重，个人认为也是本次比赛<strong>排序阶段最大的难点所在</strong>。</p>
+<h3 id="训练样本构造"><a href="#训练样本构造" class="headerlink" title="训练样本构造"></a>训练样本构造</h3><p>排序方案的训练样本构造我们采用了序列推荐的典型构造方案，即：滑窗方式构造训练样本。为了保证训练时和线上预测时的数据一致性，我们以行为序列中的1个item为滑窗步长，共滑动了10步。具体步骤即：对每个用户的行为序列$s=[i_1, i_2, …, i_n]$，从倒数第1个item开始，即：$i_n$为ground truth item, $i_1 \sim i_{n-1}$的通过我们的召回模型来计算item pair相似性，并为第$n$个位置的next-item产生召回结果；滑动窗口往左滑动1步，即：$i_{n-1}$为ground truth item, $i_1 \sim i_{n-2}$的通过我们的召回模型来计算item pair相似性，并为第$n-1$个位置的next-item产生召回结果；以此类推，共滑动10步。这种方式的缺点在于，计算复杂度非常高。因为每次滑动，都需要进行相似性的计算，并用训练集中所有的用户进行召回。目前笔者还不清楚这种方式是否是最优的构造方法(应该不是最优的)，希望后面看看其他队伍的开源开案，学习学习。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sliding_obtain_training_df</span><span class="params">(c, is_silding_compute_sim=False)</span>:</span></span><br><span class="line">    print(<span class="string">'train_path=&#123;&#125;, test_path=&#123;&#125;'</span>.format(train_path, test_path))</span><br><span class="line"></span><br><span class="line">    all_click, click_q_time = get_phase_click(c)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># for validation</span></span><br><span class="line">    compute_mode = <span class="string">'once'</span> <span class="keyword">if</span> <span class="keyword">not</span> is_silding_compute_sim <span class="keyword">else</span> <span class="string">'multi'</span></span><br><span class="line"></span><br><span class="line">    save_training_path = os.path.join(user_data_dir, <span class="string">'training'</span>, mode, compute_mode, str(c))</span><br><span class="line">    click_history_df = all_click</span><br><span class="line">    recall_methods = &#123;<span class="string">'item-cf'</span>, <span class="string">'bi-graph'</span>, <span class="string">'user-cf'</span>, <span class="string">'swing'</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(save_training_path): os.makedirs(save_training_path)</span><br><span class="line"></span><br><span class="line">    total_step = <span class="number">10</span></span><br><span class="line">    step = <span class="number">0</span></span><br><span class="line">    full_sim_pair_dict = get_multi_source_sim_dict_results_multi_processing(click_history_df,</span><br><span class="line">                                                                            recall_methods=recall_methods)</span><br><span class="line">    pickle.dump(full_sim_pair_dict, open(os.path.join(save_training_path, <span class="string">'full_sim_pair_dict.pkl'</span>), <span class="string">'wb'</span>))</span><br><span class="line"></span><br><span class="line">    step_user_recall_item_dict = &#123;&#125;</span><br><span class="line">    step_strategy_sim_pair_dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> step &lt; total_step:</span><br><span class="line">        print(<span class="string">'step=&#123;&#125;'</span>.format(step))</span><br><span class="line">        click_history_df, click_last_df = get_history_and_last_click_df(click_history_df)  <span class="comment"># override click_history_df</span></span><br><span class="line">        user_item_time_dict = get_user_item_time_dict(click_history_df)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> is_silding_compute_sim:</span><br><span class="line">            sim_pair_dict = get_multi_source_sim_dict_results_multi_processing(click_history_df,</span><br><span class="line">                                                                               recall_methods=recall_methods)  <span class="comment"># re-compute</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            sim_pair_dict = full_sim_pair_dict</span><br><span class="line"></span><br><span class="line">        user_recall_item_dict = do_multi_recall_results_multi_processing(sim_pair_dict, user_item_time_dict,</span><br><span class="line">                                                                         ret_type=<span class="string">'tuple'</span>,</span><br><span class="line">                                                                         recall_methods=recall_methods)</span><br><span class="line"></span><br><span class="line">        step_user_recall_item_dict[step] = user_recall_item_dict</span><br><span class="line">        <span class="keyword">if</span> is_silding_compute_sim:</span><br><span class="line">            step_strategy_sim_pair_dict[step] = sim_pair_dict</span><br><span class="line">        step += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    pickle.dump(step_user_recall_item_dict,</span><br><span class="line">                open(os.path.join(save_training_path, <span class="string">'step_user_recall_item_dict.pkl'</span>), <span class="string">'wb'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> is_silding_compute_sim:</span><br><span class="line">        pickle.dump(step_strategy_sim_pair_dict,</span><br><span class="line">                    open(os.path.join(save_training_path, <span class="string">'step_strategy_sim_pair_dict.pkl'</span>), <span class="string">'wb'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># validation/test recall results based on full_sim_pair_dict</span></span><br><span class="line">    <span class="comment"># user-cf depend on sim-user history, so use all-click; test user history will not occur in train, so it's ok</span></span><br><span class="line">    print(<span class="string">'obtain validate/test recall data'</span>)</span><br><span class="line">    <span class="keyword">if</span> mode == <span class="string">'offline'</span>:</span><br><span class="line">        all_user_item_dict = get_user_item_time_dict(all_click)</span><br><span class="line"></span><br><span class="line">        val_user_recall_item_dict = do_multi_recall_results_multi_processing(full_sim_pair_dict,</span><br><span class="line">                                                                             all_user_item_dict,</span><br><span class="line">                                                                             target_user_ids=click_q_time[<span class="string">'user_id'</span>].unique(), ret_type=<span class="string">'tuple'</span>,</span><br><span class="line">                                                                             recall_methods=recall_methods)</span><br><span class="line">        pickle.dump(val_user_recall_item_dict,</span><br><span class="line">                    open(os.path.join(save_training_path, <span class="string">'val_user_recall_item_dict.pkl'</span>), <span class="string">'wb'</span>))</span><br></pre></td></tr></table></figure>
+<p>构造样本标签时，将召回结果中，命中了的用户真实点击的item作为正样本（即：不包括召回结果中未命中，但是用户真实点击的item，好处是能够把<strong>召回分数特征等</strong>送到模型中进行排序），然后随机负采样部分item作为负样本，负样本的策略以user和item侧分别入手，按照比例进行负采样，最终采样到的负样本: 正样本比例 约等于 10:1。</p>
+<p>具体实现时，我们会对每个阶段的数据中的所有用户，分别进行召回并构造样本和标签。上述得到的数据格式即：user id, item id, hist item sequence, label，即: 用户id，目标物品id，用户历史交互item序列，标签。</p>
+<h3 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h3><p>重要的特征主要涉及<strong>召回时的特征</strong>以及<strong>目标item和用户历史item之间的各种关联性</strong>，如内容关联性、行为关联性等。</p>
+<h4 id="召回特征"><a href="#召回特征" class="headerlink" title="召回特征"></a>召回特征</h4><p>召回特征主要包括了：</p>
+<ul>
+<li>用户对目标item的分数，即多种recall方法融合并粗排后的分数； </li>
+<li>目标item和历史item的相似性，我们只选择历史交互序列中的<strong>最后3个物品</strong>的内容特征进行计算相似性。</li>
+</ul>
+<h4 id="内容特征"><a href="#内容特征" class="headerlink" title="内容特征"></a>内容特征</h4><ul>
+<li><p>待预测的目标物品原始的内容特征。</p>
+</li>
+<li><p>用户历史交互序列中的item的内容特征，根据交互位置顺序进行加权计算后的兴趣向量。</p>
+</li>
+<li>用户兴趣向量和物品内容向量之间的内容相似性分数。</li>
+<li>word2vec对训练集中的用户hist item sequences进行训练，然后得到的每个物品的w2v向量。</li>
+<li>每个待预测的目标物品的w2v向量和用户历史交互的item的w2v向量之间的相似性分数。</li>
+</ul>
+<h4 id="ID特征"><a href="#ID特征" class="headerlink" title="ID特征"></a>ID特征</h4><p>这部分特征主要供深度学习模型DIN使用。包括：</p>
+<ul>
+<li>user id特征</li>
+<li>item id特征</li>
+<li>用户历史行为序列中的 item id特征 （和item id 特征共享嵌入）</li>
+</ul>
+<p>比较遗憾的是，本次比赛user侧的特征由于缺失值过多，我们没有花太多时间在user侧的特征提取，比如像item侧的特征一样，进行缺失值预测、补全等。</p>
+<h3 id="排序模型"><a href="#排序模型" class="headerlink" title="排序模型"></a>排序模型</h3><p>排序模型包括了两个，1个是GBDT，这里我们采用了LightGBM [5] 中的learning to rank方法LGBMRanker进行排序。另一个是DIN，这里采用了DeepCTR [6] 库中的DIN实现版本。对于DIN，我们利用了物品的内容特征对item的嵌入进行了初始化；利用用户历史行为序列中的item的加权后的兴趣向量对user的嵌入进行了初始化。</p>
+<ul>
+<li>GBDT实现：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lgb_main</span><span class="params">(train_final_df, val_final_df=None)</span>:</span></span><br><span class="line">    print(<span class="string">'ranker begin....'</span>)</span><br><span class="line">    train_final_df.sort_values(by=[<span class="string">'user_id'</span>], inplace=<span class="keyword">True</span>)</span><br><span class="line">    g_train = train_final_df.groupby([<span class="string">'user_id'</span>], as_index=<span class="keyword">False</span>).count()[<span class="string">"label"</span>].values</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> mode == <span class="string">'offline'</span>:</span><br><span class="line">        val_final_df = val_final_df.sort_values(by=[<span class="string">'user_id'</span>])</span><br><span class="line">        g_val = val_final_df.groupby([<span class="string">'user_id'</span>], as_index=<span class="keyword">False</span>).count()[<span class="string">"label"</span>].values</span><br><span class="line"></span><br><span class="line">    lgb_ranker = lgb.LGBMRanker(</span><br><span class="line">        boosting_type=<span class="string">'gbdt'</span>, num_leaves=<span class="number">31</span>, reg_alpha=<span class="number">0.0</span>, reg_lambda=<span class="number">1</span>,</span><br><span class="line">        max_depth=<span class="number">-1</span>, n_estimators=<span class="number">300</span>, objective=<span class="string">'lambdarank'</span>,</span><br><span class="line">        subsample=<span class="number">0.7</span>, colsample_bytree=<span class="number">0.7</span>, subsample_freq=<span class="number">1</span>,</span><br><span class="line">        learning_rate=<span class="number">0.01</span>, min_child_weight=<span class="number">50</span>, random_state=<span class="number">2018</span>,</span><br><span class="line">        n_jobs=<span class="number">-1</span>)  <span class="comment"># 300epoch, best, 0.882898, dense_feat  + hist_cnt_sim_feat user_interest_dense_feat</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> mode == <span class="string">'offline'</span>:</span><br><span class="line">        lgb_ranker.fit(train_final_df[lgb_cols], train_final_df[<span class="string">'label'</span>], group=g_train,</span><br><span class="line">                       eval_set=[(val_final_df[lgb_cols], val_final_df[<span class="string">'label'</span>])], eval_group=[g_val],</span><br><span class="line">                       eval_at=[<span class="number">50</span>], eval_metric=[<span class="string">'auc'</span>, ],</span><br><span class="line">                       early_stopping_rounds=<span class="number">50</span>, )</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        lgb_ranker.fit(train_final_df[lgb_cols], train_final_df[<span class="string">'label'</span>], group=g_train)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'train done...'</span>)</span><br><span class="line">    <span class="keyword">return</span> lgb_ranker</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DIN实现：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">din_main</span><span class="params">(target_phase, train_final_df, val_final_df=None)</span>:</span></span><br><span class="line">    print(<span class="string">'din begin...'</span>)</span><br><span class="line">    get_init_user_embed(target_phase, is_use_whole_click=<span class="keyword">True</span>)</span><br><span class="line">    feature_names, linear_feature_columns, dnn_feature_columns = generate_din_feature_columns(train_final_df,</span><br><span class="line">                                                                                              [<span class="string">'user_id'</span>,</span><br><span class="line">                                                                                               <span class="string">'item_id'</span>],</span><br><span class="line">                                                                                              dense_features=item_dense_feat + sim_dense_feat + hist_time_diff_feat + hist_cnt_sim_feat + user_interest_dense_feat)</span><br><span class="line">    train_input = &#123;name: np.array(train_final_df[name].values.tolist()) <span class="keyword">for</span> name <span class="keyword">in</span> feature_names&#125;</span><br><span class="line">    train_label = train_final_df[<span class="string">'label'</span>].values</span><br><span class="line">    <span class="keyword">if</span> mode == <span class="string">'offline'</span>:</span><br><span class="line">        val_input = &#123;name: np.array(val_final_df[name].values.tolist()) <span class="keyword">for</span> name <span class="keyword">in</span> feature_names&#125;</span><br><span class="line">        val_label = val_final_df[<span class="string">'label'</span>].values</span><br><span class="line"></span><br><span class="line">    EPOCH = <span class="number">1</span></span><br><span class="line">    behavior_feature_list = [<span class="string">'item_id'</span>]</span><br><span class="line">    model = KDD_DIN(dnn_feature_columns, behavior_feature_list, dnn_hidden_units=HIDDEN_SIZE,</span><br><span class="line">                    att_hidden_size=(<span class="number">128</span>, <span class="number">64</span>), att_weight_normalization=<span class="keyword">True</span>,</span><br><span class="line">                    dnn_dropout=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    model.compile(optimizer=tf.keras.optimizers.Adam(lr=<span class="number">3e-4</span>), loss=<span class="string">"binary_crossentropy"</span>,</span><br><span class="line">                  metrics=[<span class="string">'binary_crossentropy'</span>, tf.keras.metrics.AUC()], )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> mode == <span class="string">'offline'</span>:</span><br><span class="line">        model.fit(train_input, train_label, batch_size=BATCH_SIZE, epochs=EPOCH,</span><br><span class="line">                  verbose=<span class="number">1</span>, validation_data=(val_input, val_label), ) </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        model.fit(train_input, train_label, batch_size=BATCH_SIZE, epochs=EPOCH,</span><br><span class="line">                  verbose=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> model, feature_names</span><br></pre></td></tr></table></figure>
+<h3 id="模型集成"><a href="#模型集成" class="headerlink" title="模型集成"></a>模型集成</h3><p>最后，我们将GBDT预测的分数和DIN预测的分数融合起来。具体而言，每个方法的预测概率会先进行user-wise的归一化操作；然后两个方法归一化后预测的概率值进行相加融合。最后按照融合后的分数进行排序，并产生最终的Top 50结果。在A榜的时候，lgb对召回结果对full指标的提升效果大概都在0.02+；但是融合后的LGB+DIN，提升效果可达到0.05+。对half指标的提升略微少了一些，可能原因在于模型过于关注召回得到的sim等特征，对debiasing相关的特征挖掘比较少。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">norm_sim</span><span class="params">(sim_df, weight=<span class="number">0.0</span>)</span>:</span></span><br><span class="line">    <span class="comment"># print(sim_df.head())</span></span><br><span class="line">    min_sim = sim_df.min()</span><br><span class="line">    max_sim = sim_df.max()</span><br><span class="line">    <span class="keyword">if</span> max_sim == min_sim:</span><br><span class="line">        sim_df = sim_df.apply(<span class="keyword">lambda</span> sim: <span class="number">1.0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        sim_df = sim_df.apply(<span class="keyword">lambda</span> sim: <span class="number">1.0</span> * (sim - min_sim) / (max_sim - min_sim))</span><br><span class="line"></span><br><span class="line">    sim_df = sim_df.apply(<span class="keyword">lambda</span> sim: sim + weight)  <span class="comment"># plus one</span></span><br><span class="line">    <span class="keyword">return</span> sim_df</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ensemble</span><span class="params">(output_ranking_filename)</span>:</span></span><br><span class="line">    <span class="comment"># ensemble lgb+din</span></span><br><span class="line">    lgb_output_file = <span class="string">'ranker-'</span> + output_ranking_filename + <span class="string">'-pkl'</span></span><br><span class="line">    <span class="comment"># read lgb</span></span><br><span class="line">    lgb_ranker_df = pickle.load(</span><br><span class="line">        open(<span class="string">'&#123;&#125;/&#123;&#125;'</span>.format(output_path, lgb_output_file), <span class="string">'rb'</span>))</span><br><span class="line">    lgb_ranker_df[<span class="string">'sim'</span>] = lgb_ranker_df.groupby(<span class="string">'user_id'</span>)[<span class="string">'sim'</span>].transform(<span class="keyword">lambda</span> df: norm_sim(df))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># read din</span></span><br><span class="line">    din_output_file = <span class="string">'din-'</span> + output_ranking_filename + <span class="string">'-pkl'</span></span><br><span class="line">    din_df = pickle.load(</span><br><span class="line">        open(<span class="string">'&#123;&#125;/&#123;&#125;'</span>.format(output_path, din_output_file), <span class="string">'rb'</span>))</span><br><span class="line">    din_df[<span class="string">'sim'</span>] = din_df.groupby(<span class="string">'user_id'</span>)[<span class="string">'sim'</span>].transform(<span class="keyword">lambda</span> df: norm_sim(df))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># fuse lgb and din</span></span><br><span class="line">    din_lgb_full_df = lgb_ranker_df.append(din_df)</span><br><span class="line">    din_lgb_full_df = din_lgb_full_df.groupby([<span class="string">'user_id'</span>, <span class="string">'item_id'</span>, <span class="string">'phase'</span>])[<span class="string">'sim'</span>].sum().reset_index()</span><br><span class="line"></span><br><span class="line">    online_top50_click_np, online_top50_click = obtain_top_k_click()</span><br><span class="line">    res3 = get_predict(din_lgb_full_df, <span class="string">'sim'</span>, online_top50_click)</span><br><span class="line">    res3.to_csv(output_path + <span class="string">'/result.csv'</span>, index=<span class="keyword">False</span>, header=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对本文方案的<strong>key points</strong>作一个总结：</p>
+<ul>
+<li><strong>召回训练集的构造</strong>，如何使用全量数据进行训练，user侧和item侧都需要<strong>防止穿越</strong>。这个提高非常显著，说明<strong>数据</strong>对于结果的影响非常大。</li>
+<li><strong>CF中的改进点能够有效进行纠偏</strong>，包括，<strong>交互时间、方向、内容相似性、物品流行度、用户活跃度</strong>等。这个提高也很显著，和赛题Debiasing主题契合。</li>
+<li><strong>SR-GNN</strong>基于序列推荐的图神经网络模型，完美契合本次比赛序列推荐场景，捕捉item之间的<strong>多阶相似性</strong>并兼顾用户<strong>长短期偏好</strong>。另外，我们基于SR-GNN的改进点，<strong>使用内容特征进行嵌入初始化</strong>、根据频次引入结点权重 (为了纠偏)、位置编码 (强化短期交互互影响力)、嵌入归一化、残差连接、sequence-level embedding的构建等都带来了提升。SR-GNN召回方案的提升效果达到<strong>0.05+</strong>。</li>
+<li><strong>粗排考虑了频次，提高低频商品的曝光率，以消除召回方法对高频商品的偏向性</strong>，对half指标的提升很显著。</li>
+<li><strong>排序特征的构建，</strong>包括召回特征、内容特征、历史行为相关的特征、ID特征等。</li>
+<li><strong>排序模型集成</strong>，<strong>LGB和DIN模型的融合</strong>，对最终的指标有比较高的提升。</li>
+</ul>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>[1]  Wu S, Tang Y, Zhu Y, et al. Session-based recommendation with graph neural networks[C]//Proceedings of the AAAI Conference on Artificial Intelligence. 2019, 33: 346-353.</p>
+<p>[2]  Gupta P, Garg D, Malhotra P, et al. NISER: Normalized Item and Session Representations with Graph Neural Networks[J]. arXiv preprint arXiv:1909.04276, 2019.</p>
+<p>[3]  Zhou T, Ren J, Medo M, et al. Bipartite network projection and personal recommendation[J]. Physical review E, 2007, 76(4): 046115.</p>
+<p>[4] Zhou G, Zhu X, Song C, et al. Deep interest network for click-through rate prediction[C]//Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining. 2018: 1059-1068.</p>
+<p>[5] Ke G, Meng Q, Finley T, et al. Lightgbm: A highly efficient gradient boosting decision tree[C]//Advances in neural information processing systems. 2017: 3146-3154.</p>
+<p>[6] DeepCTR, Easy-to-use,Modular and Extendible package of deep-learning based CTR models, <a href="https://github.com/shenweichen/DeepCTR" target="_blank" rel="noopener">https://github.com/shenweichen/DeepCTR</a></p>
+<p>[7] A simple itemCF Baseline, score:0.1169, <a href="https://tianchi.aliyun.com/forum/postDetail?postId=103530" target="_blank" rel="noopener">https://tianchi.aliyun.com/forum/postDetail?postId=103530</a></p>
+<p>[8] 改进青禹小生baseline，phase3线上0.2, <a href="https://tianchi.aliyun.com/forum/postDetail?postId=105787" target="_blank" rel="noopener">https://tianchi.aliyun.com/forum/postDetail?postId=105787</a></p>
+<p>[9] 推荐系统算法调研, <a href="http://xtf615.com/2018/05/03/recommender-system-survey/">http://xtf615.com/2018/05/03/recommender-system-survey/</a></p>
+<p>[10] A Simple Recall Method based on Network-based Inference, score:0.18 (phase0-3), <a href="https://tianchi.aliyun.com/forum/postDetail?postId=104936" target="_blank" rel="noopener">https://tianchi.aliyun.com/forum/postDetail?postId=104936</a></p>
+<p>[11] A library for efficient similarity search and clustering of dense vectors, <a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">https://github.com/facebookresearch/faiss</a></p>
+<p>[12] CIKM 2019 tutorial: Learning and Reasoning on Graph for Recommendation, <a href="https://next-nus.github.io/" target="_blank" rel="noopener">https://next-nus.github.io/</a></p>
+<p>[13] Source code and datasets for the paper “Session-based Recommendation with Graph Neural Networks” (AAAI-19), <a href="https://github.com/CRIPAC-DIG/SR-GNN" target="_blank" rel="noopener">https://github.com/CRIPAC-DIG/SR-GNN</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐系统/" rel="tag"># 推荐系统</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/GNN/" rel="tag"># GNN</a>
+          
+            <a href="/tags/kddcup2020/" rel="tag"># kddcup2020</a>
+          
+            <a href="/tags/Debiasing/" rel="tag"># Debiasing</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/13/Representation-Learning-on-Bipartite-Graphs/" rel="next" title="推荐系统中二分图表示学习调研">
+                <i class="fa fa-chevron-left"></i> 推荐系统中二分图表示学习调研
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/05/transformers/" rel="prev" title="Transformers源码阅读和实践">
+                Transformers源码阅读和实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#赛题解析"><span class="nav-number">1.</span> <span class="nav-text">赛题解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据分析"><span class="nav-number">2.</span> <span class="nav-text">数据分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">3.</span> <span class="nav-text">方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#召回方案"><span class="nav-number">3.1.</span> <span class="nav-text">召回方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#召回训练集构造"><span class="nav-number">3.1.1.</span> <span class="nav-text">召回训练集构造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多路召回"><span class="nav-number">3.1.2.</span> <span class="nav-text">多路召回</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Item-CF"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">Item-CF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#User-CF"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">User-CF</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Swing"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">Swing</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Bi-Graph"><span class="nav-number">3.1.2.4.</span> <span class="nav-text">Bi-Graph</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SR-GNN"><span class="nav-number">3.1.2.5.</span> <span class="nav-text">SR-GNN</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#嵌入初始化"><span class="nav-number">3.1.2.5.1.</span> <span class="nav-text">嵌入初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#带有节点权重的消息传播"><span class="nav-number">3.1.2.5.2.</span> <span class="nav-text">带有节点权重的消息传播</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#位置编码"><span class="nav-number">3.1.2.5.3.</span> <span class="nav-text">位置编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#序列级别的嵌入表征"><span class="nav-number">3.1.2.5.4.</span> <span class="nav-text">序列级别的嵌入表征</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#预测和损失函数"><span class="nav-number">3.1.2.5.5.</span> <span class="nav-text">预测和损失函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#产出多路召回结果"><span class="nav-number">3.1.3.</span> <span class="nav-text">产出多路召回结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Item-based"><span class="nav-number">3.1.3.1.</span> <span class="nav-text">Item-based</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#User-based"><span class="nav-number">3.1.3.2.</span> <span class="nav-text">User-based</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SR-GNN-1"><span class="nav-number">3.1.3.3.</span> <span class="nav-text">SR-GNN</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粗排方案"><span class="nav-number">3.2.</span> <span class="nav-text">粗排方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#精排方案"><span class="nav-number">3.3.</span> <span class="nav-text">精排方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#训练样本构造"><span class="nav-number">3.3.1.</span> <span class="nav-text">训练样本构造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征提取"><span class="nav-number">3.3.2.</span> <span class="nav-text">特征提取</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#召回特征"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">召回特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内容特征"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">内容特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ID特征"><span class="nav-number">3.3.2.3.</span> <span class="nav-text">ID特征</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序模型"><span class="nav-number">3.3.3.</span> <span class="nav-text">排序模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型集成"><span class="nav-number">3.3.4.</span> <span class="nav-text">模型集成</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

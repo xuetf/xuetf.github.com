@@ -1,0 +1,1140 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Paper,机器学习,深度学习,自然语言处理,Tensorflow," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="LSTM+CRF NER本文将借鉴论文《End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF》中的思路和方法实现命名实体识别。">
+<meta name="keywords" content="Paper,机器学习,深度学习,自然语言处理,Tensorflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSTM+CRF for NER">
+<meta property="og:url" content="xtf615.com/2018/11/27/ner/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="LSTM+CRF NER本文将借鉴论文《End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF》中的思路和方法实现命名实体识别。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/char_representation.png">
+<meta property="og:image" content="/picture/machine-learning/bi-lstm.png">
+<meta property="og:image" content="/picture/machine-learning/crf1.png">
+<meta property="og:image" content="/picture/machine-learning/crf2.png">
+<meta property="og:updated_time" content="2019-12-05T07:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LSTM+CRF for NER">
+<meta name="twitter:description" content="LSTM+CRF NER本文将借鉴论文《End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF》中的思路和方法实现命名实体识别。">
+<meta name="twitter:image" content="/picture/machine-learning/char_representation.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2018/11/27/ner/"/>
+
+
+
+
+
+  <title> LSTM+CRF for NER | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2018/11/27/ner/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                LSTM+CRF for NER
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-27T22:07:18+08:00">
+                2018-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="LSTM-CRF-NER"><a href="#LSTM-CRF-NER" class="headerlink" title="LSTM+CRF NER"></a>LSTM+CRF NER</h1><p>本文将借鉴论文《End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF》中的思路和方法实现命名实体识别。</p>
+<a id="more"></a>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>NER英文命名实体识别的目标是识别句子中每个词语的实体类型，包括5大类：PER(人名)、LOC(地名)、ORG(组织名)、MISC(其它类型实体)、O(非实体)。由于实体可能是由多个词语构成的，因此使用标注B、I来区分该词语是该实体的起始词(Begin)还是中间词(Inside)。示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">John  lives in New   York  and works for the European Union</span><br><span class="line">B-PER O     O  B-LOC I-LOC O   O     O   O   B-ORG    I-ORG</span><br></pre></td></tr></table></figure>
+<p>命名实体识别最简单的实现方法就是查表法。也就是说，将所有的实体都标注好写进词典里，要识别句子中的实体时，直接查询词典，取出对应的词语的实体类型就可以了。但是问题在于，一方面实体数量太过于庞大，另一方面，会不断有新的实体出现，那么使用查表法就解决不了了。</p>
+<p>通常，人类识别实体的方法是根据实体所处的上下文信息来判断的，因此为了模仿人类这种能力，此处主要使用神经网络的方法来进行实体识别。具体的方法是LSTM+CRF。LSTM用于建模、提取和利用上下文词语级别的信息，单个词内的字符级别的特征，CRF将利用提取到的特征以及标签信息，建模提取到的特征之间、标签之间、以及特征与标签之间的联系。二者结合起来实现命名实体任务。另外单个词内的字符级别的特征也可以采用论文中描述的CNN来提取，此处使用LSTM提取。</p>
+<h2 id="词语特征表示"><a href="#词语特征表示" class="headerlink" title="词语特征表示"></a>词语特征表示</h2><p>神经网络的输入是句子，输出为句子中每个词的实体类型。为了使用神经网络建模，输入句子需要提取特征。特征包含两个方面，一方面是句子内词语级别的特征，另一方面是词语内字符级别的特征。前者是因为实体的识别依赖于上下文词语的特征；后者是因为实体的识别还依赖于自身的特征（如大小写等）。这两种特征都不需要手动设计，都使用神经网络来学习向量化表示。不过，对于词语的向量化表示，论文中会利用到预训练好的Glove词向量，不进行额外学习（最多Finetune一下）。对于字符的向量化表示，论文中使用CNN来提取特征，此处我们采用LSTM来提取特征。</p>
+<p>下图是使用Bi-LSTM提取字符级别的特征。对于某个单词$w_i$(例如CAT)，$w = [c_1, \ldots, c_p]$，每个字符$c_i$都有一个向量化表示。使用Bi-LSTM建模单词字符词向量序列，并将Bi-LSTM最后输出的隐藏层$h_1、h_2$向量(前向、后向各一个)连接起来，作为该词$w_i$字符级别的特征，该特征能够捕获$w_i$形态学特点。</p>
+<p><img src="/picture/machine-learning/char_representation.png" alt="char_representation"></p>
+<p>然后，再将提取到的字符级别的特征和Glove预训练好的词语级别的特征连接起来，作为该词最终的特征。</p>
+<p>代码上，</p>
+<p>下面针对的都是1个batch进行优化时，如何获取batch中的不同序列中的特征。</p>
+<ul>
+<li><p>词向量：</p>
+<p>将句子看成<strong>序列</strong>，序列由<strong>词语</strong>构成，词语看成序列<strong>不同时刻的观测输入</strong>。</p>
+<ul>
+<li><p>为不同时刻的<strong>观测输入</strong>设置id，这里也就是为<strong>词语</strong>设置id。目的是查找观测的向量化表示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># shape = (batch size, max length of sentence in batch)</span><br><span class="line">word_ids = tf.placeholder(tf.int32, shape=[None, None])</span><br></pre></td></tr></table></figure>
+<p>这里针对的是1个batch，batch由多个序列（句子）构成。要设置不同序列不同时刻的观测的id，也就是不同句子不同单词的id。因此word_ids的shape是二维的，$\text{Batch Size} \times \text{Sentence Length}$，Batch Size是这个Batch中序列的数量，Sentence Length是序列的最大长度，每个元素代表某个序列某个词语的id。</p>
+</li>
+<li><p>为<strong>不同序列设置有效长度</strong>，这里也就是句子的单词数目。目的是记录batch中不同序列的有效长度。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># shape = (batch size)</span><br><span class="line">sequence_lengths = tf.placeholder(tf.int32, shape=[None])</span><br></pre></td></tr></table></figure>
+<p>针对1个batch，记录batch中不同序列的有效长度。sequence_lengths一维数组记录了batch中不同句子的有效长度，即，每个元素记录了对应序列句子的单词真实数目。之所以称作有效长度，是因为word_ids中第二维是最大序列长度，而不同句子长度不一样，因此第二维不是全部填满的，末尾大部分为0，因此使用sequence_length记录一下每条序列的有效长度。</p>
+</li>
+<li><p>根据上述的id<strong>查询观测词语的向量化表示</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">L = tf.Variable(embeddings, dtype=tf.float32, trainable=False)</span><br><span class="line"># shape = (batch size, sentence, word_vector_size)</span><br><span class="line">pretrained_embeddings = tf.nn.embedding_lookup(L, word_ids)</span><br></pre></td></tr></table></figure>
+<p>$L$就是词向量矩阵，shape为$\text{Dictionary Size} \times \text{Word Vector Size}$,  即词语总数量乘以词的维数。注意trainable=False，我们不需要训练词向量，使用预训练好的Glove词向量，并借助Tensorflow自带的embedding_lookup来查找词向量。</p>
+<p>这里直接查询到每个batch每个句子中不同单词的词向量。pretrained_embeddings的最后一维就是词向量的维数，因此pretrained_embeddings是3维的（$\text{Batch} \times \text{Sequence} \times \text{Observation} $）。</p>
+</li>
+</ul>
+</li>
+<li><p>字符向量：</p>
+<p>将<strong>单词看成序列</strong>，<strong>序列由字符构成</strong>，字符看成序列不同时刻的观测输入。</p>
+<p>下面同样针对的是1个batch，因此第一维都设置成batch。</p>
+<ul>
+<li><p>为不同时刻的<strong>观测输入</strong>设置id，这里也就是为每个<strong>字符</strong>设置一个id。目的是查找观测的向量化表示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># shape = (batch size, max length of sentence, max length of word)</span><br><span class="line">char_ids = tf.placeholder(tf.int32, shape=[None, None, None])</span><br></pre></td></tr></table></figure>
+<p>这里也是针对1个batch，查询不同句子不同单词不同字符的词向量。因此是三维的。$\text{Batch Size} \times \text{Sentence Length} \times \text{Word Length}$。Batch Size是这个Batch中句子的数量，Sentence Length是句子的最大长度，Word Length是单词的最大长度。</p>
+</li>
+<li><p>为<strong>不同序列设置有效长度</strong>，这里的<strong>单词看做序列</strong>，因此也就是<strong>每个单词的字符数目</strong>。目的是记录batch不同序列的长度。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># shape = (batch_size, max_length of sentence)</span><br><span class="line">word_lengths = tf.placeholder(tf.int32, shape=[None, None])</span><br></pre></td></tr></table></figure>
+<p>同样针对batch，记录不同句子的不同单词的有效长度 。word_lengths二维数组shape为$\text{Batch Size} \times \text{Sentence Length}$，每个元素记录了单词(序列)的有效长度。将该二维数组reshape成一维后，就记录的是Batch中所有单词(序列)的有效长度。</p>
+</li>
+<li><p>查询<strong>字符向量</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">K = tf.get_variable(name=&quot;char_embeddings&quot;, dtype=tf.float32,</span><br><span class="line">    shape=[nchars, dim_char])</span><br><span class="line">    </span><br><span class="line"># shape = (batch size, sentence, word, dim of char embeddings)</span><br><span class="line">char_embeddings = tf.nn.embedding_lookup(K, char_ids)</span><br></pre></td></tr></table></figure>
+<p>K是字符向量矩阵，是需要进行学习的，shape为$\text{Char Dictionary  Size} \times \text{Char Vector Size}$。$\text{Char Dictionary  Size}$是所有的字符总数目，$\text{Char Vector Size}$是每个字符向量的维度。char_embeddings最后一维代表的就是字符的向量维数。另外，char_embeddings是四维的，$\text{Batch} \times \text{Sentence Length} \times \text{Word Length} \times \text{Char Vector Size}$。这个稍后需要reshape成3维才能适配LSTM接口。实际上前两维可以合并，因为此处我们的序列是单词，不同句子单词一视同仁，直接拼接在一起就行。</p>
+</li>
+</ul>
+</li>
+<li><p>Bi-LSTM提取字符特征</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"># 1. get character embeddings</span><br><span class="line">K = tf.get_variable(name=&quot;char_embeddings&quot;, dtype=tf.float32,</span><br><span class="line">    shape=[nchars, dim_char]) </span><br><span class="line"># shape = (batch size, sentence, word, dim of char embeddings)</span><br><span class="line">char_embeddings = tf.nn.embedding_lookup(K, char_ids)</span><br><span class="line"></span><br><span class="line"># 2. put the time dimension on axis=1 for dynamic_rnn</span><br><span class="line">s = tf.shape(char_embeddings) # store old shape</span><br><span class="line"># shape = (batch x sentence, word, dim of char embeddings)</span><br><span class="line">char_embeddings = tf.reshape(char_embeddings, shape=[-1, s[-2], s[-1]])</span><br><span class="line">word_lengths = tf.reshape(self.word_lengths, shape=[-1])</span><br><span class="line"></span><br><span class="line"># 3. bi lstm on chars</span><br><span class="line">cell_fw = tf.contrib.rnn.LSTMCell(char_hidden_size, state_is_tuple=True)</span><br><span class="line">cell_bw = tf.contrib.rnn.LSTMCell(char_hidden_size, state_is_tuple=True)</span><br><span class="line"></span><br><span class="line">_, ((_, output_fw), (_, output_bw)) = tf.nn.bidirectional_dynamic_rnn(cell_fw,</span><br><span class="line">    cell_bw, char_embeddings, sequence_length=word_lengths,</span><br><span class="line">    dtype=tf.float32)</span><br><span class="line">    </span><br><span class="line"># 4. concat to form final word embedding</span><br><span class="line"># shape = (batch x sentence, 2 x char_hidden_size)</span><br><span class="line">output = tf.concat([output_fw, output_bw], axis=-1)</span><br><span class="line"></span><br><span class="line"># shape = (batch, sentence, 2 x char_hidden_size)</span><br><span class="line">char_rep = tf.reshape(output, shape=[-1, s[1], 2*char_hidden_size])</span><br><span class="line"></span><br><span class="line"># shape = (batch, sentence, 2 x char_hidden_size + word_vector_size)</span><br><span class="line">word_embeddings = tf.concat([pretrained_embeddings, char_rep], axis=-1)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>第一步获取字符的词向量，注意char_embeddings维度是4维。</p>
+</li>
+<li><p>第二步，我们的输入序列是单个word的字符序列，因此不同句子不同单词不需要区分，直接连接起来，并指定不同序列的长度即可，即word的长度。一定要注意，我们此处的<strong>序列是单词</strong>！</p>
+<p>这一步也是为了使用LSTM接口，将char_embeddings的reshape一下，前2维合并，即batch_size中句子、句子中单词2个维度摊平，也就是相当于把batch中所有的句子拼接起来，相应的word_lengths也修改，修改后的word_lengths一维数组每个元素记录了<strong>每个单词序列的长度</strong>，也就是LSTM需要建模的每条序列的长度。这样，word_lengths就能够把不同序列区分开。</p>
+</li>
+<li><p>第三步，前面得到了适配LSTM接口的3维数组，即$\text{Batch} \times \text{Sequence} \times \text {Observation}$。此处先构建前向LSTM单元和后向LSTM单元，并指定隐藏层单元的大小。接着将LSTM组件作为bidirectional dynamic rnn的参数传入（此处也可以使用GRU组件）。另外，注意此处要传入sequence_length参数，代表每个序列(单词)的有效长度。这个参数的作用是使得神经网络能够建模不同长度的序列样本。因为前面我们得到的第二维Senquence Length是最大单词序列的长度，但不同单词长度不一样，使用该参数能够让LSTM知道每个单词序列的有效长度，当隐藏神经元到达每个单词序列的有效长度处时，就停止继续前向传播，输出最后一个时刻的隐藏单元向量。如果不指定该参数，就默认每个序列长度一样了。bidirectional_dynamic_rnn返回值第一个参数是前向和后向序列上每个时刻的隐藏层单元输出，此处不需要；第二个参数是前向和后向最后1个时刻的状态输出。因为我们的LSTM指定了state_is_tuple=True,因此这个状态包含了记忆单元$\mathbf c$值以及隐藏层单元$\mathbf h$值。因此需要对上述第二个参数继续拆包，得到最后1个时刻的隐藏层单元$\mathbf h$值。这是我们需要的。这个作为整个<strong>单词序列</strong>提取到的字符特征，因此是1个单词对应1个字符特征。</p>
+</li>
+<li><p>第四步，拼接得到的字符向量和预训练好的单词向量，得到最终每个单词的向量化表示。首先将前向和后向得到的单词的字符级特征拼接在一起，axis=-1代表按照最后一维来拼接，拼接后得到的output的shape为 $(\text{batch * sentence}) \times (\text{2 * char_hidden_size})$。再reshape一下，变成$\text{batch} \times \text{sentence } \times (\text {2 * char_hidden_size})$。第二维每个句子的长度需要使用前面保存的参数s[1]。最后和pretrained_embeddings拼接起来。得到最终的，$\text{batch} \times \text{sentence} \times \text{observation}$。observation的维度数为$\text{word_vector_size} + (2 * \text{char_hidden_size})$。</p>
+</li>
+</ul>
+<p>提取了不同句子序列中不同单词的特征word_embeddings，接下来需要使用Bi-LSTM来建模<strong>句子序列</strong>，来提取<strong>句子上下文级别的特征</strong>（回顾一下，前面我们借助Bi-LSTM提取了<strong>单词级别的特征</strong>），句子每个时刻上下文级别的特征将作为CRF的输入特征（观测特征），并结合每个时刻的标签，来进行命名实体识别。</p>
+</li>
+</ul>
+<h2 id="上下文词语特征表示"><a href="#上下文词语特征表示" class="headerlink" title="上下文词语特征表示"></a>上下文词语特征表示</h2><p>前面得到了单个词语的特征，此处将使用Bi-LSTM运行句子单词序列，来提取每个单词的上下文特征表示，并作为每个时刻的隐藏单元输出。示意图如下：</p>
+<p><img src="/picture/machine-learning/bi-lstm.png" alt="bi-lstm"></p>
+<p>上述示意图以句子序列：EU rejuects German…作为输入。每个时刻的单词都会得到1个前向隐向量表示和1个后向隐向量表示，拼接起来作为该时刻的单词的上下文特征表示。此处我们需要保留每个时刻的特征，而不仅仅是最后一个时刻的特征。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cell_fw = tf.contrib.rnn.LSTMCell(hidden_size)</span><br><span class="line">cell_bw = tf.contrib.rnn.LSTMCell(hidden_size)</span><br><span class="line"></span><br><span class="line">(output_fw, output_bw), _ = tf.nn.bidirectional_dynamic_rnn(cell_fw,</span><br><span class="line">    cell_bw, word_embeddings, sequence_length=sequence_lengths,</span><br><span class="line">    dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">context_rep = tf.concat([output_fw, output_bw], axis=-1)</span><br></pre></td></tr></table></figure>
+<p>也就是说，我们要用的是bidirectional_dynamic_rnn返回值的第一个值。注意bidirectional_dynamic_rnn的输入是word_embeddings，shape为$\text{Batch} \times \text{Sentence} \times \text{Word}$。即输入序列是$m$个$n$维词向量，$w_1,w_2,…,w_m \in \mathbb{R}^n$，输出序列为$m$个$k$维上下文向量，$h_1,h_2,…,h_m \in \mathbb{R}^k$。$w_t$只捕捉了<strong>词语级别的特征</strong>（句法+语义），而$h_t$还<strong>捕捉了上下文特征。</strong>  context_rep维度为$\text{Batch} \times \text{Sentence} \times \text{2*hidden_size}$。因为我们传入了sequence_length，因此context_rep中无效的时间步对应的上下文特征使用0来填充。</p>
+<h2 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h2><p>此步骤将利用上述词语的特征，来解码词语的命名实体类型。前面我们提取了词语的特征$h_t$, $h_t$涵盖了词语的语义特征(Glove)、字符级特征（Bi-LSTM）以及上下文特征（Bi-LSTM）。此处将使用一个全连接层，得到一个输出向量，向量的每个分量代表不同命名实体的得分。</p>
+<p>我们一共有9个类别，B-PER、I-PER、B-LOC、I-LOC、B-ORG、I-ORG、B-MISC、I-MISC、O。令矩阵$W\in\mathbb{R}^{9 \times k}$,偏置$b \in \mathbb{R}^{9}$,  全连接层计算一个前向传播输出向量$s\in \mathbb{R}^{9} = W \cdot h + b$。$s$的第$i$个分量$s[i]$解释为该单词属于类别$i$的得分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">W = tf.get_variable(&quot;W&quot;, shape=[2*self.config.hidden_size, self.config.ntags],</span><br><span class="line">                dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">b = tf.get_variable(&quot;b&quot;, shape=[self.config.ntags], dtype=tf.float32,</span><br><span class="line">                initializer=tf.zeros_initializer())</span><br><span class="line"></span><br><span class="line">ntime_steps = tf.shape(context_rep)[1]</span><br><span class="line">context_rep_flat = tf.reshape(context_rep, [-1, 2*hidden_size])</span><br><span class="line">pred = tf.matmul(context_rep_flat, W) + b</span><br><span class="line">scores = tf.reshape(pred, [-1, ntime_steps, ntags])</span><br></pre></td></tr></table></figure>
+<p>将context_rep展平，每个时刻隐向量$h$看成1个输入样本。最后再reshape成$\text{Batch} \times \text{Sentence} \times \text{Tag}$。注意这里每个无效的时间步也进行了计算，后面解码的时候需要把这些无效时间步剔除掉即可。</p>
+<p>接下来要根据得分预测命名实体的类别。</p>
+<p>有2种方式来预测，1是使用softmax激活函数，直接输出每个时刻词语类别的概率分布。2是使用Linear-CRF来计算每个时刻词语类别的概率分布。第一种方法仍然只利用了局部的信息，即使捕捉了上下文特征。第二种方法会利用到邻近的词语的标签决策。比如对于New York实体，New实体的识别对York的识别有很大的作用。给定一个句子词语序列$w_1,w_2,…,w_m$，以及对应的得分<strong>向量</strong>序列$\mathbf s_1,\mathbf s_2,…, \mathbf s_m$和标签序列$y_1,y_2,…,y_m$，linear-chain CRF定义的全局得分$C \in \mathbb{R}$如下：<br>$$<br>\begin{align}<br>C(y_1, \ldots, y_m) &amp;= \mathbf b[y_1] &amp;+ \sum_{t=1}^{m} \mathbf s_t [y_t] &amp;+ \sum_{t=1}^{m-1} \mathbf T[y_{t}, y_{t+1}] &amp;+ \mathbf e[y_m]\\<br>                    &amp;= \text{begin} &amp;+ \text{scores} &amp;+ \text{transitions} &amp;+ \text{end}<br>\end{align}&gt;<br>$$<br>$T \in \mathbb{R}^{9\times 9}$是转移矩阵，用于捕捉标签决策之间的线性依赖。$e、b$是得分向量，用于捕捉起始标签和终止标签代价。也就是说$C$定义了一个标签序列的得分。$\mathbf s_t$为全连接层输出的单词$w_t$的标签向量得分。</p>
+<p>目标是找到$C$最大的一个标签序列$y_1,y_2,…,y_m$.</p>
+<p>示例如下：Pierre loves Pairs。假定只有3种实体类型PER、O、LOC。${y_1,y_2,y_3}$的其中两种路径如下：</p>
+<p><img src="/picture/machine-learning/crf1.png" alt="CRF"></p>
+<p>上图代表的路径：PER-O-LOC得分为：$ 1 + (10 +3+11) +  (4  + 2)  + 0= 31$</p>
+<p><img src="/picture/machine-learning/crf2.png" alt="CRF"></p>
+<p>上图代表的路径：PER-PER-LOC得分为：$ 1+(10+4+11) + (2-2) + 0 = 26$</p>
+<p>因此根据Linear-chain CRF的话，图1的序列得分更高。如果直接根据每个单词各自局部的得分最高项来决策的话，那么最终决策为PER-PER-LOC，即图2。显然没有图1好。</p>
+<p>问题关键是如何找到最优的序列。除此之外，我们还需要计算所有序列的概率分布，这样才能使用CRF的训练方法进行优化。</p>
+<h3 id="查找最优序列"><a href="#查找最优序列" class="headerlink" title="查找最优序列"></a>查找最优序列</h3><p>蛮力搜索的的话，对于一个长度为$m$的句子，标签序列共$9^m$种，穷举计算显然不可行。可以采取动态规划来解决。假设对于从时间步$y^{t+1}$开始、$y^{t+1}$取9种可能的值的每种序列$t+1,…,m$，已经得到最优的解$\tilde{s}_{t+1}(y^{t+1})$。那么：对于$t,…,m$时间步，某个$y^t$(共9种)的最优解$\tilde{s}_t(y^t)$满足：<br>$$<br>\tilde{s}_t(y_t) = arg max_{y_t,…,y_m}C(y_t,…,y_m) \\<br> = argmax_{y_{t+1}} s_t[y_t] + T[y_t,y_{t+1}] + \tilde{s}_{t+1}(y^{t+1})<br>$$<br>上述为动态规划状态转移方程。因此，对于每个时间步，需要按照上述计算该时间步9种标签的最大值，argmax复杂度$O(9)$，因此单个时间步复杂度为$O(9 \times 9)$。m个时间步复杂度为$O(9 \times 9 \times m)$。</p>
+<h3 id="计算序列概率值"><a href="#计算序列概率值" class="headerlink" title="计算序列概率值"></a>计算序列概率值</h3><p>计算序列的概率值，只需要在所有序列的得分上使用softmax即可。softmax分母需要计算配分函数，<br>$$<br>Z = \sum_{y_1, \ldots, y_m} e^{C(y_1, \ldots, y_m)}<br>$$<br>则：<br>$$<br>\mathbb{P}(y_1,…,y_m)=\frac{e^{C(y_1,…,y_m)}}{Z}<br>$$<br>另外，$Z$也具有动态规划状态转移方程。令，$Z_t(y_t)$是时间步t标签为$y_t$开始的所有序列的得分和。则：<br>$$<br>\begin{align}<br>Z_t(y_t)    &amp;=\sum_{y_{t+1},…,y_{m}} e^{s_t[y_t] + T[y_{t}, y_{t+1}]+C(y_{t+1},…,y_m)}      \\<br>&amp;= \sum_{y_{t+1}} e^{s_t[y_t] + T[y_{t}, y_{t+1}]} \sum_{y_{t+2}, \ldots, y_m} e^{C(y_{t+1}, \ldots, y_m)} \\<br>               &amp;= \sum_{y_{t+1}} e^{s_t[y_t] + T[y_{t}, y_{t+1}]}  Z_{t+1}(y_{t+1})\\<br>\log Z_t(y_t)  &amp;= \log \sum_{y_{t+1}} e^{s_t [y_t] + T[y_{t}, y_{t+1}] + \log Z_{t+1}(y_{t+1})}<br>\end{align}<br>$$</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>使用交叉熵损失训练：<br>$$<br>log (\mathbb{P} (\tilde{y}))<br>$$<br>$\tilde{y}$是真实的标注序列，其中：<br>$$<br>\mathbb{P}(\tilde{y}) = \frac{e^{C(\tilde{y})}}{Z}<br>$$<br>可以使用开源CRF损失实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># shape = (batch, sentence)</span><br><span class="line">labels = tf.placeholder(tf.int32, shape=[None, None], name=&quot;labels&quot;)</span><br><span class="line"></span><br><span class="line">log_likelihood, transition_params = tf.contrib.crf.crf_log_likelihood(</span><br><span class="line">scores, labels, sequence_lengths)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(-log_likelihood)</span><br></pre></td></tr></table></figure>
+<p>labels记录了每个句子每个单词的真实标注。scores是神经网络全连接层的输出。crf_log_likelihood会自动计算$C(\tilde{y})$。具体公式可能与上述有些出路。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://www.aclweb.org/anthology/P16-1101" target="_blank" rel="noopener">End-to-end Sequence Labeling via Bi-directional LSTM-CNNs-CRF</a></p>
+<p><a href="https://github.com/guillaumegenthial/sequence_tagging" target="_blank" rel="noopener">Sequence Tagging</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+            <a href="/tags/自然语言处理/" rel="tag"># 自然语言处理</a>
+          
+            <a href="/tags/Tensorflow/" rel="tag"># Tensorflow</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/05/word2vec/" rel="next" title="word2vec学习笔记">
+                <i class="fa fa-chevron-left"></i> word2vec学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/25/learning-to-rank/" rel="prev" title="排序学习调研">
+                排序学习调研 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LSTM-CRF-NER"><span class="nav-number">1.</span> <span class="nav-text">LSTM+CRF NER</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目标"><span class="nav-number">1.1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#词语特征表示"><span class="nav-number">1.2.</span> <span class="nav-text">词语特征表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上下文词语特征表示"><span class="nav-number">1.3.</span> <span class="nav-text">上下文词语特征表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解码"><span class="nav-number">1.4.</span> <span class="nav-text">解码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查找最优序列"><span class="nav-number">1.4.1.</span> <span class="nav-text">查找最优序列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算序列概率值"><span class="nav-number">1.4.2.</span> <span class="nav-text">计算序列概率值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#训练"><span class="nav-number">1.5.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.6.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

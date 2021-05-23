@@ -1,0 +1,1102 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="机器学习,人工智能,神经网络," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="神经网络的入门知识参见神经网络(系列1)本文主要对神经网络进行深入，探讨神经网络模型的学习。 代价函数首先引入一些便于稍后讨论的新标记方法：假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。将神经网络的分类定义为两种情况：二类分类和多类分">
+<meta name="keywords" content="机器学习,人工智能,神经网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络(系列2)">
+<meta property="og:url" content="xtf615.com/2017/02/17/神经网络-系列2/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="神经网络的入门知识参见神经网络(系列1)本文主要对神经网络进行深入，探讨神经网络模型的学习。 代价函数首先引入一些便于稍后讨论的新标记方法：假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。将神经网络的分类定义为两种情况：二类分类和多类分">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/network_learn1.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn2.jpg">
+<meta property="og:image" content="/picture/machine-learning/network11.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn4.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn5.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn10.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn11.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn12.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn5.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn13.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn14.png">
+<meta property="og:image" content="/picture/machine-learning/network_learn6.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn7.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn8.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn9.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo1.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo2.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo3.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo4.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo5.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo6.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo7.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo8.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo9.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo10.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo11.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo12.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo13.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo14.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo15.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo16.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo17.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo18.jpg">
+<meta property="og:image" content="/picture/machine-learning/network_learn_demo19.jpg">
+<meta property="og:updated_time" content="2019-12-05T07:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经网络(系列2)">
+<meta name="twitter:description" content="神经网络的入门知识参见神经网络(系列1)本文主要对神经网络进行深入，探讨神经网络模型的学习。 代价函数首先引入一些便于稍后讨论的新标记方法：假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。将神经网络的分类定义为两种情况：二类分类和多类分">
+<meta name="twitter:image" content="/picture/machine-learning/network_learn1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2017/02/17/神经网络-系列2/"/>
+
+
+
+
+
+  <title> 神经网络(系列2) | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/17/神经网络-系列2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                神经网络(系列2)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-17T16:28:37+08:00">
+                2017-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>神经网络的入门知识参见<a href="/2017/02/13/神经网络/">神经网络(系列1)</a><br>本文主要对神经网络进行深入，探讨神经网络模型的学习。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>首先引入一些便于稍后讨论的新标记方法：<br>假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。<br>将神经网络的分类定义为两种情况：二类分类和多类分类:<br>二类分类：\(S_L=1\), y=0 or 1表示哪一类；<br>K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&gt;2）<br><img src="/picture/machine-learning/network_learn1.jpg" alt="network_learn"><br>我们回顾逻辑回归问题中我们的代价函数为：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$<br>在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：<br>$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$<br><img src="/picture/machine-learning/network_learn2.jpg" alt="network_learn"><br>这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。<br>注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。<br><a id="more"></a></p>
+<h1 id="反向传播算法"><a href="#反向传播算法" class="headerlink" title="反向传播算法"></a>反向传播算法</h1><p>之前我们在计算神经网络预测结果的时候我们采用了一种正向传播方法，我们从第一层开始正向一层一层进行计算，直到最后一层的\(h_θ(x)\)。<br>现在，为了计算代价函数的偏导数\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\),我们需要采用新的方法。</p>
+<h2 id="传统方法"><a href="#传统方法" class="headerlink" title="传统方法"></a>传统方法</h2><p>机器学习可以看做是数理统计的一个应用，在数理统计中一个常见的任务就是拟合，也就是给定一些样本点，用合适的曲线揭示这些样本点随着自变量的变化关系。<br>深度学习同样也是为了这个目的，只不过此时，样本点不再限定为(x, y)点对，而可以是由向量、矩阵等等组成的广义点对(X,Y)。而此时，(X,Y)之间的关系也变得十分复杂，不太可能用一个简单函数表示。然而，人们发现可以用多层神经网络来表示这样的关系，而多层神经网络的本质就是一个多层复合的函数。<br><img src="/picture/machine-learning/network11.jpg" alt="network_learn"><br>对应的表达式如下：<br>$$a_1^{(2)}=g(\Theta_{10}^{(1)}x_0+\Theta_{11}^{(1)}x_1+\Theta_{12}^{(1)}x_2+\Theta_{13}^{(1)}x_3) \\\\<br>a_2^{(2)}=g(\Theta_{20}^{(1)}x_0+\Theta_{21}^{(1)}x_1+\Theta_{22}^{(1)}x_2+\Theta_{23}^{(1)}x_3) \\\\<br>a_3^{(2)}=g(\Theta_{30}^{(1)}x_0+\Theta_{31}^{(1)}x_1+\Theta_{32}^{(1)}x_2+\Theta_{33}^{(1)}x_3)$$<br>$$h_{\Theta}(x)=a_1^{(3)}=g(\Theta_{10}^{(2)}a_0^{(2)}+\Theta_{11}^{(2)}a_1^{(2)}+\Theta_{12}^{(2)}a_2^{(2)}+\Theta_{13}^{(2)}a_3^{(2)})$$<br>和直线拟合一样，深度学习的训练也有一个目标函数，这个目标函数定义了什么样的参数才算一组“好参数”，不过在机器学习中，一般是采用成本函数（cost function），然后，训练目标就是通过调整每一个权值\(\Theta_{ij}\)来使得cost达到最小。cost函数也可以看成是由所有待求权值\(\Theta_{ij}\)为自变量的复合函数，而且基本上是非凸的，即含有许多局部最小值。但实际中发现，采用我们常用的梯度下降法就可以有效的求解最小化cost函数的问题。<br>梯度下降法需要给定一个初始点，并求出该点的梯度向量，然后以负梯度方向为搜索方向，以一定的步长进行搜索，从而确定下一个迭代点，再计算该新的梯度方向，如此重复直到cost收敛。那么如何计算梯度呢？<br>假设我们把cost函数表示为\(J(\Theta_{11},\Theta_{12},\Theta_{13},\Theta_{ij},…,\Theta_{mn})\), 那么它的梯度向量就等于\(\nabla J = \frac{\partial J}{\partial \Theta_{11}}e_{11}+…+\frac{\partial J}{\partial \Theta_{mn}}e_{mn}\), 其中\(e_{ij}\)表示正交单位向量。为此，我们需求出cost函数J对每一个权值\(\Theta_{ij}\)的偏导数。<strong>而BP算法正是用来求解这种多层复合函数的所有变量的偏导数的利器。</strong><br>我们以求e=(a+b)*(b+1)的偏导为例。</p>
+<p>它的复合关系画出图可以表示如下：<br><img src="/picture/machine-learning/network_learn4.png" alt="network_learn"><br>为了求出a=2,b=1时，e的梯度，我们可以先利用偏导数求出不同层之间的邻节点的偏导关系，如下图所示：<br><img src="/picture/machine-learning/network_learn5.png" alt="network_learn"><br>利用链式法则我们知道：<br>$$\frac{\partial e}{\partial a}=\frac{\partial e}{\partial c}\frac{\partial c}{\partial a}$$<br>$$\frac{\partial e}{\partial b}=\frac{\partial e}{\partial c}\frac{\partial c}{\partial b}+\frac{\partial e}{\partial d}\frac{\partial d}{\partial b}$$<br>链式法则在上图中的意义是什么呢？其实不难发现，\(\frac{\partial e}{\partial a}\)的值等于从a到e的路径上的偏导值的乘积，而\(\frac{\partial e}{\partial b}\)的值等于从b到e的路径1(b-c-e)上的偏导值的乘积加上路径2(b-d-e)上的偏导值的乘积。也就是说，对于上层节点p和下层节点q，要求得，需要找到从q节点到p节点的所有路径，并且对每条路径，求得该路径上的所有偏导数之乘积，然后将所有路径的 “乘积” 累加起来才能得到的值。<br>大家也许已经注意到，这样做是<strong>十分冗余</strong>的，因为很多路径被重复访问了。比如上图中，a-c-e和b-c-e就都走了路径c-e。<strong>对于权值动则数万的深度模型中的神经网络，这样的冗余所导致的计算量是相当大的。</strong><br>同样是利用链式法则，BP算法则机智地避开了这种冗余，它对于<strong>每一个路径只访问一次</strong>就能求顶点对所有下层节点的偏导值。<br>正如反向传播(BP)算法的名字说的那样，BP算法是反向(自上往下)来寻找路径的。</p>
+<p>从最上层的节点e开始，初始值为1，以层为单位进行处理。对于e的下一层的所有子节点，将1乘以e到某个节点路径上的偏导值，并将结果“堆放”在该子节点中。等e所在的层按照这样传播完毕后，第二层的每一个节点都“堆放”些值，然后我们针对每个节点，把它里面所有“堆放”的值求和，就得到了顶点e对该节点的偏导。然后将这些第二层的节点各自作为起始顶点，初始值设为顶点e对它们的偏导值，以”层”为单位重复上述传播过程，即可求出顶点e对每一层节点的偏导数。</p>
+<p>以上图为例，节点c接受e发送的1*2并堆放起来，节点d接受e发送的1*3并堆放起来，至此第二层完毕，求出各节点总堆放量并继续向下一层发送。节点c向a发送2*1并对堆放起来，节点c向b发送2*1并堆放起来，节点d向b发送3*1并堆放起来，至此第三层完毕，节点a堆放起来的量为2，节点b堆放起来的量为2*1+3*1=5, 即顶点e对b的偏导数为5.</p>
+<p>举个不太恰当的例子，如果把上图中的箭头表示欠钱的关系，即c→e表示e欠c的钱。以a, b为例，直接计算e对它们俩的偏导相当于a, b各自去讨薪。a向c讨薪，c说e欠我钱，你向他要。于是a又跨过c去找e。b先向c讨薪，同样又转向e，b又向d讨薪，再次转向e。可以看到，追款之路，充满艰辛，而且还有重复，即a, b 都从c转向e。</p>
+<p>而BP算法就是主动还款。e把所欠之钱还给c，d。c，d收到钱，乐呵地把钱转发给了a，b，皆大欢喜。</p>
+<h2 id="路径合并"><a href="#路径合并" class="headerlink" title="路径合并"></a>路径合并</h2><p>将所有路径累加的问题在于，在可能的路径数中，很容易陷入爆炸式组合增长。<br><img src="/picture/machine-learning/network_learn10.png" alt="network_learn"><br>在上图中，从X到Y有3条路径，从Y到Z也有3条路径。如果要求\(\frac{\partial Z}{\partial X}\),我们需要把所有路径累加起来，也就是共9条路径。<br>$$\frac{\partial Z}{\partial X} = \alpha\delta + \alpha\epsilon + \alpha\zeta + \beta\delta + \beta\epsilon + \beta\zeta + \gamma\delta + \gamma\epsilon + \gamma\zeta$$<br>上图只有9条路径，但是随着图复杂程度的增加，路径数很容易呈现爆炸式增长。<br>和直接将所有路径累加相反，更好的方法是合并路径：<br>$$\frac{\partial Z}{\partial X} = (\alpha + \beta + \gamma)(\delta + \epsilon + \zeta)$$<br>这就是前向传播(forward-mode differentiation)和后向传播(reverse-mode differentiation)。它们都是通过合并路径的方法来更有效的计算路径和。和直接显示地把所有路径加起来不同，它们通过在每个节点上，向后合并路径的方式来更有效的计算路径和。实际上，两个方法每条边都只计算了一次。<br>前向传播起始于图的输入节点，一直向前直到最后一个节点。在每个节点上，它将传入(feed in)的每一条路径累加。每一条路径都代表了输入对该节点的影响。通过将它们累加起来，我们获得了不同输入对该节点总的影响。这就是导数的定义。<br><img src="/picture/machine-learning/network_learn11.png" alt="network_learn"><br>前向传播就像你刚刚入门微积分课程时学到的方法。而后向传播，起始于图的输出节点，一直向后直到第一个节点。在每一个节点上，将起源于(originated at)该节点的所有路径合并。<br><img src="/picture/machine-learning/network_learn12.png" alt="network_learn"><br>前向传播跟踪一个输入如何影响每一个节点。反向传播跟踪每一个节点如何影响一个输出节点。即，前向传播将\(\frac{\partial}{\partial X}\)应用到每一个节点(每个节点对输入求导)，而后向传播将\(\frac{\partial Z}{\partial}\)应用到每一个节点（输出对每个节点求导）。</p>
+<h2 id="反向传播优势"><a href="#反向传播优势" class="headerlink" title="反向传播优势"></a>反向传播优势</h2><p>现在，我们可能会疑问，为什么人们更关心后向传播，它看起来似乎和前向传播差不多，那它的优势在哪?<br>让我们回到前面的那个例子中：<br><img src="/picture/machine-learning/network_learn5.png" alt="network_learn"><br>我们可以使用前向传播算法从b自底向上。我们需要求每个节点对b的导数。（即b如何影响每一个节点）<br><img src="/picture/machine-learning/network_learn13.png" alt="network_learn"><br>如果我们使用后向传播从e自顶向下，我们需要求e对每个节点的导数(即每个节点如何影响e)。<br><img src="/picture/machine-learning/network_learn14.png" alt="network_learn"><br>需要强调的是： 当我说反向传播给了我们e对每个节点的导数，需要强调的是确实是<strong>每个节点</strong>，我们得到了\(\frac{\partial e}{\partial a}\)和\(\frac{\partial e}{\partial b}\)，即e对每一个输入的导数。前向传播只给了我们单独的一个b的导数，但是后向传播给了我们所有的输入的导数。<br>对这幅图而言，只得到了2倍的加速比，想象一下如果有<strong>上百万的输入节点和1个输出节点</strong>,前向传播需要我们遍历这个图上百万次才能得到导数，而后向传播只需要遍历1次即可，这就得到了上百万的加速比。<br>在神经网络中，我们的代价函数经常拥有上百万个参数，因此反向传播能够让我们训练的速度大大提高。<br><strong>那前向传播什么时候适用呢？如果只有少量的输入，而拥有大量的输出，此时前向传播速度更快。</strong><br>补充：对信息的处理，分为前向和反向两种，即从因到果和从果到因。前者适合人类的思考模式，但对机器而言，它需要的是运算，显然，反向运算更便捷（如上中所说，这是有前提的，即输入因子多于输出因子，这也符合逻辑，当我们要做出一个判断、得出一个结论，总会从方方面面进行思考，然后在提取、凝练，即归纳、总结），就像梳理头发时，我们都是从发根向发梢梳理——头皮为一个质点，向发梢逐渐发散，从一到多、从总到分的梳理、计算过程。所以反向运算比较普及，是因为运算成本更低。</p>
+<h2 id="反向传播算法-1"><a href="#反向传播算法-1" class="headerlink" title="反向传播算法"></a>反向传播算法</h2><p>我们的目标是为了计算代价函数的偏导数：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)$$<br>我们需要采用一种反向传播算法，也就是首先计算最后一层的误差，然后再一层一层反向求出各层的误差，直到倒数第二层。<br>以一个例子来说明反向传播算法。<br>假设我们的训练集只有一个实例\((x^{(1)},y^{(1)})\),我们的神经网络是一个四层的神经网络，其中 K=4，SL=4，L=4：<br><img src="/picture/machine-learning/network_learn6.jpg" alt="network_learn"><br>前向传播算法：<br>$$a^{(1)}=x \\\\<br>z^{(2)}=\Theta^{(1)}a^{(1)} \\\\<br>a^{(2)}=g(z^{(2)}) (add \ a_0^{(2)}) \\\\<br>z^{(3)}=\Theta^{(2)}a^{(2)} \\\\<br>a^{(3)}=g(z^{3}) (add \ a_0^{(3)}) \\\\<br>z^{(4)}=\Theta^{(3)}a^{(3)} \\\\<br>a^{(4)}=h_\Theta(x)=g(z^{(4)})<br>$$<br>我们从最后一层的误差开始计算，误差是激活单元的预测值（\(a_k^{(4)}\)）与实际值（\(y^{k}\)）之间的误差.（k=1:K）<br>我们用\(\delta\)来表示误差，则：<br>$$\delta^{(4)}=a^{(4)}-y$$<br>我们利用这个误差值来计算前一层的误差:<br>$$\delta^{(3)}=(\Theta^{(3)})^T\delta^{(4)}.*g’(z^{(3)})$$<br>其中,\(g’(z^{(3)})\)为sigmoid函数的导数，\(g’(z^{(3)})=a^{(3)}*(1-a^{(3)})\)。而\((\Theta^{(3)})^T\delta^{(4)}\)则是权重导致的误差的和。<br>注意到：\((\Theta^{(3)})^T\)取了转置，正常\(\Theta\)例如：<br>$$\Theta=\begin{bmatrix} \Theta_{10} \ \Theta_{11} \ \Theta_{12} \ \Theta_{13}\\\ \Theta_{20} \ \Theta_{21} \ \Theta_{22} \ \Theta_{23}\\\ \Theta_{30} \ \Theta_{31} \ \Theta_{32} \ \Theta_{33}\end{bmatrix}$$<br>每一行都代表第j层的所有神经元到第j+1层某一个神经元的连线（权重）。例如第一行就代表第j层的所有神经元到第j+1层的第一个神经元的连线。而转置\(\Theta\)后，每一行代表第j层某一个神经元到第j+1层的所有神经元的连线，可以理解成j层某一个神经元导致的j+1层总误差的情况。<br>另外，.*即点乘，代表矩阵对应位置的数字相乘。<br>下一步是继续计算第二层的误差：<br>$$\delta^{(2)}=(\Theta^{(2)})^T\delta^{(3)}.*g’(z^{(2)})$$<br>因为第一层为输入变量，不存在误差，我们有了所有的误差的表达式后，便可以计算代价函数的偏导数了，假设\(\lambda=0\)，即我们不做任何归一化处理的话：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}$$<br>重要的是清楚地知道上面式子中上下标的含义：<br>l代表目前所计算的是第几层<br>j代表目前计算层中的激活单元的下标，也将是下一层的第j个输入变量的下标。<br>i代表下一层中误差单元的下标，是受到权重矩阵中第i行影响的下一层中的误差单元的下标。<br>即：\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}\)是对第l层的第j个神经元到第l+1层的第i个神经元的连线（权重）求偏导。<br>\(a_j^{(l)}\)是第l层第j个神经元经过sigmoid函数计算后的值。<br>\(\delta_i^{l+1}\)是第l+1层第i个神经元的误差。<br>例如：<br><img src="/picture/machine-learning/network_learn7.jpg" alt="network_learn"><br>对图中红色的这条线求偏导：<br>$$\frac{\partial}{\partial \Theta_{41}^{(1)}}=a_1^{(1)}*\delta_4^{(2)}$$<br>如果我们考虑归一化处理，并且我们的训练集是一个特征矩阵而非向量。在上面的特殊情况中，我们需要计算每一层的误差单元来计算代价函数的偏导数。在更为一般的情况中，我们同样需要计算每一层的误差单元，但是我们需要为<strong>整个训练集</strong>计算误差单元，此时的误差单元也是一个矩阵，我们用\(\Delta_{ij}\)来表示这个误差矩阵。第l层的第i个激活单元受到第j个参数影响而导致的误差。<br>我们的算法：<br><img src="/picture/machine-learning/network_learn8.jpg" alt="network_learn"><br>即首先用正向传播方法计算出每一层的激活单元，利用训练集的结果与神经网络预测的结果求出最后一层的误差，然后利用该误差运用反向传播法计算出直至第二层的所有误差。<br>在求出\(\Delta_{ij}^{(l)}\)后，我们便可以计算代价函数的偏导数了，计算方法如下：<br><img src="/picture/machine-learning/network_learn9.jpg" alt="network_learn"></p>
+<h2 id="反向传播理解"><a href="#反向传播理解" class="headerlink" title="反向传播理解"></a>反向传播理解</h2><h3 id="疑问1：为什么输出层的-delta-为-delta-L-a-L-y"><a href="#疑问1：为什么输出层的-delta-为-delta-L-a-L-y" class="headerlink" title="疑问1：为什么输出层的\(\delta\)为\(\delta^{(L)}=a^{(L)}-y\)?"></a>疑问1：为什么输出层的\(\delta\)为\(\delta^{(L)}=a^{(L)}-y\)?</h3><p>很多人认为输出层的偏差量就是计算值减实际值这么简单，又或者认为是线性回归代价函数求导的结果，即\(J(\Theta)=\frac{1}{2}(h_\Theta(x)-y)^2\),求导得到：\(\frac{\partial}{\partial a^{(L)}}J(\Theta)=a^{(L)}-y\)。其实不然，要知道我们的代价函数是逻辑回归的代价函数。详细见下面分析。</p>
+<h3 id="疑问2：-Theta-l-T-delta-l-1-怎么理解？"><a href="#疑问2：-Theta-l-T-delta-l-1-怎么理解？" class="headerlink" title="疑问2：\((\Theta^{(l)})^T\delta^{(l+1)}\)怎么理解？"></a>疑问2：\((\Theta^{(l)})^T\delta^{(l+1)}\)怎么理解？</h3><p>所谓“偏差”应该这么理解：对于后一层某一个结点上出现的偏差，前一层的每一个结点都要承担一部分责任，所以我们可以把后一层结点的偏差量按照系数比例分配给前一层的结点。同时，前一层的某一个结点，对后一层的每一个节点都承担着责任，那么它的“总责任”就是这些所有的小责任之和。因此这里面矩阵的转置，我们前面也有提到，转置后的每一行实际上代表l层的某一个神经元到l+1层的每一个神经元的连线(权重)。和后一层的\(\delta^{(l+1)}\)进行矩阵乘后，实际上相当于l层的这个神经元分担掉l+1层所有神经元的这些小的误差，将这些小的误差之和作为自己的责任承担下来。如果你仔细想想这个矩阵乘法的计算过程，会发现正好就是上面说的这个责任分配与求和的过程。这就是【疑问2】的答案。</p>
+<h3 id="疑问3：为什么前一层的-delta-l-和后一层的-delta-l-1-的关系是-delta-l-Theta-l-T-delta-l-1-g’-z-l-？"><a href="#疑问3：为什么前一层的-delta-l-和后一层的-delta-l-1-的关系是-delta-l-Theta-l-T-delta-l-1-g’-z-l-？" class="headerlink" title="疑问3：为什么前一层的\(\delta^{(l)}\)和后一层的\(\delta^{(l+1)}\)的关系是\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)？"></a>疑问3：为什么前一层的\(\delta^{(l)}\)和后一层的\(\delta^{(l+1)}\)的关系是\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)？</h3><p>可以发现，在疑问2的基础上，该式子还多了个因子\(.*g’(z^{(l)})\)。为什么呢？详细见下面分析。</p>
+<h3 id="疑问4：为什么-delta-i-l-1-计算完后，还要乘以前一层的-a-j-l-后，才是偏导-frac-partial-partial-Theta-ij-l-J-Theta-的结果？"><a href="#疑问4：为什么-delta-i-l-1-计算完后，还要乘以前一层的-a-j-l-后，才是偏导-frac-partial-partial-Theta-ij-l-J-Theta-的结果？" class="headerlink" title="疑问4：为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果？"></a>疑问4：为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果？</h3><p>即，\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}\)详见下面。</p>
+<h3 id="详细推导"><a href="#详细推导" class="headerlink" title="详细推导"></a>详细推导</h3><p>我们的目标是证明：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1} \\\\<br>其中,\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)}), \\\\可以取l=l+1,求得\delta^{(l+1)},\delta_i^{l+1}为\delta^{(l+1)}的第i个元素，即l+1层误差向量的第i个元素。<br>$$<br><strong>是对第\(l\)层的第\(j\)个神经元到第\(l+1\)层的第\(i\)个神经元的连线（权重）求偏导</strong>。<br>首先回顾一下前面的一些定义：<br>$$a^{(l+1)}=g(z^{(l+1)}) \\\\<br>g(z)=\frac{1}{1+e^{-z}} \\\\<br>z^{(l+1)}=\Theta^{(l)}a^{(l)} \\\\<br>其中,g(z)为sigmoid函数 \\\\<br>z^{(l+1)}代表l+1层经过l层权重加权后的结果 \\\\<br>a^{(l+1)}代表z^{(l+1)}经过sigmoid函数后的输出值 \\\\<br>$$<br>为了使用这些定义，我们可以将上面的偏微分式子使用链式法则展开：<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}$$</p>
+<ul>
+<li>首先看最后一项：<br>$$z_i^{(l+1)}=\Theta_{1,i}^{(l)}a_1^{(l)}+\Theta_{2,i}^{(l)}a_2^{(l)}+…$$<br>所以：<br>$$\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}=a_j^{(l)}$$<br>顺便说一下，<strong>右边前两项的乘积，就是课程中引入的\(\delta\)的值</strong>。这就解释了【疑问4】中，为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果，即\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=a_j^{(l)}\delta_i^{l+1}\)</li>
+<li><p>接下来第二项<br>这就是sigmoid函数的求导：<br>$$g’(z)=\frac{e^{-z}}{(1+e^{-z})^2}=\frac{1}{1+e^{-z}}*\frac{e^{-z}}{(1+e^{-z})}=g(z)(1-g(z))$$<br>根据定义:\(g(z^{(l)})=a^{(l)}\)<br>因此，我们\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)改写成：<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*a^{(l)}.*(1-a^{(l)})$$<br>这个式子留在下面【疑问1】的证明。</p>
+</li>
+<li><p>第一项<br>首先回顾下代价函数:<br>$$J(\Theta)=-ylog(h_\Theta(x))-(1-y)log(1-h_\Theta(x))$$<br>对输出层\(a^{(L)}\)求导：<br>$$\frac{\partial}{\partial a^{(L)}}J(\Theta)=\frac{a^{(L)}-y}{a^{(L)}-(a^{(L)})^2} \\\\<br>注意对于输出层，h_\Theta(x)=a^{(L)}$$<br>因此根据前面定义:\(\delta\)为前两项偏导的乘积，即<br>$$\delta^{(L)}=\frac{a^{(L)}-y}{a^{(L)}-(a^{(L)})^2}a^{(L)}(1-a^{(L)})=a^{(L)}-y$$<br>这就解决了【疑问1】中的疑惑。实际上并不是简单的相减，而只是凑巧结果是这样。<br>对于【疑问1】【疑问2】的推导，即<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})$$<br>根据前面定义:\(\delta\)为前两项偏导的乘积，<br>我们来看下面式子的前两项偏导，<br>$$\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}\frac{\partial z_i^{(l+1)}}{\partial \Theta_{i,j}^{(l)}}$$<br>实际上前两项偏导结果就是：<br>$$\frac{\partial}{\partial z_{i}^{(l+1)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l+1)}}\frac{\partial a_i^{(l+1)}}{\partial z_i^{(l+1)}}$$<br>令\(l=l-1\),得到：<br>$$\frac{\partial}{\partial z_{i}^{(l)}}J(\Theta)=\frac{\partial J(\Theta)}{\partial a_i^{(l)}}\frac{\partial a_i^{(l)}}{\partial z_i^{(l)}}$$<br>利用链式法则得到:<br>$$\delta_{j}^{(l)}=\frac{\partial}{\partial z_{j}^{(l)}}J(\Theta)=\sum_k \frac{\partial J(\Theta)}{\partial z_k^{(l+1)}}\frac{\partial z_k^{(l+1)}}{\partial a_j^{(l)}}\frac{\partial a_j^{(l)}}{\partial z_{j}^{(l)}} \\\\<br>=\sum_k \delta_k^{(l+1)} \frac{\partial (\Theta_{kj}^{(l)}a_j^{(l)})}{\partial a_j^{(l)}}g’(z_j^{(l)}) \\\\<br>=\sum_k \delta_k^{(l+1)}\Theta_{kj}^{(l)}g’(z_j^{(l)})$$</p>
+</li>
+</ul>
+<p>1）上式是针对\(l\)层<strong>某一个神经元</strong>的求导，\(i\)(在这里k实际上就是l+1层神经元)代表\(l+1\)层神经元，\(j\)代表\(l\)层神经元。<br>2）求和相当于不同路径累加。<br>所以有：<br>$$\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})$$<br>1）上式是求\(l\)层所有神经元误差的矩阵形式。<br>2）仔细看\(\Theta_{kj}^{(l)}\)的下标变换，从1开始\(\Theta_{1j}^{(l)}\)，\(\Theta_{2j}^{(l)}\)，\(\Theta_{3j}^{(l)}\)…,实际上就代表\(l\)层的第\(j\)个神经元到\(l+1\)层的所有神经元的连线（权重）。因为\(l+1\)层的神经元代表的是行，即下标中的第一个数字。实际上和\((\Theta^{(l)})^T\delta^{(l+1)}\)矩阵形式是一样的。<br>这就解决了【疑问2】【疑问3】<br><strong>结论</strong>：<br>还有很多人说为什么这个值和很多别的网站，包括维基百科上说的不一样啊？因为很多别的网站包括维基百科，cost函数用的是线性回归的那种，它的偏微分就和逻辑回归的cost函数有差别了。具体地说，就差在分母的那一项上\(a^{(L)}-(a^{(L)})^2\)</p>
+<h2 id="反向传播演示"><a href="#反向传播演示" class="headerlink" title="反向传播演示"></a>反向传播演示</h2><p>说明：图片摘自网上，存在一定的偏差，实际上是一样的，只不过是写法的不同，重点在于<strong>整个过程以及箭头</strong>。首先进行前向传播计算，这里的\(w\)对应\(\Theta\),\(f\)对应\(g\)，即sigmoid函数，\(y\)对应\(a\),即sigmod的输出，\(e\)对应\(z\),即权重的线性组合结果。 \(\delta\)的计算式里的\(g’(z)\)项，图片中是放在最后梯度下降的时候求得导，即\(\frac{d_f}{d_e}\)。最后梯度下降公式中，不要忘记\(\delta\)还要乘以\(y\)，即我们上文讲到的\(a\)。<br><img src="/picture/machine-learning/network_learn_demo1.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo2.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo3.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo4.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo5.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo6.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo7.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo8.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo9.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo10.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo11.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo12.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo13.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo14.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo15.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo16.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo17.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo18.jpg" alt="demo"><br><img src="/picture/machine-learning/network_learn_demo19.jpg" alt="demo"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://colah.github.io/posts/2015-08-Backprop/#fnref1" target="_blank" rel="noopener">Calculus on Computational Graphs: Backpropagation</a><br><a href="http://galaxy.agh.edu.pl/~vlsi/AI/backp_t_en/backprop.html" target="_blank" rel="noopener">Principles of training multi-layer neural network using backpropagation</a><br><a href="https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/" target="_blank" rel="noopener">A Step by Step Backpropagation Example</a><br><a href="http://www.cs.toronto.edu/~fritz/absps/naturebp.pdf" target="_blank" rel="noopener">Learning representation by back-propagating errors</a><br><a href="http://blog.csdn.net/u014313009/article/details/51039334" target="_blank" rel="noopener">反向传播算法（过程及公式推导）</a><br><a href="https://www.coursera.org/learn/machine-learning" target="_blank" rel="noopener">斯坦福机器学习</a><br><a href="http://mooc.guokr.com/note/16702/" target="_blank" rel="noopener">反向传播算法的一些争论与思考</a><br><a href="https://www.zhihu.com/question/27239198" target="_blank" rel="noopener">知乎：如何直观的解释back propagation算法？</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/人工智能/" rel="tag"># 人工智能</a>
+          
+            <a href="/tags/神经网络/" rel="tag"># 神经网络</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/神经网络/" rel="next" title="神经网络(系列1)">
+                <i class="fa fa-chevron-left"></i> 神经网络(系列1)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/07/ARIMA时间序列模型/" rel="prev" title="ARIMA时间序列模型(一)">
+                ARIMA时间序列模型(一) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">66</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#代价函数"><span class="nav-number">1.</span> <span class="nav-text">代价函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反向传播算法"><span class="nav-number">2.</span> <span class="nav-text">反向传播算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#传统方法"><span class="nav-number">2.1.</span> <span class="nav-text">传统方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路径合并"><span class="nav-number">2.2.</span> <span class="nav-text">路径合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向传播优势"><span class="nav-number">2.3.</span> <span class="nav-text">反向传播优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向传播算法-1"><span class="nav-number">2.4.</span> <span class="nav-text">反向传播算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向传播理解"><span class="nav-number">2.5.</span> <span class="nav-text">反向传播理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#疑问1：为什么输出层的-delta-为-delta-L-a-L-y"><span class="nav-number">2.5.1.</span> <span class="nav-text">疑问1：为什么输出层的\(\delta\)为\(\delta^{(L)}=a^{(L)}-y\)?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#疑问2：-Theta-l-T-delta-l-1-怎么理解？"><span class="nav-number">2.5.2.</span> <span class="nav-text">疑问2：\((\Theta^{(l)})^T\delta^{(l+1)}\)怎么理解？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#疑问3：为什么前一层的-delta-l-和后一层的-delta-l-1-的关系是-delta-l-Theta-l-T-delta-l-1-g’-z-l-？"><span class="nav-number">2.5.3.</span> <span class="nav-text">疑问3：为什么前一层的\(\delta^{(l)}\)和后一层的\(\delta^{(l+1)}\)的关系是\(\delta^{(l)}=(\Theta^{(l)})^T\delta^{(l+1)}.*g’(z^{(l)})\)？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#疑问4：为什么-delta-i-l-1-计算完后，还要乘以前一层的-a-j-l-后，才是偏导-frac-partial-partial-Theta-ij-l-J-Theta-的结果？"><span class="nav-number">2.5.4.</span> <span class="nav-text">疑问4：为什么\(\delta_i^{(l+1)}\)计算完后，还要乘以前一层的\(a_j^{(l)}\)后，才是偏导\(\frac{\partial}{\partial \Theta_{ij}^{(l)}}J(\Theta)\)的结果？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#详细推导"><span class="nav-number">2.5.5.</span> <span class="nav-text">详细推导</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向传播演示"><span class="nav-number">2.6.</span> <span class="nav-text">反向传播演示</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
