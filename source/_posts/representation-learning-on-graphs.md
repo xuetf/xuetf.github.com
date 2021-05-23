@@ -3,7 +3,7 @@ title: 图表示学习Encoder-Decoder框架介绍和拓展
 date: 2019-12-04 11:20:42
 tags: [Paper,Survey,Graph Embedding,GCN,推荐系统,深度学习,Representation Learning]
 comments: true
-categories: 推荐系统
+categories: GNN
 top: 16
 ---
 

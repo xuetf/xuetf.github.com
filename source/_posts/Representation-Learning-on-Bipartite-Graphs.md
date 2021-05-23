@@ -22,7 +22,7 @@ top: 17
 
 ### Introduction
 
-这是一篇发表在KDD2018（二作T.N.Kipf是著名的 [GCN](https://openreview.net/pdf?id=SJU4ayYgl) 的一作）的文章。将矩阵补全问题看做是关于user-item 二分图的链接预测问题（a bipartite user-item graph with labeled edges），每种链接边可以看做是一种label（例如多种交互行为：点击，收藏，喜欢，下载等；在评分中，1~5分可以分别看做一种label）。有点像multi-view bipartite graph。作者提出了一个差异化信息传递(differentiable message passing)的概念，通过在bipartite interaction graph上进行差异化信息传递来学习结点的嵌入，再通过一个bilinear decoder进行链接预测。
+这是一篇发表在KDD2018（二作T.N.Kipf是著名的 [GCN](https://openreview.net/pdf?id=SJU4ayYgl) 的一作）的文章。将矩阵补全问题看做是关于user-item 二分图的链接预测问题（a bipartite user-item graph with labeled edges），每种链接边可以看做是一种label（例如多种交互行为：点击，收藏，喜欢，下载等；在评分中，1~5分可以分别看做一种label）。有点像multi-view bipartite graph。作者提出了一个信息传递(differentiable message passing)的概念，通过在bipartite interaction graph上进行信息传递来学习结点的嵌入，再通过一个bilinear decoder进行链接预测。
 
 ### Formulation
 
@@ -56,7 +56,9 @@ z_{i}^u = \sigma(W h_i^u) \tag{3}
 $$
 物品$v_i$的embedding和用户$u_i$的求解是对称的，只不过使用的是两套参数。
 
-作为拓展，值得一提的是，很多人忽略了归一化因子$c_{ij}$的重要性。一种观点是随着GCN层数的叠加，$c_{ij}$起着embedding平滑的作用（Embedding Smoothness）。我们以二层GCN为例，从协同过滤角度来阐述这一归一化因子的重要性（源自另一篇文章的观点[LightGCN](https://arxiv.org/abs/2002.02126)）。此处忽略多视图$r$以及非线性$\sigma$。令，$c_{ij}=\sqrt{|\mathcal{N}(u_i) \mathcal{N}(v_j)|}$为例，记$\boldsymbol{e}_j^{(1)}=W x_j^v$，当$x_j$为id one-hot vector时，可以认为就是item的嵌入；user同理。根据式子2，neighbor aggregation操作。我们观察用户$u, v$是如何产生协同过滤效果的。
+作为拓展，值得一提的是，很多人忽略了归一化因子$c_{ij}$的重要性。一种观点是随着GCN层数的叠加，$c_{ij}$起着embedding平滑的作用（Embedding Smoothness）。我们以二层GCN为例，从协同过滤角度来阐述这一归一化因子的重要性（源自另一篇文章的观点[LightGCN](https://arxiv.org/abs/2002.02126)）。此处忽略多视图$r$以及非线性$\sigma$。令，$c_{ij}=\sqrt{|\mathcal{N}(u_i) \mathcal{N}(v_j)|}$为例，记$\boldsymbol{e}_j^{(1)}=W x_j^v$，当$x_j$为id one-hot vector时，可以认为就是item的嵌入；user同理。
+
+根据式子2，neighbor aggregation操作。我们观察用户$u, v$是如何产生协同过滤效果的。
 $$
 \begin{aligned}
 \boldsymbol{e}_u^{(2)} &= \sum_{j \in \mathcal{N}_u} \frac{1}{\sqrt{|\mathcal{N}_u| \cdot  |\mathcal{N}_j}|} \boldsymbol{e}_j^{(1)}= \sum_{j \in \mathcal{N}_u} \frac{1}{\sqrt{|\mathcal{N}_u| \cdot |\mathcal{N}_j}|} (\sum_{v \in \mathcal{N}_j} \frac{1}{\sqrt{|\mathcal{N}_j| \cdot |\mathcal{N}_v|}}\boldsymbol{e}_v^{(0)}) \\
@@ -266,10 +268,10 @@ $$
 
   其中，$E^{(l)} \in \mathbb{R}^{(N +M)×d_l}$，即：把user, item的embeddings矩阵concat在一起，一起进行传播。也就是说，上述是user，item共同进行传播的表示形式，因此所有的矩阵都是concat在一起的形式。
 
-  作者说，$\boldsymbol{\mathcal{L}}$表示user-item interaction graph的拉普拉斯矩阵，$\boldsymbol{\mathcal{L}}=\boldsymbol{D}^{-1/2} \boldsymbol{A} \boldsymbol{D}^{-1/2}$，其中，$\boldsymbol{A} \in \mathbb{R}^{(N+M) \times (N+M)}$是邻接矩阵，是user-item 交互矩阵和item-user交互矩阵构成的，即：$\boldsymbol{A} = \left[ \begin{array}{ccc}
+  作者说，$\boldsymbol{\mathcal{L}}​$表示user-item interaction graph的拉普拉斯矩阵，$\boldsymbol{\mathcal{L}}=\boldsymbol{D}^{-1/2} \boldsymbol{A} \boldsymbol{D}^{-1/2}​$，其中，$\boldsymbol{A} \in \mathbb{R}^{(N+M) \times (N+M)}​$是邻接矩阵，是user-item 交互矩阵和item-user交互矩阵构成的，即：$\boldsymbol{A} = \left[ \begin{array}{ccc}
    \boldsymbol{0} & \boldsymbol{R} \\
    \boldsymbol{R}^T & \boldsymbol{0} \\
-  \end{array} \right]  $。(但是我个人记得拉普拉斯矩阵三种方式都不是长这个样子的，有可能这些定义之间差异很小，可能特征根是一样的，故也叫拉普拉斯矩阵吧，虽然和标准的拉普拉斯矩阵之间有一丝差异。本质都是一种graph operator。可参考[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)，讲的非常到位！)
+  \end{array} \right]  ​$。(但是我个人记得拉普拉斯矩阵三种方式都不是长这个样子的，有可能这些定义之间差异很小，可能特征根是一样的，故也叫拉普拉斯矩阵吧，虽然和标准的拉普拉斯矩阵之间有一丝差异。本质都是一种graph operator。可参考[从 Graph Convolution Networks (GCN) 谈起](https://zhuanlan.zhihu.com/p/60014316)，讲的非常到位！)
 
   这个矩阵表示形式很好理解，主要点在于，和$\boldsymbol{\mathcal{L}}$的**乘法**就对应于公式(5)中$\sum_{i \in \mathcal{N}_u} \boldsymbol{m}^{(l)}_{u \leftarrow i}$对邻域节点的汇聚**求和操作**，其它的一目了然。
 

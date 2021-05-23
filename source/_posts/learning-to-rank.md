@@ -4,11 +4,16 @@ date: 2018-12-25 18:34:54
 tags: [排序学习,推荐系统,Paper,机器学习,信息检索,搜索引擎]
 comments: true
 categories: 推荐系统
-top: 15
+top: 24
 ---
 
 排序是对一组物品列表按照某种方式进行排序，来最大化整个列表的效用的过程，广泛应用于搜索引擎、推荐系统、机器翻译、对话系统甚至计算生物学。一些监督机器学习技术经常被广泛应用在这些问题中，这些技术称作排序学习技术。本文会对排序学习进行调研。
 <!--more-->
+
+欢迎关注我的公众号"**蘑菇先生学习记**"，更快更及时地获取推荐系统前沿进展！
+
+![qr](/picture/qr_sr_code.png)
+
 
 ## Introduction
 
@@ -761,3 +766,8 @@ $$
 [WSDM2017: Unbiased Learning-to-Rank with Biased Feedback](http://www.cs.cornell.edu/~tj/publications/joachims_etal_17a.pdf) 
 
 [WSDM2018: Position Bias Estimation for Unbiased Learning to Rank in Personal Search](https://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/46485.pdf)
+
+
+最后，欢迎大家关注我的微信公众号，**蘑菇先生学习记**。会定期推送关于算法的前沿进展和学习实践感悟。
+
+![公众号](/picture/qrcode_wechat.jpg)
