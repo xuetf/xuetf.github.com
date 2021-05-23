@@ -1,0 +1,1165 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+
+    
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="paper,GNN,图神经网络,自监督学习,SIGIR," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="蘑菇先生学习记" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/picture/logo.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本篇文章主要介绍王翔、何向南老师团队在SIGIR2021上发表的文章SGL，Self-supervised Graph Learning for Recommendation[1]。这篇文章提出了一种应用于用户-物品二分图推荐系统的图自监督学习框架。核心的思想是，对输入的二分图，做结点和边的dropout进行数据增强，增强后的图可以看做原始图的子视图；在子视图上使用任意的图卷积神经网络，如Ligh">
+<meta name="keywords" content="paper,GNN,图神经网络,自监督学习,SIGIR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SIGIR&#39;21|SGL基于图自监督学习的推荐系统">
+<meta property="og:url" content="xtf615.com/2021/05/23/SGL/index.html">
+<meta property="og:site_name" content="蘑菇先生学习记">
+<meta property="og:description" content="本篇文章主要介绍王翔、何向南老师团队在SIGIR2021上发表的文章SGL，Self-supervised Graph Learning for Recommendation[1]。这篇文章提出了一种应用于用户-物品二分图推荐系统的图自监督学习框架。核心的思想是，对输入的二分图，做结点和边的dropout进行数据增强，增强后的图可以看做原始图的子视图；在子视图上使用任意的图卷积神经网络，如Ligh">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/picture/machine-learning/sgl_paper.png">
+<meta property="og:image" content="/picture/qr_sr_code.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_framework.png">
+<meta property="og:image" content="/picture/machine-learning/rw.png">
+<meta property="og:image" content="/picture/machine-learning/g_x.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_complex.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_comp_exp.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_ablation.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_longtal.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_robust.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_tau.png">
+<meta property="og:image" content="/picture/machine-learning/sgl_variant.png">
+<meta property="og:updated_time" content="2021-05-23T15:15:39.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SIGIR&#39;21|SGL基于图自监督学习的推荐系统">
+<meta name="twitter:description" content="本篇文章主要介绍王翔、何向南老师团队在SIGIR2021上发表的文章SGL，Self-supervised Graph Learning for Recommendation[1]。这篇文章提出了一种应用于用户-物品二分图推荐系统的图自监督学习框架。核心的思想是，对输入的二分图，做结点和边的dropout进行数据增强，增强后的图可以看做原始图的子视图；在子视图上使用任意的图卷积神经网络，如Ligh">
+<meta name="twitter:image" content="/picture/machine-learning/sgl_paper.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="xtf615.com/2021/05/23/SGL/"/>
+
+
+
+
+
+  <title> SIGIR'21|SGL基于图自监督学习的推荐系统 | 蘑菇先生学习记 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">蘑菇先生学习记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <!-- <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form> -->
+
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'WgLy48WeXh1aXsWx1x7L','2.0.0');
+</script> -->
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2021/05/23/SGL/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                SIGIR'21|SGL基于图自监督学习的推荐系统
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-05-23T23:03:48+08:00">
+                2021-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GNN/" itemprop="url" rel="index">
+                    <span itemprop="name">GNN</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读量 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇文章主要介绍王翔、何向南老师团队在SIGIR2021上发表的文章SGL，Self-supervised Graph Learning for Recommendation<sup>[1]</sup>。这篇文章提出了一种应用于<strong>用户-物品二分图推荐系统</strong>的<strong>图自监督学习</strong>框架。核心的思想是，对输入的二分图，做结点和边的dropout进行<strong>数据增强</strong>，增强后的图可以看做原始图的子视图；在子视图上使用任意的图卷积神经网络，如LightGCN<sup>[2]</sup>来提取结点的表征，对于同一个结点，多个视图就能形成多种表征；然后借鉴<strong>对比学习</strong><sup>[5]</sup>的思路，构造自监督学习任务，即：最大化同一个结点不同视图表征之间的相似性，最小化不同结点表征之间的相似性；最后<strong>对比学习自监督任务</strong>和<strong>推荐系统的监督学习任务</strong>联合起来，构成多任务学习的范式。<br><a id="more"></a></p>
+<p>文章的方法很简洁，这种思想和陈丹琦的工作，基于对比学习的句子表征SimCSE<sup>[4]</sup>有异曲同工之处，值得借鉴到实际的图表征学习中。相应的代码也开源在：<a href="https://github.com/wujcan/SGL" target="_blank" rel="noopener">https://github.com/wujcan/SGL</a><sup>[3]</sup>。感兴趣的同学可以去阅读一下。</p>
+<p><img src="/picture/machine-learning/sgl_paper.png" alt="SGL paper"></p>
+<p>欢迎关注我的公众号”蘑菇先生学习记”，更快更及时地获取关于推荐系统的前沿进展！</p>
+<p><img src="/picture/qr_sr_code.png" alt="qr_sr_code"></p>
+<h1 id="1-Motivation"><a href="#1-Motivation" class="headerlink" title="1.Motivation"></a>1.Motivation</h1><p>解决目前基于user-item二分图表征学习的推荐系统面临的两大核心问题：</p>
+<ul>
+<li><strong>长尾问题</strong>。high-degree高度的结点对表征学习起了主导作用，导致低度的结点，即长尾的item的学习很困难。</li>
+<li><strong>鲁棒性问题</strong>。交互数据中包含着很多噪声。而基于邻域结点汇聚的范式，会扩大”噪声观测边”的影响力，导致最终学习的表征受到噪声交互数据的影响比较大。</li>
+</ul>
+<p>因此，作者提出了图自监督学习的方法SGL(Self-supervised Graph Learning)，来提高基于二分图推荐的准确性和鲁棒性。</p>
+<p>核心的思想是，在传统监督任务的基础上，增加辅助的<strong>自监督学习任务</strong>，变成多任务学习的方式。具体而言，同一个结点先通过<strong>数据增强</strong> (data augmentation)的方式产生多种视图(multiple views)，然后借鉴<strong>对比学习</strong>(contrastive learning)的思路，最大化同一个结点不同视图表征之间的相似性，最小化不同结点表征之间的相似性，实际上是一个<strong>self-discrimination</strong>的任务。对于数据增强，对同一个结点，为了产生不同的视图，使用了3种方式，从不同维度来改变图的结构。包括，结点维度的node dropout；边维度的edge dropout（能够降低高度结点的影响力）；图维度的random walk。这种图结构的扰动和数据增强操作，能够提高模型对于噪声交互的鲁棒性。</p>
+<p>SGL方法和具体使用的图模型无关，可以和任意的图模型搭配使用。作者在LightGCN<sup>[2]</sup>的基础上，来引入SGL图自监督学习方法。通过<strong>对比学习范式</strong>的理论分析，阐明了SGL能够有助于挖掘<strong>困难负样本(hard negatives)</strong>，不仅提高了准确性，也能够提高训练过程收敛速度。通过在三个数据集上的经验性分析，也能够阐明这个SGL的有效性，尤其是在长尾items的推荐准确性以及对于噪声交互数据的鲁棒性。</p>
+<h1 id="2-Solution"><a href="#2-Solution" class="headerlink" title="2.Solution"></a>2.Solution</h1><p>开篇已经对文章的方法做了总结，即：先做数据增强操作，来产生多种视图；然后通过图编码的方式形成不同视图下的结点表征，并在这些视图表征上做对比学习。最后将对比学习辅助目标和传统的监督目标融合在一起，形成多目标学习的范式。</p>
+<p><img src="/picture/machine-learning/sgl_framework.png" alt="SGL框架图"></p>
+<h2 id="2-1-Data-Augmentation-on-Graph-Structure"><a href="#2-1-Data-Augmentation-on-Graph-Structure" class="headerlink" title="2.1 Data Augmentation on Graph Structure"></a>2.1 Data Augmentation on Graph Structure</h2><p>先看一下GNN进行结点编码的范式：<br>$$<br>\boldsymbol{Z}_1^{(l)}=H(\boldsymbol{Z}_1^{(l-1)}, \mathcal{G}),<br>$$<br>输入：上一层的结点表征向量和原始图，输出：该层的结点表征向量。具体的卷积步骤，可以参考LightGCN<sup>[2]</sup>的做法，这里不做过多赘述。</p>
+<p>在本文中，要做个小变化，即：原始图$\mathcal{G}$要进行dropout操作$s(\mathcal{G})$，要做两次，形成两个子视图。形式化地，<br>$$<br>\boldsymbol{Z}_1^{(l)}=H(\boldsymbol{Z}_1^{(l-1)}, s_1(\mathcal{G})), \boldsymbol{Z}_2^{(l)}=H(\boldsymbol{Z}_2^{(l-1)}, s_2(\mathcal{G})),<br>$$<br>下标1和2代表两次完全独立的dropout操作，形成2个视图$s_1(\mathcal{G})$和$s_2(\mathcal{G})$，再各自进行卷积操作得到结点的表征$\boldsymbol{Z}_1^{(l)},\boldsymbol{Z}_2^{(l)}$。具体的dropout操作包括如下三种：</p>
+<ul>
+<li><p><strong>Node Dropout</strong>：以一定的概率丢掉结点以及和该结点相连的边。<br>$$<br>s_1(\mathcal{G}) = (\boldsymbol{M}^{\prime} \odot \mathcal{V}, \mathcal{E}),   s_2(\mathcal{G}) = (\boldsymbol{M}^{\prime\prime} \odot \mathcal{V}, \mathcal{E})<br>$$<br>其中，$\boldsymbol{M}^{\prime}, \boldsymbol{M}^{\prime\prime} \in {0,1}^{|\mathcal{V}|}$是掩码向量，通过伯努利分布$m \sim \text{Bernoulli}(\rho)$来随机生成，其中$\rho$是dropout概率。$\boldsymbol{M}^{\prime}, \boldsymbol{M}^{\prime\prime}$完全独立。</p>
+</li>
+<li><p><strong>Edge Dropout</strong>：以一定的概率丢掉部分边。<br>$$<br>s_1(\mathcal{G}) = (\mathcal{V}, \boldsymbol{M}_{1} \odot \mathcal{E}),   s_2(\mathcal{G}) = (\mathcal{V},  \boldsymbol{M}_{2} \odot \mathcal{E})<br>$$<br>类似Node Dropout，只不过对边做的。</p>
+</li>
+<li><p><strong>Random Walk</strong>：前两种方法，产出的子视图在不同的卷积层之间是共享的，即：不同卷积层面对的子视图是一样的。random walk想要产生<strong>layer-aware</strong>的子视图，即：不同卷积层输入的图是不一样的，这个实现方式就是针对不同卷积层，都随机生成不同的掩码向量，实现方式也是通过dropout实现的，不同层子图不一样，达到类似随机游走的效果。<br>$$<br>s_1(\mathcal{G}) = (\mathcal{V}, \boldsymbol{M}_{1}^{(l)} \odot \mathcal{E}), \ \ s_2(\mathcal{G}) = (\mathcal{V},  \boldsymbol{M}_{2}^{(l)} \odot \mathcal{E})<br>$$<br>和edge dropout的差异体现在掩码向量是layer-aware的，多了个上标$(l)$。</p>
+<p>举例如下图，</p>
+<p><img src="/picture/machine-learning/rw.png" alt="随机游走策略"></p>
+</li>
+</ul>
+<h2 id="2-2-Contrastive-Learning"><a href="#2-2-Contrastive-Learning" class="headerlink" title="2.2 Contrastive Learning"></a>2.2 Contrastive Learning</h2><p>  同一个结点在不同视图下，可以产生不同的表征向量。作者将同一结点不同视图下的表示看成一对正样本，即：${(\boldsymbol{z}_u^{\prime}, \boldsymbol{z}_u^{\prime\prime})|u \in \mathcal{U}}$，而不同结点的表征看成一对负样本，即：${(\boldsymbol{z}_u^{\prime}, \boldsymbol{z}_v^{\prime\prime})|u,v \in \mathcal{U}, u \neq v}$。对比学习的目标期望最大化同一结点不同视图表征向量之间的相似性，最小化不同结点表征之间的相似性。采用了类似SimCLR<sup>[5]</sup>中的InfoNCE<sup>[6]</sup>的目标，即：<br>  $$<br>  \mathcal{L}_{ssl}^{user}=\sum_{u \in \mathcal{U}} - \log \frac{\exp(s(\boldsymbol{z}_u^{\prime},\boldsymbol{z}_u^{\prime\prime})/\tau)}{\sum_{v \in \mathcal{U}} \exp(s(\boldsymbol{z}_u^{\prime},\boldsymbol{z}_v^{\prime\prime})/\tau)}<br>  $$<br>  $s$是相似性函数，作者采用的是cosine相似性，$\tau$是温度参数。item侧和user侧是对称的，同理可以得到。则最终的自监督学习损失函数为：<br>  $$<br>  \mathcal{L}_{ssl} = \mathcal{L}_{ssl}^{user} + \mathcal{L}_{ssl}^{item}<br>  $$</p>
+<h2 id="2-3-Multi-task-Training"><a href="#2-3-Multi-task-Training" class="headerlink" title="2.3 Multi-task Training"></a>2.3 Multi-task Training</h2><p>  和推荐系统常用的BPR-pairwise损失函数$\mathcal{L}_{main}$结合起来做联合训练，即：<br>  $$<br>  \mathcal{L} = \mathcal{L}_{main} + \lambda_1 \mathcal{L}_{ssl} + \lambda_2 ||\Theta||_2^2<br>  $$<br>  值得注意的是，$\mathcal{L}_{ssl}$没有引入任何学习参数，因此最后一项正则化项都是图卷积神经网络的参数。</p>
+<h2 id="2-4-Theoretical-Analyses-of-SGL"><a href="#2-4-Theoretical-Analyses-of-SGL" class="headerlink" title="2.4 Theoretical Analyses of SGL"></a>2.4 Theoretical Analyses of SGL</h2><p>  这个部分是全文最精彩的地方，作者从<strong>梯度贡献角度</strong>来理论地分析了SGL方法为何会有效。作者分析了其中重要的一个原因，SGL有助于挖掘困难负样本，这部分样本能够贡献取值大且有意义的梯度，来引导结点的表征学习。</p>
+<p>  首先，对某个结点$u$，求$\mathcal{L}_{ssl}^{user}(u)$关于$\boldsymbol{z}_u^{\prime}$的导数。<br>  $$<br>  \frac{\partial \mathcal{L}_{ssl}^{user}(u)}{\partial \boldsymbol{z}_u^{\prime}} = \frac{1}{\tau || \boldsymbol{z}_u^{\prime}||} \{c(u)  + \sum_{v \in \mathcal{U} \text{/} {u}} c(v) \}<br>  $$</p>
+<p>  $c(u)$衡量了正样本$u$对于$\boldsymbol{z}_u^{\prime}$梯度的贡献度，${v}$衡量了负样本$v$对于$\boldsymbol{z}_u^{\prime}$梯度的贡献度。其中，<br>  $$<br>  c(u)=\left(s_u^{\prime \prime} - ({s_u^{\prime}}^T s_u^{\prime \prime})s_u^{\prime}\right)(P_{uu}-1)<br>  $$</p>
+<p>  $$<br>  c(v)=\left(s_v^{\prime \prime} - ({s_u^{\prime}}^T s_v^{\prime \prime})s_u^{\prime}\right)P_{uv}<br>  $$</p>
+<p>  $P(uv)=\frac{\exp({\boldsymbol{s}_u^{\prime}}^T \boldsymbol{s}_v^{\prime\prime})/\tau)}{\sum_{v \in \mathcal{U}} \exp({\boldsymbol{s}_u^{\prime}}^T \boldsymbol{s}_v^{\prime\prime})/\tau))}$即为softmax概率值，其中$s_u^{\prime}=\frac{z_u^{\prime}}{||z_u^{\prime}||}$是$u$结点在对应视图下表征的归一化值，$s_u^{\prime \prime}$同理。我们重点关注下负样本$v$对于梯度的贡献度，即$c(v)$，用L2范数来衡量梯度贡献度，即：<br>  $$<br>  ||c(v)||_2 \propto \sqrt{ 1-({\boldsymbol{s}_u^{\prime}}^T \boldsymbol{s}_v^{\prime\prime})^2} \exp{({\boldsymbol{s}_u^{\prime}}^T \boldsymbol{s}_v^{\prime\prime}/\tau)}<br>  $$<br>  又因为$s_u^{\prime}, s_v^{\prime \prime}$都是单位向量，引入$x={\boldsymbol{s}_u^{\prime}}^T \boldsymbol{s}_v^{\prime\prime} \in [-1,1]$来简化式子，即：<br>  $$<br>  g(x) = \sqrt{1-x^2} \exp(\frac{x}{\tau})<br>  $$<br>  其中，$x$也直接反映了正样本$u$和负样本$v$之间的相似性。根据$x$的取值，可以把$v$分为两类：</p>
+<ul>
+<li>困难负样本，$0&lt;x\leq1$，即：$v$和$u$存在一定的相似性，模型在隐空间难以很好地将这类负样本和正样本分离开。</li>
+<li><p>简单负样本，$-1 \leq x &lt; 0$，即：$v$和$u$不相似，很容易区分开。</p>
+<p>为了观察困难负样本和简单负样本对于梯度的贡献情况，作者画出了$g(x)$随着$x$取值变化的变化情况：</p>
+<p><img src="/picture/machine-learning/g_x.png" alt="负样本梯度贡献度和相似值的关系图"></p>
+</li>
+<li><p>(a)是$\tau=1$时的情况，可以看出$g(x)$位于$(0,1.5)$之间，随着$x$的变化，$g(x)$的变化幅度很小，也即：不管是困难负样本还是简单负样本，对于梯度的贡献差距不是很大。</p>
+</li>
+<li>(b)是$\tau=0.1$时的情况，可以看出$g(x)$位于$(0,4000)$之间，随着$x$的变化，$g(x)$剧烈变化，困难负样本的梯度贡献度可以达到4000，而简单负样本的贡献度甚至都趋于0。可以看出，困难负样本对于梯度的贡献度很大，能够有效地加快收敛。也可以发现温度参数的重要性。</li>
+</ul>
+<h2 id="2-5-Complexity-Analyses-of-SGL"><a href="#2-5-Complexity-Analyses-of-SGL" class="headerlink" title="2.5 Complexity Analyses of SGL"></a>2.5 Complexity Analyses of SGL</h2><p>除此之外，作者还做了一些复杂度的分析，相比于LightGCN，主要多的复杂度就是数据增强操作，即对邻接矩阵来做；以及自监督学习任务，这个的复杂度主要在于负样本选取，优化思路是拿同一个batch内其他的结点作为负样本，而不是整个图上所有其他结点都作为负样本。总体上，复杂度略涨，是在可以接受的范围内。</p>
+<p><img src="/picture/machine-learning/sgl_complex.png" alt="复杂度分析"></p>
+<h2 id="3-Evaluation"><a href="#3-Evaluation" class="headerlink" title="3. Evaluation"></a>3. Evaluation</h2><h3 id="3-1-Settings"><a href="#3-1-Settings" class="headerlink" title="3.1 Settings"></a>3.1 Settings</h3><ul>
+<li>数据集：Yelp2018, Amazon-Book，Alibaba-iFashion</li>
+<li>指标：Recall@20，NDCG@20</li>
+<li>对比方法：协同过滤方法。<ul>
+<li>二分图协同过滤方法：NGCF<sup>[9]</sup>、LightGCN<sup>[2]</sup></li>
+<li>自编码器协同过滤方法：Mult-VAE <sup>[8]</sup></li>
+<li>神经网络+自监督学习方法：DNN+SSL<sup>[7]</sup></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-Comparison-Study"><a href="#3-2-Comparison-Study" class="headerlink" title="3.2 Comparison  Study"></a>3.2 Comparison  Study</h3><p><img src="/picture/machine-learning/sgl_comp_exp.png" alt="对比实验"></p>
+<p>可以看出，<strong>SGL-ED​</strong>使用edge dropout的SGL效果比LightGCN好不少。</p>
+<h3 id="3-3-Ablation-Study"><a href="#3-3-Ablation-Study" class="headerlink" title="3.3 Ablation Study"></a>3.3 Ablation Study</h3><ul>
+<li>对比3种不同的数据增强操作。发现SGL-ED总体上效果最好，其次是SGL-RW，最后是SGL-ND。作者认为edge dropout方式能更好地发现图结构中潜在的模式。</li>
+<li>SGL和LightGCN单独对比，SGL基本都是赢的。</li>
+<li>层数从1到3层变化，效果慢慢变好，说明SGL对于泛化性有一定的帮助，即<strong>不同结点之间的对比学习</strong>能够有效缓解随着层数的增加导致的<strong>过度平滑</strong>问题。</li>
+</ul>
+<p><img src="/picture/machine-learning/sgl_ablation.png" alt="消融实验"></p>
+<h3 id="3-4-Long-tail-Recommendation"><a href="#3-4-Long-tail-Recommendation" class="headerlink" title="3.4 Long-tail Recommendation"></a>3.4 Long-tail Recommendation</h3><p>长尾物品的推荐有效性的经验性分析，即：为何能够对长尾物品的推荐有帮助。</p>
+<p>作者按照<strong>结点度的大小</strong>来对结点分组，度数越小则越长尾，然后看看SGL和LightGCN在不同组上的推荐性能差异。</p>
+<p><img src="/picture/machine-learning/sgl_longtal.png" alt="长尾推荐"></p>
+<p>如上图所示，SGL在低度的组别上（分组ID越小，度数越小），指标比LightGCN高不少；在高度的组别上，不相上下，LightGCN有的略好一些。这从经验上说明了SGL对于长尾物品推荐的有效性。</p>
+<p>更深入的原因作者没有分析。不过，从这种实验结果可以看出，SGL自监督学习的范式对于长尾、稀疏交互的场景是很有效果的。</p>
+<h3 id="3-5-Robustness-to-Noisy-Interactions"><a href="#3-5-Robustness-to-Noisy-Interactions" class="headerlink" title="3.5 Robustness to Noisy Interactions"></a>3.5 Robustness to Noisy Interactions</h3><p>验证SGL的鲁棒性。方法也很简单粗暴，在训练集中加入对抗样本，即一定比例的user-item未交互的样本，然后看SGL和LightGCN在测试集上的表现。</p>
+<p><img src="/picture/machine-learning/sgl_robust.png" alt="SGL鲁棒性实验"></p>
+<p>可以看出，SGL依然完虐LightGCN。作者给出的原因是，<strong>通过对比学习同一结点的不同视图表征，模型能够有效地发现最有意义的模式，尤其是结点的图结构，使得模型不会过于依赖某些边</strong>。总而言之，SGL提供了一种能够去掉噪声交互信息的方法。</p>
+<h2 id="3-6-Other-Analysis"><a href="#3-6-Other-Analysis" class="headerlink" title="3.6 Other Analysis"></a>3.6 Other Analysis</h2><ul>
+<li><p><strong>温度参数</strong>$\tau$的选择，不宜过大，也不宜过小。</p>
+<p><img src="/picture/machine-learning/sgl_tau.png" alt="温度参数实验"></p>
+<p>可以看出，$\tau=0.2$的时候最佳。</p>
+</li>
+<li><p><strong>预训练的有效性</strong>，自监督的另一种方法是先自监督地预训练结点向量，然后用于初始化结点向量，再通过推荐监督任务来finetune。最终的效果是，SGL-ED&gt;SGL-pre &gt;LightGCN。说明预训练方式也是有效的。</p>
+</li>
+<li><p><strong>负采样方法</strong>，</p>
+<ul>
+<li>在batch内采样同类型结点作为负样本，比如user采用user结点作为负样本。SGL-ED-batch</li>
+<li>batch内采样任意结点，不区分结点类型。SGL-ED-merge。</li>
+<li>在全域内采样同类型的负样本。SGL-ED。</li>
+</ul>
+<p>SGL-ED &gt; SGL-ED-batch &gt; SGL-ED-merge。SGL-ED-batch和SGL-ED差距不是非常大，说明batch内采样是个很好地优化方法。</p>
+<p><img src="/picture/machine-learning/sgl_variant.png" alt="SGL变体对比实验"></p>
+</li>
+<li><p><strong>SGL的收敛速度快</strong>，这主要得益于困难负样本。值得一提的是，作者提到了一个很有意思的店，SGL的BPR损失下降和Recall指标的上升存在时间上的小gap，说明了BPR损失在排序任务中不一定是最优的。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Another observation is that the origin of the rapid-decline period of BPR loss is slightly later than the rapid-rising period of Recall. This indicates the existence of a gap between the BPR loss and ranking task。</span><br></pre></td></tr></table></figure>
+<h2 id="Summarization"><a href="#Summarization" class="headerlink" title="Summarization"></a>Summarization</h2><p>SGL方法很简洁，可以快速结合各种图模型，在各种各样的推荐任务上尝试。实验论证也做的非常充分，是个很有借鉴意义的工作。整篇文章看下来，最大的收获是，对比学习的<strong>理论分析</strong>以及为何能够解决<strong>长尾推荐</strong>和对<strong>噪声交互有鲁棒性</strong>的实验论证。作者给出了一些经验的分析，可能缺一些更细致深入的剖析，但是从直觉上给到了很重要的原因。按照我的理解，总结两点，</p>
+<ul>
+<li><p>通过<strong>数据增强</strong>来改变图结构，使得图模型于不会过于依赖某些<strong>边</strong>或者某些<strong>高度结点</strong>。</p>
+</li>
+<li><p>通过<strong>对比学习</strong>同一结点的不同视图表征，模型能够有效地发现<strong>最有意义的模式</strong>，尤其是结点的图结构信息，同时还能挖掘困难负样本，提高模型的区分能力。</p>
+</li>
+</ul>
+<p>更多基于二分图的推荐系统文章请参见：</p>
+<p>基于二分图表征学习的推荐系统调研：<a href="https://zhuanlan.zhihu.com/p/110682271" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/110682271</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzU0MDA1MzI0Mw==&amp;mid=2247485420&amp;idx=2&amp;sn=7b3200eb8bfdb2b038582bce9c82da6a&amp;chksm=fb3e5c78cc49d56e952e213d56db0578987fdb41ff8873025aeed15a14dec6502ed6b8419e06&amp;token=2071122747&amp;lang=zh_CN#rd" target="_blank" rel="noopener">MM’19 | MMGCN 面向短视频推荐的多模态图神经网络</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MjM5MzY4NzE3MA==&amp;mid=2247484583&amp;idx=1&amp;sn=8e58ca2c09032e76d8dd30e2d875f60d&amp;chksm=a692774a91e5fe5c941c88fcad943b442244f0f9b195178125754f008786637a21d3602f071d&amp;token=2071122747&amp;lang=zh_CN#rd" target="_blank" rel="noopener">KDD’18 | GC-MC 图卷积矩阵补全</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>[1] SIGIR21，Self-supervised Graph Learning for Recommendation</p>
+<p>[2] SIGIR20，LightGCN：Simplifying and powering graph convolution network for recommendation</p>
+<p>[3] SGL源代码：<a href="https://github.com/wujcan/SGL" target="_blank" rel="noopener">https://github.com/wujcan/SGL</a></p>
+<p>[4] SimCSE: Simple Contrastive Learning of Sentence Embeddings：<a href="https://arxiv.org/abs/2104.08821" target="_blank" rel="noopener">https://arxiv.org/abs/2104.08821</a></p>
+<p>[5] SimCLR: A Simple Framework for Contrastive Learning of Visual Representations. CoRR 2020</p>
+<p>[6] InfoNCE：Michael Gutmann and Aapo Hyvärinen. 2010. Noise-contrastive estimation: A new estimation principle for unnormalized statistical models. In AISTATS, Vol. 9. 297–304.</p>
+<p>[7]  CoRR20，Self-supervised Learning for Deep Models in Recommendations. </p>
+<p>[8] WWW18，Variational Autoencoders for Collaborative Filtering</p>
+<p>[9] SIGIR19, NGCF，Neural Graph Collaborative Filtering</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/picture/wechatpay.JPG" alt="xuetf WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/picture/alipay.JPG" alt="xuetf Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper/" rel="tag"># paper</a>
+          
+            <a href="/tags/GNN/" rel="tag"># GNN</a>
+          
+            <a href="/tags/图神经网络/" rel="tag"># 图神经网络</a>
+          
+            <a href="/tags/自监督学习/" rel="tag"># 自监督学习</a>
+          
+            <a href="/tags/SIGIR/" rel="tag"># SIGIR</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/20/ConcepT/" rel="next" title="KDD'19|ConcepT 腾讯概念标签体系">
+                <i class="fa fa-chevron-left"></i> KDD'19|ConcepT 腾讯概念标签体系
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+         <div id="uyan_frame"></div>
+    
+  </div>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400"
+               alt="xuetf" />
+          <p class="site-author-name" itemprop="name">xuetf</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">121</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://lsxj615.com/" title="小王子" target="_blank">小王子</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xuetf/" title="My Github" target="_blank">My Github</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Motivation"><span class="nav-number">1.</span> <span class="nav-text">1.Motivation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Solution"><span class="nav-number">2.</span> <span class="nav-text">2.Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Data-Augmentation-on-Graph-Structure"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Data Augmentation on Graph Structure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Contrastive-Learning"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 Contrastive Learning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Multi-task-Training"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 Multi-task Training</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Theoretical-Analyses-of-SGL"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 Theoretical Analyses of SGL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-Complexity-Analyses-of-SGL"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 Complexity Analyses of SGL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Evaluation"><span class="nav-number">2.6.</span> <span class="nav-text">3. Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Settings"><span class="nav-number">2.6.1.</span> <span class="nav-text">3.1 Settings</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-Comparison-Study"><span class="nav-number">2.6.2.</span> <span class="nav-text">3.2 Comparison  Study</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Ablation-Study"><span class="nav-number">2.6.3.</span> <span class="nav-text">3.3 Ablation Study</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-Long-tail-Recommendation"><span class="nav-number">2.6.4.</span> <span class="nav-text">3.4 Long-tail Recommendation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-Robustness-to-Noisy-Interactions"><span class="nav-number">2.6.5.</span> <span class="nav-text">3.5 Robustness to Noisy Interactions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-Other-Analysis"><span class="nav-number">2.7.</span> <span class="nav-text">3.6 Other Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Summarization"><span class="nav-number">2.8.</span> <span class="nav-text">Summarization</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuetf</span>
+</div>
+
+
+
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+ tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+ TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+ messageStyle: "none"
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Queue(function() {
+ var all = MathJax.Hub.getAllJax(), i;
+ for(i=0; i < all.length; i += 1) {
+ all[i].SourceElement().parentNode.className += ' has-jax';
+ }
+ });
+</script>
+
+<!-- <script charset="utf-8" src="/js/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<script charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+    
+  
+ 
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2122877"></script>
+      <!-- UY END -->
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  <!-- custom analytics part create by xiamo -->
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("DFlRFg5OyISCpmUurUC3Vk4s-gzGzoHsz", "0ayDjXz6ELVOVmPMjLQH3llQ");</script>
+<script>
+function showTime(Counter) {
+  var query = new AV.Query(Counter);
+  $(".leancloud_visitors").each(function() {
+    var url = $(this).attr("id").trim();
+    query.equalTo("url", url);
+    query.find({
+      success: function(results) {
+        if (results.length == 0) {
+          var content = '0 ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+          return;
+        }
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          var content = object.get('time') + ' ' + $(document.getElementById(url)).text();
+          $(document.getElementById(url)).text(content);
+        }
+      },
+      error: function(object, error) {
+        console.log("Error: " + error.code + " " + error.message);
+      }
+    });
+
+  });
+}
+
+function addCount(Counter) {
+  var Counter = AV.Object.extend("Counter");
+  url = $(".leancloud_visitors").attr('id').trim();
+  title = $(".leancloud_visitors").attr('data-flag-title').trim();
+  var query = new AV.Query(Counter);
+  query.equalTo("url", url);
+  query.find({
+    success: function(results) {
+      if (results.length > 0) {
+        var counter = results[0];
+        counter.fetchWhenSave(true);
+        counter.increment("time");
+        counter.save(null, {
+          success: function(counter) {
+            var content =  counter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(counter, error) {
+            console.log('Failed to save Visitor num, with error message: ' + error.message);
+          }
+        });
+      } else {
+        var newcounter = new Counter();
+        newcounter.set("title", title);
+        newcounter.set("url", url);
+        newcounter.set("time", 1);
+        newcounter.save(null, {
+          success: function(newcounter) {
+              console.log("newcounter.get('time')="+newcounter.get('time'));
+            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
+            $(document.getElementById(url)).text(content);
+          },
+          error: function(newcounter, error) {
+            console.log('Failed to create');
+          }
+        });
+      }
+    },
+    error: function(error) {
+      console.log('Error:' + error.code + " " + error.message);
+    }
+  });
+}
+$(function() {
+  var Counter = AV.Object.extend("Counter");
+  if ($('.leancloud_visitors').length == 1) {
+    addCount(Counter);
+  } else if ($('.post-title-link').length > 1) {
+    showTime(Counter);
+  }
+}); 
+</script>
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
