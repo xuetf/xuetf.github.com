@@ -88,6 +88,6 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/xuetf/xuetf.github.com.git
+  repository: https://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@github.com/xuetf/xuetf.github.com.git
   branch: master
 

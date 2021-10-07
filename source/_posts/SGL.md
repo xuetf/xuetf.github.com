@@ -252,3 +252,7 @@ SGL方法很简洁，可以快速结合各种图模型，在各种各样的推�
 [8] WWW18，Variational Autoencoders for Collaborative Filtering
 
 [9] SIGIR19, NGCF，Neural Graph Collaborative Filtering
+
+也欢迎关注我的公众号"**蘑菇先生学习记**"，更快更及时地获取推荐系统前沿进展！
+
+![qr](/picture/qr_sr_code.png)

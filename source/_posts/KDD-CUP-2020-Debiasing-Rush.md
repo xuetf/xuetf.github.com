@@ -886,3 +886,7 @@ def ensemble(output_ranking_filename):
 [12] CIKM 2019 tutorial: Learning and Reasoning on Graph for Recommendation, https://next-nus.github.io/
 
 [13] Source code and datasets for the paper "Session-based Recommendation with Graph Neural Networks" (AAAI-19), https://github.com/CRIPAC-DIG/SR-GNN
+
+也欢迎关注我的公众号"**蘑菇先生学习记**"，更快更及时地获取推荐系统前沿进展！
+
+![qr](/picture/qr_sr_code.png)
