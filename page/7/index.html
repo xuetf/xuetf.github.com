@@ -292,6 +292,152 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/17/神经网络-系列2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="xuetf">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/11912425?v=3&u=11f9f5dc75aaf84f020a06c0b9cb2b6f401c586b&s=400">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="蘑菇先生学习记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="蘑菇先生学习记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/17/神经网络-系列2/" itemprop="url">
+                  神经网络(系列2)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-17T16:28:37+08:00">
+                2017-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>神经网络的入门知识参见<a href="/2017/02/13/神经网络/">神经网络(系列1)</a><br>本文主要对神经网络进行深入，探讨神经网络模型的学习。</p>
+<h1 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h1><p>首先引入一些便于稍后讨论的新标记方法：<br>假设神经网络的训练样本有m个，每个包含一组输入x和一组输出信号y，L表示神经网络层数，\(S_l\)表示每层的neuron个数(\(S_L\)表示输出层神经元个数),(\(S_L\)代表最后一层中处理单元的个数。<br>将神经网络的分类定义为两种情况：二类分类和多类分类:<br>二类分类：\(S_L=1\), y=0 or 1表示哪一类；<br>K类分类：\(S_L=K\),  \(y_i = 1\)表示分到第i类；（K&gt;2）<br><img src="/picture/machine-learning/network_learn1.jpg" alt="network_learn"><br>我们回顾逻辑回归问题中我们的代价函数为：<br>$$J(θ)=-\frac{1}{m}\sum_{i=1}^m\left(y^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))\right)+\frac{\lambda}{2m}\sum_{j=1}^nθ_j^2$$<br>在逻辑回归中，我们只有一个输出变量，又称标量（scalar），也只有一个因变量y，但是在神经网络中，我们可以有很多输出变量，我们的\(h_θ(x)\)是一个维度为K的向量，并且训练集中的因变量也是同样维度的一个向量，因此代价函数会比逻辑回归更加复杂一些，为：<br>$$J(\Theta)=-\frac{1}{m}\Big[\sum_{i=1}^m\sum_{k=1}^K\left(y_k^{(i)}log((h_\Theta(x^{(i)}))_k)+(1-y_k^{(i)})log(1-(h_\Theta(x^{(i)}))_k)\right)\Big] \\\ + \frac{\lambda}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(\Theta_{ji}^{(l)})^2$$<br><img src="/picture/machine-learning/network_learn2.jpg" alt="network_learn"><br>这个看起来复杂很多的代价函数背后的思想还是一样的，我们希望通过代价函数来观察算法预测的结果与真实情况的误差有多大，唯一不同的是，对于每一行特征，我们都会给出K个预测，基本上我们可以利用循环，对每一行特征都预测K个不同结果，然后在利用循环在K个预测中选择可能性最高的一个。<br>注意：j循环所有的行（由\(s_{l+1}\)层的激活单元数决定,l+1整体是下标），循环i则循环所有的列，由该层（\(s_l\)层）的激活单元数所决定。<br>
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/02/17/神经网络-系列2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="xtf615.com/2017/02/13/神经网络/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1680,7 +1826,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-count">70</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
