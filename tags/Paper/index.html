@@ -296,6 +296,34 @@
 
       <h1 class="post-title">
         
+            <a class="post-title-link" href="/2021/10/07/recsys2021/" itemprop="url">
+              
+                <span itemprop="name">Recsys2021 | 推荐系统论文整理和导读</span>
+              
+            </a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2021-10-07T19:48:31+08:00"
+              content="2021-10-07" >
+          10-07
+        </time>
+      </div>
+
+    </header>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h1 class="post-title">
+        
             <a class="post-title-link" href="/2021/05/23/SGL/" itemprop="url">
               
                 <span itemprop="name">SIGIR'21|SGL基于图自监督学习的推荐系统</span>
@@ -555,7 +583,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-count">68</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -573,7 +601,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">121</span>
+                <span class="site-state-item-count">122</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1032,27 +1060,7 @@ $(function() {
 
 </body>
 </html>
-message);
-          }
-        });
-      } else {
-        var newcounter = new Counter();
-        newcounter.set("title", title);
-        newcounter.set("url", url);
-        newcounter.set("time", 1);
-        newcounter.save(null, {
-          success: function(newcounter) {
-              console.log("newcounter.get('time')="+newcounter.get('time'));
-            var content = newcounter.get('time') + ' ' + $(document.getElementById(url)).text();
-            $(document.getElementById(url)).text(content);
-          },
-          error: function(newcounter, error) {
-            console.log('Failed to create');
-          }
-        });
-      }
-    },
-    error: function(error) {
+(error) {
       console.log('Error:' + error.code + " " + error.message);
     }
   });
