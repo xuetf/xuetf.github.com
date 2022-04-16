@@ -11,11 +11,11 @@
         <title>KDD 21 | 工业界搜推广nlp论文整理</title>
         <pubTime>2021-10-07T12:29:32.000Z</pubTime>
         
+        <tag>推荐系统</tag>
+         
         <tag>paper</tag>
          
         <tag>KDD</tag>
-         
-        <tag>推荐系统</tag>
          
          
            
@@ -64,11 +64,11 @@
         <title>KDD'19|ConcepT 腾讯概念标签体系</title>
         <pubTime>2021-05-20T12:46:03.000Z</pubTime>
         
-        <tag>标签挖掘</tag>
-         
         <tag>paper</tag>
          
         <tag>KDD</tag>
+         
+        <tag>标签挖掘</tag>
          
         <tag>腾讯</tag>
          
@@ -92,9 +92,9 @@
         
         <tag>深度学习</tag>
          
-        <tag>GNN</tag>
-         
         <tag>推荐系统</tag>
+         
+        <tag>GNN</tag>
          
         <tag>kddcup2020</tag>
          
@@ -118,11 +118,11 @@
         <title>SIGIR'21|SGL基于图自监督学习的推荐系统</title>
         <pubTime>2021-05-23T15:03:48.000Z</pubTime>
         
-        <tag>paper</tag>
-         
         <tag>GNN</tag>
          
         <tag>图神经网络</tag>
+         
+        <tag>paper</tag>
          
         <tag>自监督学习</tag>
          
@@ -146,9 +146,9 @@
         <title>Recsys2021 | 推荐系统论文整理和导读</title>
         <pubTime>2021-10-07T11:48:31.000Z</pubTime>
         
-        <tag>paper</tag>
-         
         <tag>推荐系统</tag>
+         
+        <tag>paper</tag>
          
         <tag>Recsys</tag>
          
@@ -196,9 +196,9 @@
         <title>图表示学习Encoder-Decoder框架介绍和拓展</title>
         <pubTime>2019-12-04T03:20:42.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>推荐系统</tag>
          
@@ -228,11 +228,11 @@
         <title>推荐系统算法调研</title>
         <pubTime>2018-05-03T12:30:29.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
          
         <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>推荐系统</tag>
          
@@ -254,9 +254,9 @@
         <title>排序学习调研</title>
         <pubTime>2018-12-25T10:34:54.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>推荐系统</tag>
          
@@ -310,9 +310,9 @@
         <title>特征交互新思路| 阿里 Co-action Network论文解读</title>
         <pubTime>2021-01-10T01:34:00.000Z</pubTime>
         
-        <tag>paper</tag>
-         
         <tag>推荐系统</tag>
+         
+        <tag>paper</tag>
          
         <tag>特征交互</tag>
          
@@ -336,9 +336,9 @@
         <title>推荐系统中二分图表示学习调研</title>
         <pubTime>2020-02-13T04:13:53.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>推荐系统</tag>
          
@@ -394,39 +394,13 @@
         <title>MA-GNN记忆增强的图神经网络序列推荐方法</title>
         <pubTime>2020-11-14T06:14:51.000Z</pubTime>
         
-        <tag>paper</tag>
+        <tag>推荐系统</tag>
          
         <tag>GNN</tag>
          
         <tag>图神经网络</tag>
          
-        <tag>推荐系统</tag>
-         
-         
-           
-             
-              <breadCrumb title="GNN" url="xtf615.com/categories/GNN/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2020/11/14/GCE-GNN/</loc>
-    <lastmod>2021-05-23T14:52:32.294Z</lastmod>
-    <data>
-        <display>
-        <title>GCE-GNN基于全局上下文增强的图神经网络序列推荐方法</title>
-        <pubTime>2020-11-14T06:00:25.000Z</pubTime>
-        
         <tag>paper</tag>
-         
-        <tag>GNN</tag>
-         
-        <tag>图神经网络</tag>
-         
-        <tag>推荐系统</tag>
          
          
            
@@ -446,11 +420,11 @@
         <title>语义向量召回之ANN检索</title>
         <pubTime>2020-08-01T03:51:23.000Z</pubTime>
         
-        <tag>KDD</tag>
-         
         <tag>向量召回</tag>
          
         <tag>ANN</tag>
+         
+        <tag>KDD</tag>
          
         <tag>工程</tag>
          
@@ -465,6 +439,32 @@
 
     
   <url>
+    <loc>xtf615.com/2020/11/14/GCE-GNN/</loc>
+    <lastmod>2021-05-23T14:52:32.294Z</lastmod>
+    <data>
+        <display>
+        <title>GCE-GNN基于全局上下文增强的图神经网络序列推荐方法</title>
+        <pubTime>2020-11-14T06:00:25.000Z</pubTime>
+        
+        <tag>推荐系统</tag>
+         
+        <tag>GNN</tag>
+         
+        <tag>图神经网络</tag>
+         
+        <tag>paper</tag>
+         
+         
+           
+             
+              <breadCrumb title="GNN" url="xtf615.com/categories/GNN/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2020/11/20/Disen-GNN/</loc>
     <lastmod>2021-05-23T14:52:32.293Z</lastmod>
     <data>
@@ -472,13 +472,13 @@
         <title>基于分离式表征的图神经网络调研</title>
         <pubTime>2020-11-20T15:10:52.000Z</pubTime>
         
-        <tag>paper</tag>
+        <tag>推荐系统</tag>
          
         <tag>GNN</tag>
          
         <tag>图神经网络</tag>
          
-        <tag>推荐系统</tag>
+        <tag>paper</tag>
          
          
            
@@ -499,11 +499,11 @@
         <title>图卷积神经网络理论基础</title>
         <pubTime>2019-02-24T07:20:50.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
          
         <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>推荐系统</tag>
          
@@ -545,18 +545,18 @@
     
     
   <url>
-    <loc>xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B-%E4%BA%8C/</loc>
+    <loc>xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>ARIMA时间序列模型(二)</title>
-        <pubTime>2017-03-07T05:49:28.000Z</pubTime>
+        <title>ARIMA时间序列模型(一)</title>
+        <pubTime>2017-03-07T01:33:02.000Z</pubTime>
         
-        <tag>统计学</tag>
-         
         <tag>时间序列</tag>
          
-        <tag>人工智能</tag>
+        <tag>统计学</tag>
+         
+        <tag>ARMA</tag>
          
         <tag>ARIMA</tag>
          
@@ -571,27 +571,19 @@
 
     
   <url>
-    <loc>xtf615.com/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</loc>
+    <loc>xtf615.com/2017/09/07/Python%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>spark分布式环境搭建教程</title>
-        <pubTime>2016-12-29T13:31:00.000Z</pubTime>
+        <title>Python核心编程读书笔记</title>
+        <pubTime>2017-09-07T12:05:12.000Z</pubTime>
         
-        <tag>大数据</tag>
-         
-        <tag>分布式</tag>
-         
-        <tag>spark</tag>
-         
-        <tag>内存</tag>
-         
-        <tag>环境</tag>
+        <tag>Python</tag>
          
          
            
              
-              <breadCrumb title="大数据" url="xtf615.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+              <breadCrumb title="语言学习" url="xtf615.com/categories/%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -606,37 +598,11 @@
         <title>Gradient Boosting Machine</title>
         <pubTime>2017-12-02T01:41:32.000Z</pubTime>
         
-        <tag>GBM</tag>
+        <tag>机器学习</tag>
          
         <tag>Paper</tag>
          
-        <tag>机器学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/03/29/Learning-Theory/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Learning Theory</title>
-        <pubTime>2017-03-29T04:59:14.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>经验风险最小化</tag>
-         
-        <tag>方差</tag>
-         
-        <tag>偏差</tag>
+        <tag>GBM</tag>
          
          
            
@@ -673,6 +639,32 @@
 
     
   <url>
+    <loc>xtf615.com/2017/03/08/Python%E5%AE%9E%E7%8E%B0%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>Python实现时间序列分析</title>
+        <pubTime>2017-03-08T01:54:58.000Z</pubTime>
+        
+        <tag>时间序列</tag>
+         
+        <tag>统计学</tag>
+         
+        <tag>ARIMA</tag>
+         
+        <tag>人工智能</tag>
+         
+         
+           
+             
+              <breadCrumb title="时间序列分析" url="xtf615.com/categories/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2018/08/15/CTR/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
@@ -680,13 +672,13 @@
         <title>CTR协同主题回归</title>
         <pubTime>2018-08-15T07:07:18.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
          
-        <tag>推荐系统</tag>
+        <tag>Paper</tag>
          
         <tag>主题模型</tag>
+         
+        <tag>推荐系统</tag>
          
         <tag>LDA</tag>
          
@@ -701,25 +693,29 @@
 
     
   <url>
-    <loc>xtf615.com/2018/02/12/AlphaGo-Zero/</loc>
+    <loc>xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>AlphaGo Zero论文解析</title>
-        <pubTime>2018-02-12T04:18:10.000Z</pubTime>
+        <title>SVM支持向量机</title>
+        <pubTime>2017-03-28T00:26:31.000Z</pubTime>
         
-        <tag>Paper</tag>
+        <tag>机器学习</tag>
          
         <tag>人工智能</tag>
          
-        <tag>深度学习</tag>
+        <tag>支持向量机</tag>
          
-        <tag>强化学习</tag>
+        <tag>SVM</tag>
+         
+        <tag>线性分类器</tag>
+         
+        <tag>非线性分类器</tag>
          
          
            
              
-              <breadCrumb title="强化学习" url="xtf615.com/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/"/>
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -727,21 +723,51 @@
 
     
   <url>
-    <loc>xtf615.com/2017/09/17/Week-1-For-Leetcode/</loc>
+    <loc>xtf615.com/2016/12/29/Spark%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>Leetcode (Week 1)</title>
-        <pubTime>2017-09-17T07:28:05.000Z</pubTime>
+        <title>spark分布式环境搭建教程</title>
+        <pubTime>2016-12-29T13:31:00.000Z</pubTime>
         
-        <tag>基础算法</tag>
+        <tag>大数据</tag>
          
-        <tag>Leetcode</tag>
+        <tag>分布式</tag>
+         
+        <tag>spark</tag>
+         
+        <tag>内存</tag>
+         
+        <tag>环境</tag>
          
          
            
              
-              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+              <breadCrumb title="大数据" url="xtf615.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/07/10/Factor-Analysis/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>因子分析</title>
+        <pubTime>2017-07-10T08:41:30.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>无监督学习</tag>
+         
+        <tag>空间映射</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -756,9 +782,9 @@
         <title>Spectral Clustering</title>
         <pubTime>2017-12-03T07:43:12.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>Clustering</tag>
          
@@ -773,12 +799,12 @@
 
     
   <url>
-    <loc>xtf615.com/2017/10/06/Week-3-For-Leetcode/</loc>
+    <loc>xtf615.com/2017/09/17/Week-1-For-Leetcode/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>Week-3-For-Leetcode</title>
-        <pubTime>2017-10-06T01:48:14.000Z</pubTime>
+        <title>Leetcode (Week 1)</title>
+        <pubTime>2017-09-17T07:28:05.000Z</pubTime>
         
         <tag>基础算法</tag>
          
@@ -817,144 +843,20 @@
 
     
   <url>
-    <loc>xtf615.com/2017/03/28/SVM%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA/</loc>
+    <loc>xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B-%E4%BA%8C/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>SVM支持向量机</title>
-        <pubTime>2017-03-28T00:26:31.000Z</pubTime>
+        <title>ARIMA时间序列模型(二)</title>
+        <pubTime>2017-03-07T05:49:28.000Z</pubTime>
         
-        <tag>机器学习</tag>
-         
-        <tag>人工智能</tag>
-         
-        <tag>支持向量机</tag>
-         
-        <tag>SVM</tag>
-         
-        <tag>线性分类器</tag>
-         
-        <tag>非线性分类器</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/10/13/Week-4-For-Leetcode/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Week-4-For-Leetcode</title>
-        <pubTime>2017-10-13T11:49:56.000Z</pubTime>
-        
-        <tag>基础算法</tag>
-         
-        <tag>Leetcode</tag>
-         
-         
-           
-             
-              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>前馈神经网络实践</title>
-        <pubTime>2017-08-08T06:07:05.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>神经网络</tag>
-         
-        <tag>梯度下降</tag>
-         
-        <tag>反向传播</tag>
-         
-         
-           
-             
-              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2018/02/24/AlphaZeroDesign/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>AlphaZero问题研究和算法设计与实现</title>
-        <pubTime>2018-02-24T02:11:26.000Z</pubTime>
-        
-        <tag>人工智能</tag>
-         
-        <tag>深度学习</tag>
-         
-        <tag>强化学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="强化学习" url="xtf615.com/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2018/05/03/collaborative-location-recommendation/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>基于张量分解的POI协同过滤推荐算法</title>
-        <pubTime>2018-05-03T13:02:27.000Z</pubTime>
-        
-        <tag>Paper</tag>
-         
-        <tag>推荐系统</tag>
-         
-         
-           
-             
-              <breadCrumb title="推荐系统" url="xtf615.com/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/03/07/ARIMA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>ARIMA时间序列模型(一)</title>
-        <pubTime>2017-03-07T01:33:02.000Z</pubTime>
-        
-        <tag>统计学</tag>
-         
         <tag>时间序列</tag>
+         
+        <tag>统计学</tag>
          
         <tag>ARIMA</tag>
          
-        <tag>ARMA</tag>
+        <tag>人工智能</tag>
          
          
            
@@ -993,20 +895,64 @@
 
     
   <url>
-    <loc>xtf615.com/2018/02/10/AlphaGo/</loc>
+    <loc>xtf615.com/2017/10/06/Week-3-For-Leetcode/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>Alpha Go论文解析</title>
-        <pubTime>2018-02-10T01:18:10.000Z</pubTime>
+        <title>Week-3-For-Leetcode</title>
+        <pubTime>2017-10-06T01:48:14.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>Leetcode</tag>
+         
+         
+           
+             
+              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2018/05/03/collaborative-location-recommendation/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>基于张量分解的POI协同过滤推荐算法</title>
+        <pubTime>2018-05-03T13:02:27.000Z</pubTime>
         
         <tag>Paper</tag>
          
-        <tag>人工智能</tag>
+        <tag>推荐系统</tag>
          
+         
+           
+             
+              <breadCrumb title="推荐系统" url="xtf615.com/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2018/02/12/AlphaGo-Zero/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>AlphaGo Zero论文解析</title>
+        <pubTime>2018-02-12T04:18:10.000Z</pubTime>
+        
         <tag>深度学习</tag>
          
         <tag>强化学习</tag>
+         
+        <tag>人工智能</tag>
+         
+        <tag>Paper</tag>
          
          
            
@@ -1019,25 +965,25 @@
 
     
   <url>
-    <loc>xtf615.com/2019/07/04/GAN/</loc>
+    <loc>xtf615.com/2018/02/10/AlphaGo/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>生成对抗网络</title>
-        <pubTime>2019-07-04T11:36:13.000Z</pubTime>
+        <title>Alpha Go论文解析</title>
+        <pubTime>2018-02-10T01:18:10.000Z</pubTime>
         
         <tag>深度学习</tag>
          
-        <tag>GAN</tag>
+        <tag>强化学习</tag>
          
-        <tag>结构化学习</tag>
+        <tag>人工智能</tag>
          
-        <tag>生成模型</tag>
+        <tag>Paper</tag>
          
          
            
              
-              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+              <breadCrumb title="强化学习" url="xtf615.com/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -1082,11 +1028,11 @@
         <title>LSTM+CRF for NER</title>
         <pubTime>2018-11-27T14:07:18.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
          
         <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>自然语言处理</tag>
          
@@ -1096,6 +1042,34 @@
            
              
               <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/04/03/practice-ml-advice/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>Advice for applying Machine Learning(2)</title>
+        <pubTime>2017-04-03T07:21:13.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>算法诊断</tag>
+         
+        <tag>偏差方差分析</tag>
+         
+        <tag>学习曲线</tag>
+         
+        <tag>目标函数</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -1131,6 +1105,54 @@
 
     
   <url>
+    <loc>xtf615.com/2018/03/07/DQN/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>Deep Q-Networks</title>
+        <pubTime>2018-03-07T02:11:26.000Z</pubTime>
+        
+        <tag>深度学习</tag>
+         
+        <tag>强化学习</tag>
+         
+        <tag>人工智能</tag>
+         
+        <tag>Paper</tag>
+         
+         
+           
+             
+              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/10/13/Week-4-For-Leetcode/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>Week-4-For-Leetcode</title>
+        <pubTime>2017-10-13T11:49:56.000Z</pubTime>
+        
+        <tag>基础算法</tag>
+         
+        <tag>Leetcode</tag>
+         
+         
+           
+             
+              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2018/08/13/LDA/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
@@ -1140,9 +1162,9 @@
         
         <tag>机器学习</tag>
          
-        <tag>推荐系统</tag>
-         
         <tag>主题模型</tag>
+         
+        <tag>推荐系统</tag>
          
         <tag>nlp</tag>
          
@@ -1189,60 +1211,6 @@
 
     
   <url>
-    <loc>xtf615.com/2017/04/03/practice-ml-advice/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Advice for applying Machine Learning(2)</title>
-        <pubTime>2017-04-03T07:21:13.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>算法诊断</tag>
-         
-        <tag>偏差方差分析</tag>
-         
-        <tag>学习曲线</tag>
-         
-        <tag>目标函数</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2018/03/07/DQN/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Deep Q-Networks</title>
-        <pubTime>2018-03-07T02:11:26.000Z</pubTime>
-        
-        <tag>Paper</tag>
-         
-        <tag>人工智能</tag>
-         
-        <tag>深度学习</tag>
-         
-        <tag>强化学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>xtf615.com/2018/09/10/vi/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
@@ -1250,9 +1218,9 @@
         <title>Variational Inference:A Review for Statisticians读书笔记</title>
         <pubTime>2018-09-10T01:56:43.000Z</pubTime>
         
-        <tag>Paper</tag>
-         
         <tag>机器学习</tag>
+         
+        <tag>Paper</tag>
          
         <tag>变分推断</tag>
          
@@ -1267,93 +1235,51 @@
 
     
   <url>
-    <loc>xtf615.com/2017/07/08/PCA/</loc>
+    <loc>xtf615.com/2019/07/04/GAN/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>主成分分析</title>
-        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
+        <title>生成对抗网络</title>
+        <pubTime>2019-07-04T11:36:13.000Z</pubTime>
+        
+        <tag>深度学习</tag>
+         
+        <tag>GAN</tag>
+         
+        <tag>结构化学习</tag>
+         
+        <tag>生成模型</tag>
+         
+         
+           
+             
+              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2018/09/08/vi-demo/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>变分推断应用示例</title>
+        <pubTime>2018-09-08T03:30:58.000Z</pubTime>
         
         <tag>机器学习</tag>
          
-        <tag>空间映射</tag>
+        <tag>Paper</tag>
          
-        <tag>降维</tag>
+        <tag>推荐系统</tag>
          
-        <tag>主成分分析</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>算法设计与分析(Lecture 1)</title>
-        <pubTime>2017-09-16T01:08:05.000Z</pubTime>
-        
-        <tag>算法设计与分析</tag>
-         
-        <tag>课堂笔记</tag>
+        <tag>变分推断</tag>
          
          
            
              
-              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/11/25/Linux-copy-page-tables/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Linux内存管理之copy_page_tables源码理解</title>
-        <pubTime>2017-11-25T05:40:12.000Z</pubTime>
-        
-        <tag>Linux</tag>
-         
-        <tag>内存管理</tag>
-         
-        <tag>操作系统</tag>
-         
-         
-           
-             
-              <breadCrumb title="操作系统" url="xtf615.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/11/20/%E4%BB%8E%E5%BC%80%E6%9C%BA%E5%8A%A0%E7%94%B5%E5%88%B0%E6%89%A7%E8%A1%8Cmain%E5%87%BD%E6%95%B0%E4%B9%8B%E5%89%8D%E7%9A%84%E8%BF%87%E7%A8%8B/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>从开机加电到执行main函数之前的过程</title>
-        <pubTime>2017-11-20T12:03:00.000Z</pubTime>
-        
-        <tag>Linux</tag>
-         
-        <tag>操作系统</tag>
-         
-         
-           
-             
-              <breadCrumb title="操作系统" url="xtf615.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
           
         </display>
     </data>
@@ -1385,70 +1311,20 @@
 
     
   <url>
-    <loc>xtf615.com/2018/09/08/vi-demo/</loc>
+    <loc>xtf615.com/2017/03/29/Learning-Theory/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>变分推断应用示例</title>
-        <pubTime>2018-09-08T03:30:58.000Z</pubTime>
-        
-        <tag>Paper</tag>
-         
-        <tag>机器学习</tag>
-         
-        <tag>推荐系统</tag>
-         
-        <tag>变分推断</tag>
-         
-         
-           
-             
-              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2018/10/05/word2vec/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>word2vec学习笔记</title>
-        <pubTime>2018-10-05T08:16:00.000Z</pubTime>
-        
-        <tag>Paper</tag>
-         
-        <tag>机器学习</tag>
-         
-        <tag>深度学习</tag>
-         
-        <tag>自然语言处理</tag>
-         
-         
-           
-             
-              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/01/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>机器学习概念</title>
-        <pubTime>2017-01-18T01:25:34.000Z</pubTime>
+        <title>Learning Theory</title>
+        <pubTime>2017-03-29T04:59:14.000Z</pubTime>
         
         <tag>机器学习</tag>
          
-        <tag>人工智能</tag>
+        <tag>经验风险最小化</tag>
          
-        <tag>概念</tag>
+        <tag>方差</tag>
+         
+        <tag>偏差</tag>
          
          
            
@@ -1485,27 +1361,93 @@
 
     
   <url>
-    <loc>xtf615.com/2018/01/12/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
+    <loc>xtf615.com/2017/09/16/Lecture-1-for-Algorithm-Design-and-Analysis/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>K-means和混合高斯模型</title>
-        <pubTime>2018-01-12T12:14:27.000Z</pubTime>
+        <title>算法设计与分析(Lecture 1)</title>
+        <pubTime>2017-09-16T01:08:05.000Z</pubTime>
+        
+        <tag>算法设计与分析</tag>
+         
+        <tag>课堂笔记</tag>
+         
+         
+           
+             
+              <breadCrumb title="算法设计与分析" url="xtf615.com/categories/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%88%86%E6%9E%90/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/11/20/%E4%BB%8E%E5%BC%80%E6%9C%BA%E5%8A%A0%E7%94%B5%E5%88%B0%E6%89%A7%E8%A1%8Cmain%E5%87%BD%E6%95%B0%E4%B9%8B%E5%89%8D%E7%9A%84%E8%BF%87%E7%A8%8B/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>从开机加电到执行main函数之前的过程</title>
+        <pubTime>2017-11-20T12:03:00.000Z</pubTime>
+        
+        <tag>Linux</tag>
+         
+        <tag>操作系统</tag>
+         
+         
+           
+             
+              <breadCrumb title="操作系统" url="xtf615.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/01/18/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E5%BF%B5/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>机器学习概念</title>
+        <pubTime>2017-01-18T01:25:34.000Z</pubTime>
         
         <tag>机器学习</tag>
          
-        <tag>无监督学习</tag>
+        <tag>人工智能</tag>
          
-        <tag>k-means</tag>
-         
-        <tag>混合高斯分布</tag>
-         
-        <tag>期望最大化算法</tag>
+        <tag>概念</tag>
          
          
            
              
               <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2018/10/05/word2vec/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>word2vec学习笔记</title>
+        <pubTime>2018-10-05T08:16:00.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
+         
+        <tag>自然语言处理</tag>
+         
+         
+           
+             
+              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
           
         </display>
     </data>
@@ -1529,54 +1471,6 @@
         <tag>分词</tag>
          
         <tag>NLTK</tag>
-         
-         
-           
-             
-              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/02/17/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-%E7%B3%BB%E5%88%972/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>神经网络(系列2)</title>
-        <pubTime>2017-02-17T08:28:37.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>人工智能</tag>
-         
-        <tag>神经网络</tag>
-         
-         
-           
-             
-              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>xtf615.com/2017/02/11/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>逻辑回归</title>
-        <pubTime>2017-02-11T07:30:53.000Z</pubTime>
-        
-        <tag>机器学习</tag>
-         
-        <tag>逻辑回归</tag>
-         
-        <tag>广义线性模型</tag>
          
          
            
@@ -1639,6 +1533,34 @@
 
     
   <url>
+    <loc>xtf615.com/2018/01/12/%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>K-means和混合高斯模型</title>
+        <pubTime>2018-01-12T12:14:27.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>无监督学习</tag>
+         
+        <tag>k-means</tag>
+         
+        <tag>混合高斯分布</tag>
+         
+        <tag>期望最大化算法</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>xtf615.com/2017/02/09/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
@@ -1648,16 +1570,120 @@
         
         <tag>机器学习</tag>
          
-        <tag>梯度下降</tag>
+        <tag>线性回归</tag>
          
         <tag>广义线性模型</tag>
          
-        <tag>线性回归</tag>
+        <tag>梯度下降</tag>
          
          
            
              
               <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/02/11/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>逻辑回归</title>
+        <pubTime>2017-02-11T07:30:53.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>广义线性模型</tag>
+         
+        <tag>逻辑回归</tag>
+         
+         
+           
+             
+              <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/02/17/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C-%E7%B3%BB%E5%88%972/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>神经网络(系列2)</title>
+        <pubTime>2017-02-17T08:28:37.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>人工智能</tag>
+         
+        <tag>神经网络</tag>
+         
+         
+           
+             
+              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2017/08/08/feedforward-neural-network-handwritten/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>前馈神经网络实践</title>
+        <pubTime>2017-08-08T06:07:05.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>神经网络</tag>
+         
+        <tag>梯度下降</tag>
+         
+        <tag>反向传播</tag>
+         
+         
+           
+             
+              <breadCrumb title="深度学习" url="xtf615.com/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>xtf615.com/2019/01/06/attention/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>Attention in Deep Learning</title>
+        <pubTime>2019-01-06T02:31:23.000Z</pubTime>
+        
+        <tag>机器学习</tag>
+         
+        <tag>深度学习</tag>
+         
+        <tag>Paper</tag>
+         
+        <tag>自然语言处理</tag>
+         
+        <tag>计算机视觉</tag>
+         
+        <tag>Attention</tag>
+         
+         
+           
+             
+              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
           
         </display>
     </data>
@@ -1687,29 +1713,51 @@
 
     
   <url>
-    <loc>xtf615.com/2019/01/06/attention/</loc>
+    <loc>xtf615.com/2017/11/25/Linux-copy-page-tables/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>Attention in Deep Learning</title>
-        <pubTime>2019-01-06T02:31:23.000Z</pubTime>
+        <title>Linux内存管理之copy_page_tables源码理解</title>
+        <pubTime>2017-11-25T05:40:12.000Z</pubTime>
         
-        <tag>Paper</tag>
+        <tag>Linux</tag>
          
-        <tag>机器学习</tag>
+        <tag>内存管理</tag>
          
-        <tag>深度学习</tag>
-         
-        <tag>自然语言处理</tag>
-         
-        <tag>计算机视觉</tag>
-         
-        <tag>Attention</tag>
+        <tag>操作系统</tag>
          
          
            
              
-              <breadCrumb title="自然语言处理" url="xtf615.com/categories/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/"/>
+              <breadCrumb title="操作系统" url="xtf615.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+    
+    
+    
+    
+  <url>
+    <loc>xtf615.com/2018/02/24/AlphaZeroDesign/</loc>
+    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
+    <data>
+        <display>
+        <title>AlphaZero问题研究和算法设计与实现</title>
+        <pubTime>2018-02-24T02:11:26.000Z</pubTime>
+        
+        <tag>深度学习</tag>
+         
+        <tag>强化学习</tag>
+         
+        <tag>人工智能</tag>
+         
+         
+           
+             
+              <breadCrumb title="强化学习" url="xtf615.com/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
@@ -1717,73 +1765,25 @@
 
     
   <url>
-    <loc>xtf615.com/2017/07/10/Factor-Analysis/</loc>
+    <loc>xtf615.com/2017/07/08/PCA/</loc>
     <lastmod>2019-12-05T07:51:19.000Z</lastmod>
     <data>
         <display>
-        <title>因子分析</title>
-        <pubTime>2017-07-10T08:41:30.000Z</pubTime>
+        <title>主成分分析</title>
+        <pubTime>2017-07-08T00:38:56.000Z</pubTime>
         
         <tag>机器学习</tag>
          
-        <tag>无监督学习</tag>
-         
         <tag>空间映射</tag>
+         
+        <tag>降维</tag>
+         
+        <tag>主成分分析</tag>
          
          
            
              
               <breadCrumb title="机器学习" url="xtf615.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-    
-    
-    
-  <url>
-    <loc>xtf615.com/2017/03/08/Python%E5%AE%9E%E7%8E%B0%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Python实现时间序列分析</title>
-        <pubTime>2017-03-08T01:54:58.000Z</pubTime>
-        
-        <tag>统计学</tag>
-         
-        <tag>时间序列</tag>
-         
-        <tag>人工智能</tag>
-         
-        <tag>ARIMA</tag>
-         
-         
-           
-             
-              <breadCrumb title="时间序列分析" url="xtf615.com/categories/%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
-    <loc>xtf615.com/2017/09/07/Python%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2019-12-05T07:51:19.000Z</lastmod>
-    <data>
-        <display>
-        <title>Python核心编程读书笔记</title>
-        <pubTime>2017-09-07T12:05:12.000Z</pubTime>
-        
-        <tag>Python</tag>
-         
-         
-           
-             
-              <breadCrumb title="语言学习" url="xtf615.com/categories/%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/"/>
           
         </display>
     </data>
